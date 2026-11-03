@@ -5,13 +5,42 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+// ========================================
+// TIPOS DE DATOS
+// ========================================
+
 type Usuario = {
   email: string;
   nombre: string;
   rol: string;
 };
 
-// Obtener información y rol del usuario desde Supabase.
+// ========================================
+// REDIRECCIÓN SEGÚN EL ROL
+// ========================================
+
+function obtenerRutaPorRol(rol: string): string | null {
+  switch (rol) {
+    case "cliente":
+      return "/cliente";
+
+    case "entrenador":
+      return "/entrenador";
+
+    // Se habilitará cuando exista
+    // el panel del administrador.
+    case "administrador":
+      return null;
+
+    default:
+      return null;
+  }
+}
+
+// ========================================
+// CONSULTAR PERFIL Y ROL EN SUPABASE
+// ========================================
+
 async function obtenerPerfil(id: string, email: string) {
   const supabase = createClient();
 
@@ -29,30 +58,42 @@ async function obtenerPerfil(id: string, email: string) {
       .single(),
   ]);
 
-  return {
-    usuario: {
-      email,
-      nombre: perfil.data?.nombre_completo ?? "No disponible",
-      rol: acceso.data?.rol ?? "No disponible",
-    },
-    error:
-      perfil.error || acceso.error
-        ? "La cuenta se autenticó, pero no se pudo consultar su perfil o rol. Revisaremos los permisos de la base de datos."
-        : "",
+  const usuario: Usuario = {
+    email,
+    nombre: perfil.data?.nombre_completo ?? "No disponible",
+    rol: acceso.data?.rol ?? "No disponible",
   };
+
+  const error =
+    perfil.error || acceso.error
+      ? "La cuenta se autenticó, pero no se pudo consultar su perfil o rol. Revisaremos los permisos de la base de datos."
+      : "";
+
+  return { usuario, error };
 }
+
+// ========================================
+// COMPONENTE PRINCIPAL DEL LOGIN
+// ========================================
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [usuario, setUsuario] = useState<Usuario | null>(null);
+
   const [error, setError] = useState("");
+
   const [cargando, setCargando] = useState(false);
+
   const [verificando, setVerificando] = useState(true);
 
-  // Comprobar si ya existe una sesión activa.
+  // ========================================
+  // COMPROBAR SI YA EXISTE UNA SESIÓN
+  // ========================================
+
   useEffect(() => {
     let activo = true;
 
@@ -76,12 +117,15 @@ export default function LoginPage() {
           setUsuario(resultado.usuario);
           setError(resultado.error);
 
-          // Redirección según el rol comprobado.
-          if (
-            !resultado.error &&
-            resultado.usuario.rol === "cliente"
-          ) {
-            router.replace("/cliente");
+          // Obtener ruta según el rol.
+          const ruta = !resultado.error
+            ? obtenerRutaPorRol(resultado.usuario.rol)
+            : null;
+
+          // Redirigir a su panel autorizado.
+          if (ruta) {
+            router.replace(ruta);
+            return;
           }
         }
       } catch {
@@ -102,7 +146,10 @@ export default function LoginPage() {
     };
   }, [router]);
 
-  // Iniciar sesión utilizando Supabase Auth.
+  // ========================================
+  // INICIAR SESIÓN CON SUPABASE AUTH
+  // ========================================
+
   async function iniciarSesion(
     evento: FormEvent<HTMLFormElement>
   ) {
@@ -125,7 +172,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Consultar el rol registrado en PostgreSQL.
+      // Consultar datos del usuario.
       const resultado = await obtenerPerfil(
         data.user.id,
         data.user.email ?? email
@@ -135,17 +182,18 @@ export default function LoginPage() {
       setError(resultado.error);
       setPassword("");
 
-      // Enviar al cliente a su panel correspondiente.
-      if (
-        !resultado.error &&
-        resultado.usuario.rol === "cliente"
-      ) {
-        router.replace("/cliente");
+      // Determinar panel correspondiente.
+      const ruta = !resultado.error
+        ? obtenerRutaPorRol(resultado.usuario.rol)
+        : null;
+
+      if (ruta) {
+        router.replace(ruta);
         return;
       }
 
-      // Los demás roles tendrán sus paneles
-      // cuando se implementen sus módulos.
+      // Para roles sin panel disponible,
+      // se mantiene la vista informativa.
     } catch {
       setError(
         "No se pudo conectar. Comprueba tu conexión."
@@ -155,7 +203,10 @@ export default function LoginPage() {
     }
   }
 
-  // Cerrar sesión desde la pantalla de acceso.
+  // ========================================
+  // CERRAR SESIÓN
+  // ========================================
+
   async function cerrarSesion() {
     setCargando(true);
     setError("");
@@ -171,9 +222,13 @@ export default function LoginPage() {
         return;
       }
 
+      // Limpiar los datos locales.
       setUsuario(null);
       setEmail("");
       setPassword("");
+
+      // Actualizar los componentes del servidor.
+      router.refresh();
     } catch {
       setError(
         "Ocurrió un error al cerrar la sesión."
@@ -183,12 +238,17 @@ export default function LoginPage() {
     }
   }
 
+  // ========================================
+  // INTERFAZ VISUAL DEL LOGIN
+  // ========================================
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-5 py-12 text-white">
       <div className="w-full max-w-md">
 
-        {/* Encabezado */}
+        {/* ENCABEZADO */}
         <div className="mb-8 text-center">
+
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 text-3xl font-black text-slate-950">
             E
           </div>
@@ -203,21 +263,33 @@ export default function LoginPage() {
           <p className="mt-2 text-sm text-slate-400">
             Sistema inteligente de entrenamiento
           </p>
+
         </div>
 
-        {/* Contenedor principal */}
+        {/* CONTENEDOR PRINCIPAL */}
         <section className="rounded-3xl border border-white/10 bg-slate-900 p-8 shadow-2xl">
 
           {verificando ? (
-            <p className="text-center text-slate-300">
-              Comprobando sesión...
-            </p>
+
+            // VERIFICANDO SESIÓN
+            <div className="text-center">
+              <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-slate-700 border-t-cyan-400" />
+
+              <p className="text-slate-300">
+                Comprobando sesión...
+              </p>
+            </div>
+
           ) : usuario ? (
 
-            // Estado autenticado
+            // USUARIO AUTENTICADO
             <div className="space-y-5">
+
               <div className="rounded-2xl bg-emerald-500/10 p-5 text-center">
-                <div className="mb-2 text-3xl">✓</div>
+
+                <div className="mb-2 text-3xl">
+                  ✓
+                </div>
 
                 <h2 className="text-xl font-bold text-emerald-300">
                   Autenticación correcta
@@ -226,9 +298,12 @@ export default function LoginPage() {
                 <p className="mt-2 text-sm text-slate-300">
                   Supabase ha reconocido tu cuenta.
                 </p>
+
               </div>
 
+              {/* INFORMACIÓN DEL USUARIO */}
               <div className="space-y-3 rounded-xl bg-slate-800 p-5 text-sm">
+
                 <p>
                   <span className="text-slate-400">
                     Nombre:
@@ -249,8 +324,10 @@ export default function LoginPage() {
                   </span>{" "}
                   {usuario.rol}
                 </p>
+
               </div>
 
+              {/* MENSAJES DE ERROR */}
               {error && (
                 <p
                   role="alert"
@@ -260,6 +337,17 @@ export default function LoginPage() {
                 </p>
               )}
 
+              {/* PANEL NO IMPLEMENTADO */}
+              {!error &&
+                !obtenerRutaPorRol(usuario.rol) && (
+                  <p className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200">
+                    Tu cuenta está autenticada, pero el
+                    panel correspondiente a este rol
+                    todavía no está disponible.
+                  </p>
+                )}
+
+              {/* CERRAR SESIÓN */}
               <button
                 type="button"
                 onClick={cerrarSesion}
@@ -270,11 +358,12 @@ export default function LoginPage() {
                   ? "Cerrando sesión..."
                   : "Cerrar sesión"}
               </button>
+
             </div>
 
           ) : (
 
-            // Formulario de inicio de sesión
+            // FORMULARIO DE INICIO DE SESIÓN
             <>
               <h2 className="text-2xl font-bold">
                 ¡Bienvenido!
@@ -288,8 +377,10 @@ export default function LoginPage() {
                 onSubmit={iniciarSesion}
                 className="mt-8 space-y-5"
               >
-                {/* Correo electrónico */}
+
+                {/* CORREO ELECTRÓNICO */}
                 <div>
+
                   <label
                     htmlFor="email"
                     className="mb-2 block text-sm font-medium"
@@ -309,10 +400,12 @@ export default function LoginPage() {
                     required
                     className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
                   />
+
                 </div>
 
-                {/* Contraseña */}
+                {/* CONTRASEÑA */}
                 <div>
+
                   <label
                     htmlFor="password"
                     className="mb-2 block text-sm font-medium"
@@ -332,9 +425,10 @@ export default function LoginPage() {
                     required
                     className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
                   />
+
                 </div>
 
-                {/* Mensajes de error */}
+                {/* MENSAJES DE ERROR */}
                 {error && (
                   <p
                     role="alert"
@@ -344,7 +438,7 @@ export default function LoginPage() {
                   </p>
                 )}
 
-                {/* Botón de acceso */}
+                {/* BOTÓN INICIAR SESIÓN */}
                 <button
                   type="submit"
                   disabled={cargando}
@@ -354,15 +448,18 @@ export default function LoginPage() {
                     ? "Verificando..."
                     : "Iniciar sesión"}
                 </button>
+
               </form>
             </>
           )}
+
         </section>
 
-        {/* Pie de página */}
+        {/* PIE DE PÁGINA */}
         <p className="mt-6 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Lima, Perú · 2026
         </p>
+
       </div>
     </main>
   );

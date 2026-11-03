@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 
 import { createClient } from "@/lib/supabase/server";
-import { cerrarSesion } from "./actions";
+import { cerrarSesion } from "@/lib/actions/auth";
 
 // Pantalla de carga mientras se verifica el usuario.
 function CargandoPanel() {
