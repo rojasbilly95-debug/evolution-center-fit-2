@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Python - Motor de recomendaciones IA
+services/ia/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Python - Entornos virtuales
+venv/
+.venv/
+
+# Python - Archivos locales
+*.egg-info/
