@@ -215,9 +215,20 @@ async function ContenidoEntrenador() {
                 </p>
 
                 <div className="mt-6 border-t border-white/10 pt-5">
-                  <p className="text-sm font-medium text-cyan-400">
-                    Módulo en desarrollo
-                  </p>
+
+                  {modulo.titulo === "Mis clientes" ? (
+                    <Link
+                      href="/entrenador/clientes"
+                      className="text-sm font-semibold text-cyan-400 hover:underline"
+                    >
+                      Ver clientes asignados
+                    </Link>
+                  ) : (
+                    <p className="text-sm font-medium text-cyan-400">
+                      Módulo en desarrollo
+                    </p>
+                  )}
+
                 </div>
               </article>
             ))}
