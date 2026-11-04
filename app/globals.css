@@ -24,3 +24,56 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+
+/* ==========================================
+   EVOLUTION CENTER FIT 2.0
+   Animaciones del motor recomendador
+   ========================================== */
+
+/* Entrada sutil de tarjetas */
+@keyframes ecf-aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Crecimiento horizontal de la barra */
+@keyframes ecf-crecer {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Animar solamente si el usuario lo permite */
+@media (prefers-reduced-motion: no-preference) {
+  .ecf-entrada {
+    animation: ecf-aparecer 420ms
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ecf-barra {
+    transform-origin: left center;
+    animation: ecf-crecer 900ms
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* Sin movimientos para usuarios que los reducen */
+@media (prefers-reduced-motion: reduce) {
+  .ecf-entrada,
+  .ecf-barra {
+    animation: none;
+  }
+}

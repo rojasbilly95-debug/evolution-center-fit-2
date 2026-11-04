@@ -12,5 +12,6 @@ export const config = {
     "/entrenador/:path*",
     "/administrador/:path*",
     "/catalogo/:path*",
+    "/api/recomendaciones/:path*",
   ],
 };

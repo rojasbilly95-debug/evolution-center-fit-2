@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import BotonRecomendar from "./boton-recomendar";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -299,8 +300,8 @@ async function ContenidoClientes() {
                       <p className="mt-2 text-sm text-slate-300">
                         {cliente.equipamiento.length
                           ? cliente.equipamiento
-                              .map(formatear)
-                              .join(", ")
+                            .map(formatear)
+                            .join(", ")
                           : "Sin equipamiento registrado"}
                       </p>
                     </div>
@@ -312,9 +313,10 @@ async function ContenidoClientes() {
                   </p>
                 )}
 
-                <p className="mt-6 border-t border-white/10 pt-5 text-sm text-cyan-400">
-                  Recomendaciones con IA: próximo módulo
-                </p>
+                <div className="mt-6 border-t border-white/10 pt-6">
+                  <BotonRecomendar clienteId={cliente.id} />
+                </div>
+
               </article>
             ))
           )}
