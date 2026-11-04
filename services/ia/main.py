@@ -7,21 +7,31 @@ from pydantic import BaseModel, Field
 
 # ==========================================
 # EVOLUTION CENTER FIT 2.0
-# MOTOR RECOMENDADOR - FASE 1
-# Reglas de elegibilidad
+# MOTOR RECOMENDADOR - VERSION 0.2.0
+#
+# Fase 1: Reglas de elegibilidad
+# Fase 2: Ranking de compatibilidad
+#
+# Futuras fases:
+# - Similitud semantica (embeddings)
+# - Logica difusa
+# - Ranking hibrido explicable
 # ==========================================
 
 app = FastAPI(
     title="Evolution Center Fit 2.0 - Motor IA",
     description=(
-        "Servicio para evaluar la compatibilidad "
-        "entre perfiles de clientes y rutinas."
+        "Servicio inteligente para evaluar la elegibilidad "
+        "y calcular la compatibilidad entre perfiles "
+        "de clientes y rutinas de entrenamiento."
     ),
-    version="0.1.0",
+    version="0.2.0",
 )
 
 
-# Valores compatibles con PostgreSQL
+# ==========================================
+# VALORES COMPATIBLES CON POSTGRESQL
+# ==========================================
 
 Objetivo = Literal[
     "perder_grasa",
@@ -70,6 +80,7 @@ class PerfilCliente(BaseModel):
     )
 
     lugar: Lugar
+
     equipamiento: list[Equipo]
 
 
@@ -115,7 +126,7 @@ class SolicitudRecomendacion(BaseModel):
 
 
 # ==========================================
-# REGLAS DE ELEGIBILIDAD
+# CONFIGURACION DEL MOTOR
 # ==========================================
 
 NIVELES = {
@@ -124,11 +135,36 @@ NIVELES = {
     "avanzado": 3,
 }
 
+# Pesos iniciales del ranking.
+# Total maximo: 100 puntos.
+#
+# Estos pesos son heuristicas del prototipo
+# y necesitan validacion posterior.
+
+PESOS = {
+    "estado": 5,
+    "objetivo": 30,
+    "nivel": 20,
+    "frecuencia": 10,
+    "duracion": 15,
+    "lugar": 10,
+    "equipamiento": 10,
+}
+
+
+# ==========================================
+# FUNCIONES AUXILIARES
+# ==========================================
 
 def lugar_compatible(
     lugar_cliente: Lugar,
     lugar_requerido: Lugar,
 ) -> bool:
+    """
+    Determina si el lugar solicitado es
+    compatible con el lugar disponible.
+    """
+
     return (
         lugar_cliente == "mixto"
         or lugar_requerido == "mixto"
@@ -136,26 +172,56 @@ def lugar_compatible(
     )
 
 
-def evaluar_rutina(
+def obtener_equipamiento(
+    perfil: PerfilCliente,
+) -> set[str]:
+    """
+    Obtiene los equipos disponibles.
+
+    El peso corporal se considera disponible
+    sin equipamiento adicional.
+    """
+
+    equipos = set(perfil.equipamiento)
+
+    equipos.add("peso_corporal")
+
+    return equipos
+
+
+# ==========================================
+# FASE 1 - REGLAS DE ELEGIBILIDAD
+# ==========================================
+
+def comprobar_elegibilidad(
     perfil: PerfilCliente,
     rutina: Rutina,
-) -> dict:
+) -> list[str]:
+    """
+    Evalua las restricciones obligatorias.
+
+    Devuelve los motivos que impiden que
+    una rutina sea considerada elegible.
+    """
 
     motivos = []
 
-    # 1. Estado de la plantilla
+    # REGLA 1: ESTADO DE LA PLANTILLA
+
     if rutina.estado != "publicada":
         motivos.append(
-            "La rutina no está publicada."
+            "La rutina no esta publicada."
         )
 
-    # 2. Objetivo
+    # REGLA 2: OBJETIVO
+
     if rutina.objetivo != perfil.objetivo:
         motivos.append(
             "El objetivo de la rutina no coincide."
         )
 
-    # 3. Experiencia
+    # REGLA 3: NIVEL DE EXPERIENCIA
+
     if (
         NIVELES[rutina.nivel]
         > NIVELES[perfil.experiencia]
@@ -164,27 +230,30 @@ def evaluar_rutina(
             "La rutina supera el nivel del cliente."
         )
 
-    # 4. Frecuencia semanal
+    # REGLA 4: FRECUENCIA SEMANAL
+
     if (
         rutina.frecuencia_semanal
         > perfil.frecuencia_semanal
     ):
         motivos.append(
-            "La rutina requiere más días "
+            "La rutina requiere mas dias "
             "de los disponibles."
         )
 
-    # 5. Duración
+    # REGLA 5: DURACION
+
     if (
         rutina.duracion_min
         > perfil.minutos_por_sesion
     ):
         motivos.append(
             "La rutina supera el tiempo "
-            "disponible por sesión."
+            "disponible por sesion."
         )
 
-    # 6. Lugar de entrenamiento
+    # REGLA 6: LUGAR
+
     if not lugar_compatible(
         perfil.lugar,
         rutina.lugar,
@@ -193,26 +262,20 @@ def evaluar_rutina(
             "El lugar de entrenamiento no coincide."
         )
 
-    # 7. Ejercicios y equipamiento
-    equipos_disponibles = set(
-        perfil.equipamiento
-    )
+    # REGLA 7: EJERCICIOS
 
-    equipos_disponibles.add(
-        "peso_corporal"
-    )
+    equipos = obtener_equipamiento(perfil)
 
     for ejercicio in rutina.ejercicios:
 
-        if (
-            ejercicio.equipamiento
-            not in equipos_disponibles
-        ):
+        # Equipamiento disponible
+        if ejercicio.equipamiento not in equipos:
             motivos.append(
                 f"Falta equipamiento para "
                 f"{ejercicio.nombre}."
             )
 
+        # Nivel del ejercicio
         if (
             NIVELES[ejercicio.nivel]
             > NIVELES[perfil.experiencia]
@@ -222,6 +285,7 @@ def evaluar_rutina(
                 f"supera el nivel del cliente."
             )
 
+        # Lugar del ejercicio
         if not lugar_compatible(
             perfil.lugar,
             ejercicio.lugar,
@@ -231,8 +295,210 @@ def evaluar_rutina(
                 f"{ejercicio.nombre}."
             )
 
-    # Resultado
+    return motivos
+
+
+# ==========================================
+# FASE 2 - RANKING DE COMPATIBILIDAD
+# ==========================================
+
+def calcular_compatibilidad(
+    perfil: PerfilCliente,
+    rutina: Rutina,
+) -> dict:
+    """
+    Calcula un puntaje heuristico entre 0 y 100.
+
+    Una puntuacion alta NO elimina las
+    restricciones de elegibilidad.
+
+    Tampoco representa una probabilidad
+    clinica ni garantiza resultados.
+    """
+
+    puntos = {}
+
+    # --------------------------------------
+    # 1. ESTADO - MAXIMO 5 PUNTOS
+    # --------------------------------------
+
+    puntos["estado"] = (
+        PESOS["estado"]
+        if rutina.estado == "publicada"
+        else 0
+    )
+
+    # --------------------------------------
+    # 2. OBJETIVO - MAXIMO 30 PUNTOS
+    # --------------------------------------
+
+    puntos["objetivo"] = (
+        PESOS["objetivo"]
+        if rutina.objetivo == perfil.objetivo
+        else 0
+    )
+
+    # --------------------------------------
+    # 3. NIVEL - MAXIMO 20 PUNTOS
+    # --------------------------------------
+
+    nivel_cliente = NIVELES[
+        perfil.experiencia
+    ]
+
+    nivel_rutina = NIVELES[
+        rutina.nivel
+    ]
+
+    ejercicios_adecuados = all(
+        NIVELES[ejercicio.nivel] <= nivel_cliente
+        for ejercicio in rutina.ejercicios
+    )
+
+    if (
+        nivel_rutina > nivel_cliente
+        or not ejercicios_adecuados
+    ):
+        puntos["nivel"] = 0
+
+    elif nivel_rutina == nivel_cliente:
+        puntos["nivel"] = PESOS["nivel"]
+
+    else:
+        # Rutina de nivel inferior al cliente
+        puntos["nivel"] = 12
+
+    # --------------------------------------
+    # 4. FRECUENCIA - MAXIMO 10 PUNTOS
+    # --------------------------------------
+
+    diferencia_dias = (
+        perfil.frecuencia_semanal
+        - rutina.frecuencia_semanal
+    )
+
+    if diferencia_dias < 0:
+        puntos["frecuencia"] = 0
+    else:
+        puntos["frecuencia"] = max(
+            0,
+            PESOS["frecuencia"] - 2 * diferencia_dias,
+        )
+
+    # --------------------------------------
+    # 5. DURACION - MAXIMO 15 PUNTOS
+    # --------------------------------------
+
+    diferencia_minutos = (
+        perfil.minutos_por_sesion
+        - rutina.duracion_min
+    )
+
+    if diferencia_minutos < 0:
+        puntos["duracion"] = 0
+    else:
+        puntos["duracion"] = max(
+            0,
+            PESOS["duracion"]
+            - diferencia_minutos // 5,
+        )
+
+    # --------------------------------------
+    # 6. LUGAR - MAXIMO 10 PUNTOS
+    # --------------------------------------
+
+    lugar_valido = lugar_compatible(
+        perfil.lugar,
+        rutina.lugar,
+    )
+
+    ejercicios_lugar_valido = all(
+        lugar_compatible(
+            perfil.lugar,
+            ejercicio.lugar,
+        )
+        for ejercicio in rutina.ejercicios
+    )
+
+    puntos["lugar"] = (
+        PESOS["lugar"]
+        if lugar_valido and ejercicios_lugar_valido
+        else 0
+    )
+
+    # --------------------------------------
+    # 7. EQUIPAMIENTO - MAXIMO 10 PUNTOS
+    # --------------------------------------
+
+    equipos = obtener_equipamiento(perfil)
+
+    total_ejercicios = len(
+        rutina.ejercicios
+    )
+
+    ejercicios_compatibles = sum(
+        1
+        for ejercicio in rutina.ejercicios
+        if ejercicio.equipamiento in equipos
+    )
+
+    if total_ejercicios > 0:
+        puntos["equipamiento"] = round(
+            PESOS["equipamiento"]
+            * ejercicios_compatibles
+            / total_ejercicios,
+            1,
+        )
+    else:
+        puntos["equipamiento"] = 0
+
+    # --------------------------------------
+    # RESULTADO FINAL
+    # --------------------------------------
+
+    puntuacion = round(
+        sum(puntos.values()),
+        1,
+    )
+
+    # Garantizar rango de 0 a 100
+    puntuacion = max(
+        0,
+        min(100, puntuacion),
+    )
+
+    return {
+        "puntaje_compatibilidad": puntuacion,
+        "desglose_puntaje": puntos,
+    }
+
+
+# ==========================================
+# EVALUACION COMPLETA DE UNA RUTINA
+# ==========================================
+
+def evaluar_rutina(
+    perfil: PerfilCliente,
+    rutina: Rutina,
+) -> dict:
+    """
+    Combina las reglas obligatorias
+    con el ranking de compatibilidad.
+    """
+
+    # Primero verificar elegibilidad
+    motivos = comprobar_elegibilidad(
+        perfil,
+        rutina,
+    )
+
     elegible = len(motivos) == 0
+
+    # Luego calcular puntuacion
+    compatibilidad = calcular_compatibilidad(
+        perfil,
+        rutina,
+    )
 
     return {
         "rutina_id": rutina.id,
@@ -242,6 +508,10 @@ def evaluar_rutina(
             "Cumple las reglas iniciales "
             "de elegibilidad."
         ],
+        "puntaje_compatibilidad":
+            compatibilidad["puntaje_compatibilidad"],
+        "desglose_puntaje":
+            compatibilidad["desglose_puntaje"],
     }
 
 
@@ -251,11 +521,15 @@ def evaluar_rutina(
 
 @app.get("/health")
 def comprobar_estado():
+    """
+    Comprueba el estado del servicio.
+    """
+
     return {
         "estado": "activo",
         "servicio": "motor-recomendador",
-        "version": "0.1.0",
-        "fase": "reglas_elegibilidad",
+        "version": "0.2.0",
+        "fase": "elegibilidad_y_ranking",
     }
 
 
@@ -263,6 +537,11 @@ def comprobar_estado():
 def evaluar_recomendaciones(
     solicitud: SolicitudRecomendacion,
 ):
+    """
+    Evalua todas las rutinas recibidas
+    y devuelve un ranking explicable.
+    """
+
     resultados = [
         evaluar_rutina(
             solicitud.perfil,
@@ -271,10 +550,17 @@ def evaluar_recomendaciones(
         for rutina in solicitud.rutinas
     ]
 
-    # Mostrar primero las elegibles
+    # Prioridad:
+    # 1. Primero las rutinas elegibles.
+    # 2. Mayor puntuacion de compatibilidad.
+    # 3. ID para desempate estable.
+
     resultados.sort(
-        key=lambda resultado:
-        not resultado["elegible"]
+        key=lambda resultado: (
+            not resultado["elegible"],
+            -resultado["puntaje_compatibilidad"],
+            resultado["rutina_id"],
+        )
     )
 
     total_elegibles = sum(
@@ -286,6 +572,6 @@ def evaluar_recomendaciones(
     return {
         "total_evaluadas": len(resultados),
         "total_elegibles": total_elegibles,
-        "metodo": "reglas_deterministas_v1",
+        "metodo": "reglas_deterministas_ranking_v2",
         "resultados": resultados,
     }
