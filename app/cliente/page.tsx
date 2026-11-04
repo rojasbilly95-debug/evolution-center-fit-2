@@ -7,7 +7,31 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
 
-// Pantalla de carga mientras se verifica el usuario.
+// Módulos del panel del cliente
+const modulos = [
+  {
+    titulo: "Mi perfil",
+    descripcion:
+      "Registra tus objetivos, experiencia y disponibilidad.",
+  },
+  {
+    titulo: "Mis rutinas",
+    descripcion:
+      "Consulta tus planes personalizados aprobados.",
+  },
+  {
+    titulo: "Mis entrenamientos",
+    descripcion:
+      "Consulta tus sesiones programadas y realizadas.",
+  },
+  {
+    titulo: "Mi progreso",
+    descripcion:
+      "Revisa tu asistencia, cumplimiento y continuidad.",
+  },
+];
+
+// Pantalla de carga
 function CargandoPanel() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
@@ -26,14 +50,13 @@ function CargandoPanel() {
   );
 }
 
-// El contenido privado se procesa por solicitud.
+// Contenido protegido
 async function ContenidoCliente() {
-  // Evita prerenderizar la autenticación del cliente.
   await connection();
 
   const supabase = await createClient();
 
-  // Verificar identidad.
+  // Verificar identidad
   const { data: auth, error: authError } =
     await supabase.auth.getClaims();
 
@@ -43,7 +66,7 @@ async function ContenidoCliente() {
     redirect("/login");
   }
 
-  // Verificar el rol en PostgreSQL.
+  // Verificar rol
   const { data: acceso, error: accesoError } =
     await supabase
       .from("usuario_roles")
@@ -72,7 +95,7 @@ async function ContenidoCliente() {
     );
   }
 
-  // Consultar únicamente los datos del cliente.
+  // Obtener nombre del cliente
   const { data: perfil } = await supabase
     .from("usuarios")
     .select("nombre_completo")
@@ -81,31 +104,9 @@ async function ContenidoCliente() {
 
   const nombre = perfil?.nombre_completo ?? "Cliente";
 
-  const modulos = [
-    {
-      titulo: "Mi perfil",
-      descripcion:
-        "Objetivos, experiencia y disponibilidad.",
-    },
-    {
-      titulo: "Mis rutinas",
-      descripcion:
-        "Planes personalizados aprobados.",
-    },
-    {
-      titulo: "Mis entrenamientos",
-      descripcion:
-        "Sesiones programadas y realizadas.",
-    },
-    {
-      titulo: "Mi progreso",
-      descripcion:
-        "Asistencia, cumplimiento y continuidad.",
-    },
-  ];
-
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+      {/* ENCABEZADO */}
       <header className="border-b border-white/10 bg-slate-900">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div>
@@ -132,6 +133,7 @@ async function ContenidoCliente() {
         </div>
       </header>
 
+      {/* CONTENIDO PRINCIPAL */}
       <section className="mx-auto max-w-6xl px-6 py-12">
         <p className="mb-3 text-sm font-semibold text-cyan-400">
           PANEL PERSONAL
@@ -145,6 +147,7 @@ async function ContenidoCliente() {
           Tu espacio personal de entrenamiento.
         </p>
 
+        {/* TARJETAS */}
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {modulos.map((modulo) => (
             <article
@@ -159,9 +162,19 @@ async function ContenidoCliente() {
                 {modulo.descripcion}
               </p>
 
-              <p className="mt-6 text-xs font-semibold text-cyan-400">
-                Próximamente
-              </p>
+              {/* ENLACE FUNCIONAL AL PERFIL */}
+              {modulo.titulo === "Mi perfil" ? (
+                <Link
+                  href="/cliente/perfil"
+                  className="mt-6 inline-block text-sm font-semibold text-cyan-400 hover:underline"
+                >
+                  Completar o editar mi perfil
+                </Link>
+              ) : (
+                <p className="mt-6 text-xs font-semibold text-cyan-400">
+                  Próximamente
+                </p>
+              )}
             </article>
           ))}
         </div>
@@ -170,7 +183,7 @@ async function ContenidoCliente() {
   );
 }
 
-// Página principal con límite de carga.
+// Página principal
 export default function ClientePage() {
   return (
     <Suspense fallback={<CargandoPanel />}>

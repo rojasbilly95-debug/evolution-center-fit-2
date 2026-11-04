@@ -135,6 +135,13 @@ async function ContenidoEntrenador() {
             </div>
           </div>
 
+          <Link
+            href="/catalogo"
+            className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
+          >
+            Ver catálogo de rutinas
+          </Link>
+
           <form action={cerrarSesion}>
             <button
               type="submit"

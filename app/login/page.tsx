@@ -27,10 +27,8 @@ function obtenerRutaPorRol(rol: string): string | null {
     case "entrenador":
       return "/entrenador";
 
-    // Se habilitará cuando exista
-    // el panel del administrador.
     case "administrador":
-      return null;
+      return "/administrador";
 
     default:
       return null;
