@@ -1,4 +1,4 @@
-﻿import { connection, NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
 import { createClient as crearAdmin } from "@supabase/supabase-js";
 import { createClient as crearServidor } from "@/lib/supabase/server";
@@ -224,4 +224,3 @@ export async function GET() {
     );
   }
 }
-
