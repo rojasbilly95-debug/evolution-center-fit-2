@@ -49,16 +49,20 @@ export async function bloqueoIAEstudio(
       );
     }
 
-    // Los clientes no inscritos conservan
-    // el funcionamiento normal del sistema.
-    if (!participante) {
-      return null;
-    }
+ // Sin inscripción verificada, no se permite
+// utilizar el motor inteligente.
+if (!participante) {
+  return denegar(
+    "El cliente no tiene una inscripción verificada en el estudio. La IA permanece deshabilitada.",
+    403
+  );
+}
 
-    // Grupo control: sin recomendación inteligente.
-    if (participante.grupo_estudio === "GC") {
+    // Sin inscripción verificada, no se permite
+    // utilizar el motor inteligente.
+    if (!participante) {
       return denegar(
-        "El grupo control utiliza entrenamiento habitual, sin recomendaciones inteligentes.",
+        "El cliente no tiene una inscripción verificada en el estudio. La IA permanece deshabilitada.",
         403
       );
     }
