@@ -1,4 +1,3 @@
-
 from typing import Literal
 
 from fastapi import FastAPI
@@ -7,15 +6,14 @@ from pydantic import BaseModel, Field
 
 # ==========================================
 # EVOLUTION CENTER FIT 2.0
-# MOTOR RECOMENDADOR - VERSION 0.2.0
+# MOTOR RECOMENDADOR - VERSION 0.3.0
 #
 # Fase 1: Reglas de elegibilidad
 # Fase 2: Ranking de compatibilidad
+# Fase 3: Similitud semantica opcional (embeddings)
+# Fase 4: Logica difusa opcional para rutinas elegibles
 #
-# Futuras fases:
-# - Similitud semantica (embeddings)
-# - Logica difusa
-# - Ranking hibrido explicable
+# Siguiente fase: validacion del ranking hibrido explicable
 # ==========================================
 
 app = FastAPI(
@@ -25,7 +23,7 @@ app = FastAPI(
         "y calcular la compatibilidad entre perfiles "
         "de clientes y rutinas de entrenamiento."
     ),
-    version="0.2.0",
+    version="0.3.0",
 )
 
 
@@ -120,9 +118,19 @@ class Rutina(BaseModel):
     )
 
 
+
 class SolicitudRecomendacion(BaseModel):
     perfil: PerfilCliente
     rutinas: list[Rutina]
+
+    # Opcional para mantener compatibilidad
+    # con las pruebas anteriores.
+    incluir_similitud: bool = False
+
+    # Activar solo cuando se solicite expresamente.
+    # Evita modificar las pruebas y los clientes existentes.
+    incluir_logica_difusa: bool = False
+
 
 
 # ==========================================
@@ -516,6 +524,142 @@ def evaluar_rutina(
 
 
 # ==========================================
+# PASO 57
+# INTEGRACION DE SIMILITUD SEMANTICA
+# ==========================================
+
+DESCRIPCIONES_OBJETIVOS = {
+    "perder_grasa":
+        "reducir grasa corporal y mejorar "
+        "la condicion fisica",
+
+    "ganar_masa_muscular":
+        "aumentar masa muscular mediante "
+        "entrenamiento de fuerza",
+
+    "mejorar_resistencia":
+        "mejorar resistencia cardiovascular "
+        "y capacidad aerobica",
+
+    "mejorar_condicion_fisica":
+        "mejorar condicion fisica general "
+        "con fuerza basica y resistencia",
+}
+
+
+def construir_texto_cliente(
+    perfil: PerfilCliente,
+) -> str:
+    """
+    Construye una descripcion semantica
+    a partir del perfil autorizado.
+    """
+
+    objetivo = DESCRIPCIONES_OBJETIVOS[
+        perfil.objetivo
+    ]
+
+    return (
+        f"Persona con nivel {perfil.experiencia}. "
+        f"Busca {objetivo}. "
+        f"Entrena en {perfil.lugar}. "
+        f"Tiene disponibles "
+        f"{perfil.frecuencia_semanal} dias por semana "
+        f"y {perfil.minutos_por_sesion} minutos "
+        f"por sesion."
+    )
+
+
+def construir_texto_rutina(
+    rutina: Rutina,
+) -> str:
+    """
+    Construye una descripcion de la rutina
+    utilizando sus datos del catalogo.
+    """
+
+    objetivo = DESCRIPCIONES_OBJETIVOS[
+        rutina.objetivo
+    ]
+
+    ejercicios = ", ".join(
+        ejercicio.nombre
+        for ejercicio in rutina.ejercicios
+    )
+
+    return (
+        f"Programa {rutina.nombre}. "
+        f"Objetivo: {objetivo}. "
+        f"Nivel {rutina.nivel}. "
+        f"Entrenamiento en {rutina.lugar}. "
+        f"{rutina.frecuencia_semanal} dias "
+        f"por semana. "
+        f"{rutina.duracion_min} minutos "
+        f"por sesion. "
+        f"Ejercicios: {ejercicios}."
+    )
+
+
+def calcular_similitud_por_lote(
+    perfil: PerfilCliente,
+    rutinas: list[Rutina],
+) -> list[float]:
+    """
+    Ejecuta el modelo de embeddings.
+
+    Se importa aqui para evitar cargar
+    PyTorch durante las pruebas que solo
+    necesitan las reglas deterministas.
+    """
+
+    from similitud import (
+        obtener_similitudes_por_posicion,
+    )
+
+    descripcion_cliente = (
+        construir_texto_cliente(perfil)
+    )
+
+    descripciones_rutinas = [
+        construir_texto_rutina(rutina)
+        for rutina in rutinas
+    ]
+
+    return obtener_similitudes_por_posicion(
+        descripcion_cliente,
+        descripciones_rutinas,
+    )
+
+
+# ==========================================
+# PASO 59 - INTEGRACION DE LOGICA DIFUSA
+# ==========================================
+
+def calcular_ajuste_difuso_rutina(
+    perfil: PerfilCliente,
+    rutina: Rutina,
+) -> dict:
+    """
+    Calcula el ajuste difuso de disponibilidad.
+
+    Solo se llama cuando la rutina ya es elegible.
+    La puntuacion difusa es informativa y no
+    reemplaza las reglas obligatorias.
+    """
+
+    # Importacion diferida: las pruebas de reglas
+    # no necesitan cargar el modulo de logica difusa.
+    from logica_difusa import evaluar_ajuste_difuso
+
+    return evaluar_ajuste_difuso(
+        minutos_disponibles=perfil.minutos_por_sesion,
+        minutos_requeridos=rutina.duracion_min,
+        dias_disponibles=perfil.frecuencia_semanal,
+        dias_requeridos=rutina.frecuencia_semanal,
+    )
+
+
+# ==========================================
 # ENDPOINTS DE FASTAPI
 # ==========================================
 
@@ -528,9 +672,10 @@ def comprobar_estado():
     return {
         "estado": "activo",
         "servicio": "motor-recomendador",
-        "version": "0.2.0",
-        "fase": "elegibilidad_y_ranking",
+        "version": "0.3.0",
+        "fase": "ranking_embeddings_y_logica_difusa_opcional",
     }
+
 
 
 @app.post("/evaluar")
@@ -538,10 +683,18 @@ def evaluar_recomendaciones(
     solicitud: SolicitudRecomendacion,
 ):
     """
-    Evalua todas las rutinas recibidas
-    y devuelve un ranking explicable.
+    Evalua las rutinas mediante:
+
+    1. Reglas de elegibilidad.
+    2. Ranking heuristico.
+    3. Similitud semantica opcional.
+    4. Logica difusa opcional para rutinas elegibles.
+
+    Ni la similitud ni la logica difusa
+    modifican la elegibilidad.
     """
 
+    # Primera fase: reglas y puntuacion.
     resultados = [
         evaluar_rutina(
             solicitud.perfil,
@@ -550,15 +703,70 @@ def evaluar_recomendaciones(
         for rutina in solicitud.rutinas
     ]
 
-    # Prioridad:
-    # 1. Primero las rutinas elegibles.
-    # 2. Mayor puntuacion de compatibilidad.
-    # 3. ID para desempate estable.
+    similitud_aplicada = False
+
+    # Segunda fase: embeddings.
+    if (
+        solicitud.incluir_similitud
+        and solicitud.rutinas
+    ):
+        similitudes = calcular_similitud_por_lote(
+            solicitud.perfil,
+            solicitud.rutinas,
+        )
+
+        if len(similitudes) != len(resultados):
+            raise ValueError(
+                "El modelo devolvio una cantidad "
+                "incorrecta de similitudes."
+            )
+
+        for resultado, similitud in zip(
+            resultados,
+            similitudes,
+        ):
+            resultado["similitud_semantica"] = (
+                similitud
+            )
+
+        similitud_aplicada = True
+
+    # Tercera fase: logica difusa.
+    # Se evalua exclusivamente en rutinas elegibles.
+    logica_difusa_aplicada = False
+
+    if solicitud.incluir_logica_difusa:
+        for rutina, resultado in zip(
+            solicitud.rutinas,
+            resultados,
+        ):
+            if resultado["elegible"]:
+                resultado["ajuste_difuso"] = (
+                    calcular_ajuste_difuso_rutina(
+                        solicitud.perfil,
+                        rutina,
+                    )
+                )
+                logica_difusa_aplicada = True
+            else:
+                # No mostrar puntuaciones difusas de
+                # rutinas descartadas por seguridad.
+                resultado["ajuste_difuso"] = None
+
+    # Orden:
+    # 1. Elegibilidad obligatoria.
+    # 2. Compatibilidad heuristica.
+    # 3. Similitud como desempate.
+    # 4. ID como desempate estable.
 
     resultados.sort(
         key=lambda resultado: (
             not resultado["elegible"],
             -resultado["puntaje_compatibilidad"],
+            -resultado.get(
+                "similitud_semantica",
+                -2.0,
+            ),
             resultado["rutina_id"],
         )
     )
@@ -569,9 +777,20 @@ def evaluar_recomendaciones(
         if resultado["elegible"]
     )
 
+    metodo = (
+        "reglas_ranking_v2_embeddings_desempate"
+        if similitud_aplicada
+        else "reglas_deterministas_ranking_v2"
+    )
+
+    if logica_difusa_aplicada:
+        metodo += "_difusa_v1"
+
     return {
         "total_evaluadas": len(resultados),
         "total_elegibles": total_elegibles,
-        "metodo": "reglas_deterministas_ranking_v2",
+        "metodo": metodo,
+        "similitud_aplicada": similitud_aplicada,
+        "logica_difusa_aplicada": logica_difusa_aplicada,
         "resultados": resultados,
     }

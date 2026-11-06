@@ -2,12 +2,17 @@
 "use client";
 
 import { useState } from "react";
-
+import RevisionRutina from "./revision-rutina";
 // ==========================================
 // EVOLUTION CENTER FIT 2.0
 // INTERFAZ DE RECOMENDACIONES
 // Diseño profesional - UI 2.0
 // ==========================================
+
+type AjusteDifuso = {
+  puntaje_difuso?: number;
+  uso_tiempo_pct?: number;
+};
 
 type ResultadoRutina = {
   rutina_id: number;
@@ -16,12 +21,16 @@ type ResultadoRutina = {
   motivos: string[];
   puntaje_compatibilidad?: number;
   desglose_puntaje?: Record<string, number>;
+  similitud_semantica?: number;
+  ajuste_difuso?: AjusteDifuso | null;
 };
 
 type RespuestaMotor = {
   total_evaluadas: number;
   total_elegibles: number;
   metodo: string;
+  similitud_aplicada?: boolean;
+  logica_difusa_aplicada?: boolean;
   resultados: ResultadoRutina[];
   rutinas_omitidas?: string[];
   advertencia?: string;
@@ -105,7 +114,7 @@ export default function BotonRecomendar({
       if (!respuesta.ok) {
         throw new Error(
           datos.error ??
-            "No se pudo completar la evaluación."
+          "No se pudo completar la evaluación."
         );
       }
 
@@ -280,11 +289,11 @@ export default function BotonRecomendar({
 
                 const puntaje =
                   typeof valor === "number" &&
-                  Number.isFinite(valor)
+                    Number.isFinite(valor)
                     ? Math.max(
-                        0,
-                        Math.min(100, valor)
-                      )
+                      0,
+                      Math.min(100, valor)
+                    )
                     : null;
 
                 return (
@@ -308,11 +317,10 @@ export default function BotonRecomendar({
                       </div>
 
                       <span
-                        className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                          rutina.elegible
-                            ? "bg-emerald-400/10 text-emerald-300"
-                            : "bg-amber-400/10 text-amber-300"
-                        }`}
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold ${rutina.elegible
+                          ? "bg-emerald-400/10 text-emerald-300"
+                          : "bg-amber-400/10 text-amber-300"
+                          }`}
                       >
                         {rutina.elegible
                           ? "Elegible"
@@ -355,11 +363,10 @@ export default function BotonRecomendar({
                           className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-700/80"
                         >
                           <div
-                            className={`ecf-barra h-full rounded-full ${
-                              rutina.elegible
-                                ? "bg-gradient-to-r from-cyan-400 to-teal-400"
-                                : "bg-gradient-to-r from-amber-400 to-orange-400"
-                            }`}
+                            className={`ecf-barra h-full rounded-full ${rutina.elegible
+                              ? "bg-gradient-to-r from-cyan-400 to-teal-400"
+                              : "bg-gradient-to-r from-amber-400 to-orange-400"
+                              }`}
                             style={{
                               width: `${puntaje}%`,
                             }}
@@ -368,13 +375,105 @@ export default function BotonRecomendar({
                       </div>
                     )}
 
+                    {/* SIMILITUD SEMANTICA DEL MODELO */}
+                    {typeof rutina.similitud_semantica === "number" && (
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-400/15 bg-violet-400/5 px-4 py-4">
+                        <div>
+                          <p className="text-sm font-semibold text-violet-200">
+                            Similitud semántica con IA
+                          </p>
+
+                          <p className="mt-1 text-xs text-slate-400">
+                            Modelo multilingüe de embeddings
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-xl font-bold tabular-nums text-violet-200">
+                            {rutina.similitud_semantica.toFixed(3)}
+                          </p>
+
+                          <p className="text-xs text-slate-500">
+                            Similitud coseno
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* LOGICA DIFUSA: SOLO SI EL MOTOR ENVIA DATOS */}
+                    {rutina.elegible &&
+                      rutina.ajuste_difuso &&
+                      typeof rutina.ajuste_difuso.puntaje_difuso ===
+                      "number" &&
+                      Number.isFinite(
+                        rutina.ajuste_difuso.puntaje_difuso
+                      ) && (
+                        <div className="mt-4 rounded-xl border border-teal-400/20 bg-teal-400/5 px-4 py-4">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-teal-200">
+                                Ajuste con lógica difusa
+                              </p>
+                              <p className="mt-1 text-xs leading-5 text-slate-400">
+                                Valoración orientativa de la adecuación de la rutina
+                              </p>
+                            </div>
+                            <p className="text-xl font-bold tabular-nums text-teal-200">
+                              {numero(rutina.ajuste_difuso.puntaje_difuso)}
+                              <span className="ml-1 text-xs font-normal text-slate-400">
+                                /100
+                              </span>
+                            </p>
+                          </div>
+
+                          <div
+                            className="mt-3 h-2 overflow-hidden rounded-full bg-slate-700/80"
+                            role="progressbar"
+                            aria-label={`Ajuste difuso de ${rutina.nombre}`}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={Math.max(
+                              0,
+                              Math.min(100, rutina.ajuste_difuso.puntaje_difuso)
+                            )}
+                          >
+                            <div
+                              className="ecf-barra h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-400"
+                              style={{
+                                width: `${Math.max(
+                                  0,
+                                  Math.min(100, rutina.ajuste_difuso.puntaje_difuso)
+                                )}%`,
+                              }}
+                            />
+                          </div>
+
+                          {typeof rutina.ajuste_difuso.uso_tiempo_pct ===
+                            "number" &&
+                            Number.isFinite(
+                              rutina.ajuste_difuso.uso_tiempo_pct
+                            ) && (
+                              <p className="mt-3 text-xs text-slate-300">
+                                Aprovechamiento del tiempo disponible: {numero(
+                                  rutina.ajuste_difuso.uso_tiempo_pct
+                                )}%
+                              </p>
+                            )}
+
+                          <p className="mt-2 text-xs leading-5 text-slate-400">
+                            Este ajuste complementa el análisis por reglas; no
+                            modifica la elegibilidad ni representa una
+                            probabilidad de éxito.
+                          </p>
+                        </div>
+                      )}
+
                     {/* MENSAJE PRINCIPAL */}
                     <div
-                      className={`mt-5 flex items-start gap-2 rounded-xl px-4 py-3 text-sm leading-6 ${
-                        rutina.elegible
-                          ? "bg-emerald-400/5 text-emerald-200"
-                          : "bg-amber-400/5 text-amber-200"
-                      }`}
+                      className={`mt-5 flex items-start gap-2 rounded-xl px-4 py-3 text-sm leading-6 ${rutina.elegible
+                        ? "bg-emerald-400/5 text-emerald-200"
+                        : "bg-amber-400/5 text-amber-200"
+                        }`}
                     >
                       <span aria-hidden="true">
                         {rutina.elegible ? "✓" : "!"}
@@ -384,7 +483,7 @@ export default function BotonRecomendar({
                         {rutina.elegible
                           ? "Cumple las reglas iniciales de elegibilidad. Pendiente de revisión profesional."
                           : rutina.motivos[0] ??
-                            "No cumple los criterios obligatorios."}
+                          "No cumple los criterios obligatorios."}
                       </p>
                     </div>
 
@@ -454,7 +553,7 @@ export default function BotonRecomendar({
                               {CRITERIOS.map((criterio) => {
                                 const puntos =
                                   rutina.desglose_puntaje?.[
-                                    criterio.id
+                                  criterio.id
                                   ];
 
                                 if (
@@ -482,9 +581,19 @@ export default function BotonRecomendar({
                           </div>
                         )}
                       </div>
+
                     </details>
+
+                    {/* REVISION PROFESIONAL */}
+                    <RevisionRutina
+                      clienteId={clienteId}
+                      rutinaId={rutina.rutina_id}
+                      rutinaNombre={rutina.nombre}
+                      elegible={rutina.elegible}
+                    />
                   </li>
                 );
+
               }
             )}
           </ol>
@@ -525,12 +634,20 @@ export default function BotonRecomendar({
                   entre el perfil y las rutinas del
                   catálogo. No representan una probabilidad
                   de éxito ni garantizan resultados.
-                  Las propuestas requieren revisión
-                  y aprobación del entrenador.
+                  La similitud semántica y la lógica difusa
+                  complementan el análisis, pero no eliminan
+                  restricciones de elegibilidad. Las propuestas
+                  requieren revisión y aprobación del entrenador.
                 </p>
 
                 <p className="mt-2 text-xs text-slate-500">
                   Método: {resultado.metodo}
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Lógica difusa: {resultado.logica_difusa_aplicada
+                    ? "aplicada"
+                    : "no aplicada en esta evaluación"}
                 </p>
               </div>
             </div>

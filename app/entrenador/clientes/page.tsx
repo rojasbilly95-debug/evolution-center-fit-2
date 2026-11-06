@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import BotonRecomendar from "./boton-recomendar";
+import BotonRecomendarProtegido from "./boton-recomendar-protegido";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -314,7 +314,13 @@ async function ContenidoClientes() {
                 )}
 
                 <div className="mt-6 border-t border-white/10 pt-6">
-                  <BotonRecomendar clienteId={cliente.id} />
+                                    <Link
+                    href={`/entrenador/clientes/${cliente.id}/seguimiento`}
+                    className="mb-4 inline-flex items-center justify-center rounded-xl bg-cyan-500 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-400"
+                  >
+                    Ver seguimiento
+                  </Link>
+                  <BotonRecomendarProtegido clienteId={cliente.id} />
                 </div>
 
               </article>

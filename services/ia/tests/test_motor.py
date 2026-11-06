@@ -1,6 +1,8 @@
 
 import unittest
 
+from unittest.mock import patch
+
 from pydantic import ValidationError
 
 from main import (
@@ -318,6 +320,96 @@ class PruebasMotorRecomendador(unittest.TestCase):
                 lugar="gimnasio",
                 equipamiento=["mancuernas"],
             )
+
+
+    # ======================================
+    # PRUEBA 11 - DESEMPATE SEMANTICO
+    # ======================================
+
+    def test_11_desempate_semantico(self):
+        rutina_a = self.rutina.model_copy(
+            update={"id": 1}
+        )
+
+        rutina_b = self.rutina.model_copy(
+            update={
+                "id": 2,
+                "nombre": "Otra rutina compatible",
+            }
+        )
+
+        solicitud = SolicitudRecomendacion(
+            perfil=self.perfil,
+            rutinas=[rutina_a, rutina_b],
+            incluir_similitud=True,
+        )
+
+        with patch(
+            "main.calcular_similitud_por_lote",
+            return_value=[0.25, 0.85],
+        ):
+            respuesta = evaluar_recomendaciones(
+                solicitud
+            )
+
+        # Ambas rutinas tienen el mismo
+        # puntaje heuristico.
+        # Debe ganar la mayor similitud.
+
+        self.assertEqual(
+            respuesta["resultados"][0]["rutina_id"],
+            2,
+        )
+
+        self.assertEqual(
+            respuesta["resultados"][0][
+                "similitud_semantica"
+            ],
+            0.85,
+        )
+
+    # ======================================
+    # PRUEBA 12 - SEGURIDAD DE ELEGIBILIDAD
+    # ======================================
+
+    def test_12_similitud_no_anula_reglas(self):
+        compatible = self.rutina.model_copy(
+            update={"id": 1}
+        )
+
+        incompatible = self.rutina.model_copy(
+            update={
+                "id": 2,
+                "objetivo": "mejorar_resistencia",
+            }
+        )
+
+        solicitud = SolicitudRecomendacion(
+            perfil=self.perfil,
+            rutinas=[compatible, incompatible],
+            incluir_similitud=True,
+        )
+
+        with patch(
+            "main.calcular_similitud_por_lote",
+            return_value=[0.20, 0.99],
+        ):
+            respuesta = evaluar_recomendaciones(
+                solicitud
+            )
+
+        self.assertEqual(
+            respuesta["resultados"][0]["rutina_id"],
+            1,
+        )
+
+        self.assertTrue(
+            respuesta["resultados"][0]["elegible"]
+        )
+
+        self.assertFalse(
+            respuesta["resultados"][1]["elegible"]
+        )
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import { bloqueoIAEstudio } from "@/lib/investigacion/bloqueo-ia-estudio";
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -21,10 +22,7 @@ type RutinaMotor = {
   ejercicios: EjercicioMotor[];
 };
 
-function respuestaError(
-  mensaje: string,
-  estado: number
-) {
+function respuestaError(mensaje: string, estado: number) {
   return NextResponse.json(
     { error: mensaje },
     { status: estado }
@@ -33,10 +31,8 @@ function respuestaError(
 
 export async function POST(request: Request) {
   try {
-    // 1. Recibir y validar el cliente.
-    const body: unknown = await request
-      .json()
-      .catch(() => null);
+    // 1. Recibir y validar el identificador del cliente.
+    const body: unknown = await request.json().catch(() => null);
 
     const clienteId =
       body !== null &&
@@ -52,47 +48,34 @@ export async function POST(request: Request) {
       );
 
     if (!esUuid) {
-      return respuestaError(
-        "Identificador de cliente inválido.",
-        400
-      );
+      return respuestaError("Identificador de cliente inválido.", 400);
     }
 
     const supabase = await createClient();
 
-    // 2. Verificar la identidad autenticada.
+    // 2. Verificar la sesión autenticada.
     const { data: auth, error: authError } =
       await supabase.auth.getClaims();
 
     const entrenadorId = auth?.claims?.sub;
 
     if (authError || !entrenadorId) {
-      return respuestaError(
-        "Debes iniciar sesión.",
-        401
-      );
+      return respuestaError("Debes iniciar sesión.", 401);
     }
 
-    // 3. Comprobar que tiene rol entrenador.
-    const { data: acceso, error: errorRol } =
-      await supabase
-        .from("usuario_roles")
-        .select("rol")
-        .eq("usuario_id", entrenadorId)
-        .single();
+    // 3. Comprobar el rol de entrenador.
+    const { data: acceso, error: errorRol } = await supabase
+      .from("usuario_roles")
+      .select("rol")
+      .eq("usuario_id", entrenadorId)
+      .single();
 
     if (errorRol || acceso?.rol !== "entrenador") {
-      return respuestaError(
-        "No tienes autorización.",
-        403
-      );
+      return respuestaError("No tienes autorización.", 403);
     }
 
-    // 4. Confirmar asignación activa del cliente.
-    const {
-      data: asignacion,
-      error: errorAsignacion,
-    } = await supabase
+    // 4. Confirmar que el cliente está asignado al entrenador.
+    const { data: asignacion, error: errorAsignacion } = await supabase
       .from("asignaciones_entrenadores")
       .select("cliente_id")
       .eq("cliente_id", clienteId)
@@ -101,9 +84,7 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (errorAsignacion) {
-      throw new Error(
-        "No se pudo consultar la asignación."
-      );
+      throw new Error("No se pudo consultar la asignación.");
     }
 
     if (!asignacion) {
@@ -113,52 +94,43 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Consultar perfil autorizado.
-    const { data: perfil, error: errorPerfil } =
-      await supabase
-        .from("perfiles_clientes")
-        .select(
-          "objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento"
-        )
-        .eq("usuario_id", clienteId)
-        .maybeSingle();
+    // 5. Obtener el perfil del cliente autorizado.
+    const { data: perfil, error: errorPerfil } = await supabase
+      .from("perfiles_clientes")
+      .select(
+        "objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento"
+      )
+      .eq("usuario_id", clienteId)
+      .maybeSingle();
 
     if (errorPerfil) {
-      throw new Error(
-        "No se pudo consultar el perfil."
-      );
+      throw new Error("No se pudo consultar el perfil.");
     }
 
     if (!perfil) {
-      return respuestaError(
-        "El cliente todavía no tiene perfil.",
-        404
-      );
+      return respuestaError("El cliente todavía no tiene perfil.", 404);
     }
 
-    // 6. Consultar las rutinas publicadas.
-    const { data: rutinas, error: errorRutinas } =
-      await supabase
-        .from("rutinas")
-        .select(
-          "id,nombre,objetivo,nivel,frecuencia_semanal,duracion_min,lugar,estado"
-        )
-        .eq("estado", "publicada");
+    // 6. Consultar el catálogo de rutinas publicadas.
+    const { data: rutinas, error: errorRutinas } = await supabase
+      .from("rutinas")
+      .select(
+        "id,nombre,objetivo,nivel,frecuencia_semanal,duracion_min,lugar,estado"
+      )
+      .eq("estado", "publicada");
 
     if (errorRutinas) {
-      throw new Error(
-        "No se pudieron consultar las rutinas."
-      );
+      throw new Error("No se pudieron consultar las rutinas.");
     }
 
-    const idsRutinas = (rutinas ?? []).map(
-      (rutina) => rutina.id
-    );
+    const idsRutinas = (rutinas ?? []).map((rutina) => rutina.id);
 
     const resultadoVacio = {
       total_evaluadas: 0,
       total_elegibles: 0,
       metodo: "reglas_deterministas_v1",
+      similitud_aplicada: false,
+      logica_difusa_aplicada: false,
       resultados: [],
     };
 
@@ -166,81 +138,57 @@ export async function POST(request: Request) {
       return NextResponse.json(resultadoVacio);
     }
 
-    // 7. Consultar las relaciones.
-    const {
-      data: relaciones,
-      error: errorRelaciones,
-    } = await supabase
+    // 7. Consultar los ejercicios asociados a las rutinas.
+    const { data: relaciones, error: errorRelaciones } = await supabase
       .from("rutina_ejercicios")
       .select("rutina_id,ejercicio_id,orden")
       .in("rutina_id", idsRutinas);
 
     if (errorRelaciones) {
-      throw new Error(
-        "No se pudieron consultar las relaciones."
-      );
+      throw new Error("No se pudieron consultar las relaciones.");
     }
 
     const idsEjercicios = [
       ...new Set(
-        (relaciones ?? []).map(
-          (relacion) => relacion.ejercicio_id
-        )
+        (relaciones ?? []).map((relacion) => relacion.ejercicio_id)
       ),
     ];
 
     if (idsEjercicios.length === 0) {
       return NextResponse.json({
         ...resultadoVacio,
-        advertencia:
-          "Las rutinas no tienen ejercicios asignados.",
+        advertencia: "Las rutinas no tienen ejercicios asignados.",
       });
     }
 
-    // 8. Consultar ejercicios.
-    const {
-      data: ejercicios,
-      error: errorEjercicios,
-    } = await supabase
+    // 8. Consultar la información de cada ejercicio.
+    const { data: ejercicios, error: errorEjercicios } = await supabase
       .from("ejercicios")
-      .select(
-        "id,nombre,nivel,lugar,equipamiento,activo"
-      )
+      .select("id,nombre,nivel,lugar,equipamiento,activo")
       .in("id", idsEjercicios);
 
     if (errorEjercicios) {
-      throw new Error(
-        "No se pudieron consultar los ejercicios."
-      );
+      throw new Error("No se pudieron consultar los ejercicios.");
     }
 
     const ejerciciosPorId = new Map(
-      (ejercicios ?? []).map(
-        (ejercicio) => [ejercicio.id, ejercicio]
-      )
+      (ejercicios ?? []).map((ejercicio) => [ejercicio.id, ejercicio])
     );
 
-    // 9. Preparar las rutinas para Python.
+    // 9. Preparar las rutinas completas para FastAPI.
     const rutinasMotor: RutinaMotor[] = [];
     const rutinasOmitidas: string[] = [];
 
     for (const rutina of rutinas ?? []) {
       const componentes = (relaciones ?? [])
-        .filter(
-          (relacion) =>
-            relacion.rutina_id === rutina.id
-        )
-        .sort(
-          (a, b) => a.orden - b.orden
-        );
+        .filter((relacion) => relacion.rutina_id === rutina.id)
+        .sort((a, b) => a.orden - b.orden);
 
       let completa = componentes.length > 0;
       const ejerciciosMotor: EjercicioMotor[] = [];
 
       for (const componente of componentes) {
-        const ejercicio = ejerciciosPorId.get(
-          componente.ejercicio_id
-        );
+        const ejercicio = ejerciciosPorId.get(componente.ejercicio_id);
 
         if (!ejercicio || !ejercicio.activo) {
           completa = false;
@@ -265,8 +213,7 @@ export async function POST(request: Request) {
         nombre: rutina.nombre,
         objetivo: rutina.objetivo,
         nivel: rutina.nivel,
-        frecuencia_semanal:
-          rutina.frecuencia_semanal,
+        frecuencia_semanal: rutina.frecuencia_semanal,
         duracion_min: rutina.duracion_min,
         lugar: rutina.lugar,
         estado: rutina.estado,
@@ -281,56 +228,50 @@ export async function POST(request: Request) {
       });
     }
 
-    // 10. Verificar dirección configurada.
+    // 10. Verificar la URL privada del servicio de IA.
+    // PASO 80.10: bloqueo de IA por estudio
+    const bloqueoIA = await bloqueoIAEstudio(String(clienteId));
+    if (bloqueoIA) return bloqueoIA;
+
     const servicio = process.env.IA_SERVICE_URL;
 
     if (!servicio) {
-      return respuestaError(
-        "No se configuró IA_SERVICE_URL.",
-        503
-      );
+      return respuestaError("No se configuró IA_SERVICE_URL.", 503);
     }
 
-    // 11. Enviar la evaluación a FastAPI.
+    // 11. Solicitar reglas, ranking, similitud y lógica difusa.
+    // La lógica difusa NO cambia la elegibilidad obligatoria.
     let respuestaIA: Response;
 
     try {
-      respuestaIA = await fetch(
-        new URL("/evaluar", servicio),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            perfil,
-            rutinas: rutinasMotor,
-          }),
-          cache: "no-store",
-          signal: AbortSignal.timeout(10000),
-        }
-      );
+      respuestaIA = await fetch(new URL("/evaluar", servicio), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          perfil,
+          rutinas: rutinasMotor,
+          incluir_similitud: true,
+          incluir_logica_difusa: true,
+        }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(45000),
+      });
     } catch {
       return respuestaError(
-        "No se pudo conectar con FastAPI. Comprueba que esté funcionando en el puerto 8000.",
+        "No se pudo conectar con FastAPI. Comprueba que el servicio esté funcionando.",
         503
       );
     }
 
     if (!respuestaIA.ok) {
-      console.error(
-        "FastAPI devolvió:",
-        respuestaIA.status
-      );
-
-      return respuestaError(
-        "FastAPI no pudo procesar las rutinas.",
-        502
-      );
+      console.error("FastAPI devolvió:", respuestaIA.status);
+      return respuestaError("FastAPI no pudo procesar las rutinas.", 502);
     }
 
-    const resultado: unknown =
-      await respuestaIA.json();
+    // 12. Validar la respuesta antes de enviarla al navegador.
+    const resultado: unknown = await respuestaIA.json();
 
     if (
       !resultado ||
@@ -343,12 +284,11 @@ export async function POST(request: Request) {
       !("total_elegibles" in resultado) ||
       typeof resultado.total_elegibles !== "number"
     ) {
-      return respuestaError(
-        "El motor devolvió una respuesta inválida.",
-        502
-      );
+      return respuestaError("El motor devolvió una respuesta inválida.", 502);
     }
 
+    // Se conservan los campos devueltos por FastAPI:
+    // ajuste_difuso, similitud_semantica, desglose_puntaje, etc.
     return NextResponse.json(
       {
         ...resultado,
@@ -361,14 +301,7 @@ export async function POST(request: Request) {
       }
     );
   } catch (error) {
-    console.error(
-      "Error en la integración con IA:",
-      error
-    );
-
-    return respuestaError(
-      "No se pudo completar la evaluación.",
-      500
-    );
+    console.error("Error en la integración con IA:", error);
+    return respuestaError("No se pudo completar la evaluación.", 500);
   }
 }
