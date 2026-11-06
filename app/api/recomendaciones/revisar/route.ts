@@ -378,6 +378,15 @@ export async function POST(request: Request) {
     const servicioIA =
       process.env.IA_SERVICE_URL;
 
+    const claveInternaIA = process.env.IA_INTERNAL_API_KEY;
+    if (!claveInternaIA) {
+      return NextResponse.json(
+        { error: "Servicio de IA no configurado." },
+        { status: 503 }
+      );
+    }
+
+
     if (!servicioIA) {
       return errorJson(
         "Falta configurar IA_SERVICE_URL.",
@@ -393,7 +402,8 @@ export async function POST(request: Request) {
         {
           method: "POST",
           headers: {
-            "Content-Type":
+"X-IA-Service-Key": claveInternaIA,
+                        "Content-Type":
               "application/json",
           },
           body: JSON.stringify({

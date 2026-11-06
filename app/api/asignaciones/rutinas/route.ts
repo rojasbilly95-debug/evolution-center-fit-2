@@ -460,6 +460,11 @@ export async function POST(
       );
     }
 
+    const claveInternaIA = process.env.IA_INTERNAL_API_KEY;
+    if (!claveInternaIA || claveInternaIA.length < 32) {
+      return errorJson("Servicio de IA no configurado.", 503);
+    }
+
     let respuestaIA: Response;
 
     try {
@@ -471,6 +476,7 @@ export async function POST(
         {
           method: "POST",
           headers: {
+            "X-IA-Service-Key": claveInternaIA,
             "Content-Type":
               "application/json",
           },

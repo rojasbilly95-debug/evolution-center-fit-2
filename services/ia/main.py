@@ -1,6 +1,8 @@
+import hmac
+import os
 from typing import Literal
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 
@@ -678,7 +680,31 @@ def comprobar_estado():
 
 
 
-@app.post("/evaluar")
+
+def exigir_clave_ia(
+    x_ia_service_key: str | None = Header(
+        default=None,
+        alias="X-IA-Service-Key",
+    ),
+) -> None:
+    clave = os.environ.get("IA_INTERNAL_API_KEY", "")
+
+    if len(clave) < 32:
+        raise HTTPException(
+            status_code=503,
+            detail="Motor IA sin configurar.",
+        )
+
+    if not x_ia_service_key or not hmac.compare_digest(
+        x_ia_service_key, clave
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="No autorizado.",
+        )
+
+
+@app.post("/evaluar", dependencies=[Depends(exigir_clave_ia)])
 def evaluar_recomendaciones(
     solicitud: SolicitudRecomendacion,
 ):
