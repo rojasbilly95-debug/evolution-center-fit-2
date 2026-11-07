@@ -2,7 +2,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+
+// EVOLUTION CENTER FIT 2.0
+// FASE 110.7 - Catalogo profesional y responsive.
+// Solo cambia la presentacion. No escribe en Supabase.
 
 export type Ejercicio = {
   id: number;
@@ -44,362 +48,984 @@ type Props = {
   relaciones: RutinaEjercicio[];
 };
 
-function formatear(texto: string) {
-  return texto
+type Vista = "rutinas" | "ejercicios";
+
+type NombreIcono =
+  | "dumbbell"
+  | "layers"
+  | "calendar"
+  | "search"
+  | "filter"
+  | "arrow"
+  | "chevron"
+  | "clock"
+  | "menu"
+  | "check"
+  | "book";
+
+const dibujos: Record<NombreIcono, ReactNode> = {
+  dumbbell: (
+    <>
+      <path d="m6.5 6.5 11 11M4 9l5-5M15 20l5-5M2 7l5-5M17 22l5-5" />
+    </>
+  ),
+  layers: (
+    <>
+      <path d="m12 2 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 17l9 5 9-5" />
+    </>
+  ),
+  calendar: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m16 16 5 5" />
+    </>
+  ),
+  filter: (
+    <>
+      <path d="M4 7h16M7 12h10M10 17h4" />
+    </>
+  ),
+  arrow: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  chevron: <path d="m6 9 6 6 6-6" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  check: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8 12 3 3 5-6" />
+    </>
+  ),
+  book: (
+    <>
+      <path d="M4 4h7a3 3 0 0 1 3 3v14H7a3 3 0 0 0-3 2V4ZM14 7a3 3 0 0 1 3-3h3v17h-3a3 3 0 0 0-3 2" />
+    </>
+  ),
+};
+
+function Icono({
+  nombre,
+  className = "h-5 w-5",
+}: {
+  nombre: NombreIcono;
+  className?: string;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {dibujos[nombre]}
+    </svg>
+  );
+}
+
+function formatear(valor: string | null | undefined) {
+  if (!valor) return "No registrado";
+
+  return valor
     .replaceAll("_", " ")
     .replace(/^./, (letra) => letra.toUpperCase());
 }
 
+function normalizar(valor: string) {
+  return valor
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function Etiqueta({
+  children,
+  color = "cyan",
+}: {
+  children: ReactNode;
+  color?: "cyan" | "emerald" | "amber" | "slate";
+}) {
+  const estilos = {
+    cyan: "border-cyan-400/25 bg-cyan-400/10 text-cyan-200",
+    emerald:
+      "border-emerald-400/25 bg-emerald-400/10 text-emerald-200",
+    amber:
+      "border-amber-400/25 bg-amber-400/10 text-amber-200",
+    slate:
+      "border-white/15 bg-white/5 text-slate-300",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold ${estilos[color]}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+// NAVEGACION SEGUN EL ROL
+function Cabecera({
+  rol,
+}: {
+  rol: Props["rol"];
+}) {
+  const esEntrenador = rol === "entrenador";
+
+  const volver = esEntrenador
+    ? "/entrenador"
+    : "/administrador";
+
+  const enlaces = esEntrenador
+    ? [
+        { texto: "Inicio", href: "/entrenador" },
+        {
+          texto: "Mis clientes",
+          href: "/entrenador/clientes",
+        },
+        {
+          texto: "Investigación",
+          href: "/entrenador/investigacion",
+        },
+        {
+          texto: "Reportes",
+          href: "/entrenador/investigacion/reporte",
+        },
+        { texto: "Catálogo", href: "/catalogo" },
+      ]
+    : [
+        {
+          texto: "Administración",
+          href: "/administrador",
+        },
+        { texto: "Catálogo", href: "/catalogo" },
+      ];
+
+  return (
+    <header className="relative z-40 border-b border-white/10 bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <Link
+          href={volver}
+          className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 text-xl font-black text-[#07121e]">
+            E
+          </span>
+
+          <span className="min-w-0">
+            <span className="block truncate text-xs font-black tracking-wide sm:text-sm">
+              EVOLUTION CENTER FIT{" "}
+              <span className="text-cyan-300">2.0</span>
+            </span>
+
+            <span className="block text-[11px] text-slate-400">
+              Catálogo de entrenamiento
+            </span>
+          </span>
+        </Link>
+
+        <nav
+          aria-label="Navegación principal"
+          className="hidden items-center gap-1 xl:flex"
+        >
+          {enlaces.map((enlace) => (
+            <Link
+              key={enlace.href}
+              href={enlace.href}
+              aria-current={
+                enlace.href === "/catalogo"
+                  ? "page"
+                  : undefined
+              }
+              className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
+                enlace.href === "/catalogo"
+                  ? "bg-cyan-400/10 text-cyan-300"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {enlace.texto}
+            </Link>
+          ))}
+        </nav>
+
+        <details className="relative shrink-0 xl:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+            <Icono nombre="menu" />
+            Menú
+          </summary>
+
+          <nav
+            aria-label="Navegación móvil"
+            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+          >
+            {enlaces.map((enlace) => (
+              <Link
+                key={enlace.href}
+                href={enlace.href}
+                aria-current={
+                  enlace.href === "/catalogo"
+                    ? "page"
+                    : undefined
+                }
+                className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
+                  enlace.href === "/catalogo"
+                    ? "bg-cyan-400/10 text-cyan-300"
+                    : "text-slate-200 hover:bg-white/10"
+                }`}
+              >
+                {enlace.texto}
+              </Link>
+            ))}
+          </nav>
+        </details>
+      </div>
+    </header>
+  );
+}
+
+function TarjetaIndicador({
+  titulo,
+  valor,
+  icono,
+  color,
+}: {
+  titulo: string;
+  valor: number;
+  icono: NombreIcono;
+  color: string;
+}) {
+  return (
+    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.19)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
+      <span
+        className={`flex h-11 w-11 items-center justify-center rounded-xl ${color}`}
+      >
+        <Icono nombre={icono} />
+      </span>
+
+      <p className="mt-5 text-3xl font-extrabold tabular-nums text-white sm:text-4xl">
+        {valor}
+      </p>
+
+      <p className="mt-2 text-sm font-semibold text-slate-300">
+        {titulo}
+      </p>
+    </article>
+  );
+}
+
+// TARJETA DE RUTINA
+function TarjetaRutina({
+  rutina,
+  componentes,
+  ejerciciosPorId,
+}: {
+  rutina: Rutina;
+  componentes: RutinaEjercicio[];
+  ejerciciosPorId: Map<number, Ejercicio>;
+}) {
+  const publicada = rutina.estado === "publicada";
+
+  return (
+    <article className="group min-w-0 rounded-3xl border border-white/10 bg-gradient-to-br from-[#152740] to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 hover:shadow-[0_24px_55px_rgba(0,0,0,0.28)] sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-400/10 text-violet-200">
+          <Icono
+            nombre="layers"
+            className="h-6 w-6"
+          />
+        </span>
+
+        <Etiqueta color={publicada ? "emerald" : "amber"}>
+          {formatear(rutina.estado)}
+        </Etiqueta>
+      </div>
+
+      <h3 className="mt-5 text-xl font-extrabold leading-snug text-white">
+        {rutina.nombre}
+      </h3>
+
+      <p className="mt-2 text-sm text-slate-400">
+        {formatear(rutina.objetivo)}
+      </p>
+
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
+          <p className="text-xs text-slate-400">
+            Duración
+          </p>
+          <p className="mt-1 font-bold text-slate-100">
+            {rutina.duracion_min} min
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
+          <p className="text-xs text-slate-400">
+            Frecuencia
+          </p>
+          <p className="mt-1 font-bold text-slate-100">
+            {rutina.frecuencia_semanal} días/sem.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Etiqueta color="cyan">
+          {formatear(rutina.nivel)}
+        </Etiqueta>
+
+        <Etiqueta color="slate">
+          {formatear(rutina.lugar)}
+        </Etiqueta>
+
+        <Etiqueta color="slate">
+          {componentes.length} ejercicios
+        </Etiqueta>
+      </div>
+
+      <details className="group/detalle mt-6 overflow-hidden rounded-2xl border border-white/10 bg-[#0a1627]/70 open:border-cyan-400/25">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-cyan-200 transition-colors hover:bg-cyan-400/[0.07] focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+          <span className="flex items-center gap-2">
+            <Icono
+              nombre="book"
+              className="h-5 w-5"
+            />
+            Ver ejercicios incluidos
+          </span>
+
+          <Icono
+            nombre="chevron"
+            className="h-4 w-4 shrink-0 transition-transform duration-200 group-open/detalle:rotate-180"
+          />
+        </summary>
+
+        <div className="border-t border-white/10 p-3 sm:p-4">
+          {componentes.length === 0 ? (
+            <p className="p-3 text-sm text-slate-400">
+              Esta rutina todavía no tiene ejercicios
+              vinculados.
+            </p>
+          ) : (
+            <ol className="space-y-2">
+              {componentes.map((item) => {
+                const ejercicio = ejerciciosPorId.get(
+                  item.ejercicio_id
+                );
+
+                const objetivo = [
+                  item.series !== null
+                    ? `${item.series} series`
+                    : null,
+                  item.repeticiones !== null
+                    ? `${item.repeticiones} rep.`
+                    : null,
+                  item.duracion_min !== null
+                    ? `${item.duracion_min} min`
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ");
+
+                return (
+                  <li
+                    key={`${item.rutina_id}-${item.orden}-${item.ejercicio_id}`}
+                    className="flex flex-col gap-2 rounded-xl border border-white/[0.05] bg-white/[0.045] p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex min-w-0 items-start gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-xs font-bold text-cyan-300">
+                        {item.orden}
+                      </span>
+
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-semibold text-white">
+                          {ejercicio?.nombre ??
+                            "Ejercicio no encontrado"}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-400">
+                          {ejercicio
+                            ? formatear(
+                                ejercicio.grupo_muscular
+                              )
+                            : "Sin grupo muscular"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pl-11 text-xs sm:pl-3 sm:text-right">
+                      <p className="font-semibold text-cyan-200">
+                        {objetivo ||
+                          "Sin objetivo detallado"}
+                      </p>
+                      <p className="mt-1 text-slate-400">
+                        Descanso: {item.descanso_seg} s
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      </details>
+    </article>
+  );
+}
+
+// TARJETA DE EJERCICIO
+function TarjetaEjercicio({
+  ejercicio,
+}: {
+  ejercicio: Ejercicio;
+}) {
+  return (
+    <article className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-br from-[#152740] to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+          <Icono
+            nombre="dumbbell"
+            className="h-6 w-6"
+          />
+        </span>
+
+        <Etiqueta
+          color={ejercicio.activo ? "emerald" : "amber"}
+        >
+          {ejercicio.activo ? "Activo" : "Inactivo"}
+        </Etiqueta>
+      </div>
+
+      <h3 className="mt-5 text-lg font-bold text-white">
+        {ejercicio.nombre}
+      </h3>
+
+      <p className="mt-2 min-h-10 text-sm leading-6 text-slate-400">
+        {ejercicio.descripcion ||
+          "Sin descripción registrada."}
+      </p>
+
+      <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
+        {[
+          {
+            etiqueta: "Grupo muscular",
+            valor: formatear(
+              ejercicio.grupo_muscular
+            ),
+          },
+          {
+            etiqueta: "Nivel",
+            valor: formatear(ejercicio.nivel),
+          },
+          {
+            etiqueta: "Tipo",
+            valor: formatear(ejercicio.tipo),
+          },
+          {
+            etiqueta: "Lugar",
+            valor: formatear(ejercicio.lugar),
+          },
+        ].map((dato) => (
+          <div key={dato.etiqueta} className="min-w-0">
+            <dt className="text-xs text-slate-400">
+              {dato.etiqueta}
+            </dt>
+            <dd className="mt-1 break-words text-sm font-semibold text-slate-100">
+              {dato.valor}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
+        <p className="text-xs text-slate-400">
+          Equipamiento
+        </p>
+        <p className="mt-1 text-sm font-semibold text-slate-200">
+          {formatear(ejercicio.equipamiento)}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+// CATALOGO PRINCIPAL
 export default function CatalogoInteractivo({
   rol,
   ejercicios,
   rutinas,
   relaciones,
 }: Props) {
-  const [vista, setVista] = useState<
-    "rutinas" | "ejercicios"
-  >("rutinas");
+  const [vista, setVista] =
+    useState<Vista>("rutinas");
 
   const [busqueda, setBusqueda] = useState("");
   const [nivel, setNivel] = useState("todos");
-
-  const buscar = busqueda.trim().toLowerCase();
-
-  const ejerciciosFiltrados = ejercicios.filter(
-    (ejercicio) => {
-      const coincideTexto =
-        `${ejercicio.nombre} ${ejercicio.grupo_muscular} ${ejercicio.tipo}`
-          .toLowerCase()
-          .includes(buscar);
-
-      const coincideNivel =
-        nivel === "todos" ||
-        ejercicio.nivel === nivel;
-
-      return coincideTexto && coincideNivel;
-    }
-  );
-
-  const rutinasFiltradas = rutinas.filter(
-    (rutina) => {
-      const coincideTexto =
-        `${rutina.nombre} ${rutina.objetivo}`
-          .toLowerCase()
-          .includes(buscar);
-
-      const coincideNivel =
-        nivel === "todos" ||
-        rutina.nivel === nivel;
-
-      return coincideTexto && coincideNivel;
-    }
-  );
+  const [lugar, setLugar] = useState("todos");
 
   const volver =
     rol === "administrador"
       ? "/administrador"
       : "/entrenador";
 
+  const ejerciciosPorId = useMemo(
+    () =>
+      new Map(
+        ejercicios.map((ejercicio) => [
+          ejercicio.id,
+          ejercicio,
+        ])
+      ),
+    [ejercicios]
+  );
+
+  const relacionesPorRutina = useMemo(() => {
+    const resultado = new Map<
+      number,
+      RutinaEjercicio[]
+    >();
+
+    for (const relacion of relaciones) {
+      const anteriores =
+        resultado.get(relacion.rutina_id) ?? [];
+
+      anteriores.push(relacion);
+      resultado.set(relacion.rutina_id, anteriores);
+    }
+
+    for (const elementos of resultado.values()) {
+      elementos.sort(
+        (a, b) => a.orden - b.orden
+      );
+    }
+
+    return resultado;
+  }, [relaciones]);
+
+  const texto = normalizar(busqueda.trim());
+
+  const coincide = (
+    nombre: string,
+    nivelActual: string,
+    lugarActual: string
+  ) =>
+    normalizar(nombre).includes(texto) &&
+    (nivel === "todos" ||
+      nivelActual === nivel) &&
+    (lugar === "todos" ||
+      lugarActual === lugar);
+
+  const rutinasFiltradas = rutinas
+    .filter((rutina) =>
+      coincide(
+        `${rutina.nombre} ${rutina.objetivo}`,
+        rutina.nivel,
+        rutina.lugar
+      )
+    )
+    .sort((a, b) =>
+      a.nombre.localeCompare(b.nombre, "es")
+    );
+
+  const ejerciciosFiltrados = ejercicios
+    .filter((ejercicio) =>
+      coincide(
+        `${ejercicio.nombre} ${ejercicio.grupo_muscular} ${ejercicio.tipo}`,
+        ejercicio.nivel,
+        ejercicio.lugar
+      )
+    )
+    .sort((a, b) =>
+      a.nombre.localeCompare(b.nombre, "es")
+    );
+
+  const totalVisible =
+    vista === "rutinas"
+      ? rutinasFiltradas.length
+      : ejerciciosFiltrados.length;
+
+  const totalOriginal =
+    vista === "rutinas"
+      ? rutinas.length
+      : ejercicios.length;
+
+  const hayFiltros =
+    busqueda.trim() !== "" ||
+    nivel !== "todos" ||
+    lugar !== "todos";
+
+  function limpiarFiltros() {
+    setBusqueda("");
+    setNivel("todos");
+    setLugar("todos");
+  }
+
+  const campo =
+    "min-h-12 w-full rounded-xl border border-white/15 " +
+    "bg-[#0b1628] px-4 py-3 text-sm text-white outline-none " +
+    "transition-colors focus:border-cyan-400/70 " +
+    "focus:ring-2 focus:ring-cyan-400/20";
+
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
-      <header className="border-b border-white/10 bg-slate-900">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5">
-          <div>
-            <h1 className="text-xl font-black">
-              EVOLUTION CENTER FIT
-              <span className="ml-2 text-cyan-400">
-                2.0
+    <main className="relative min-h-screen bg-[#080d1a] text-white">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-cyan-500/[0.06] to-transparent"
+      />
+
+      <Cabecera rol={rol} />
+
+      <div className="relative mx-auto w-full max-w-7xl space-y-8 px-4 pb-20 pt-7 sm:px-6 lg:px-8">
+        {/* BIENVENIDA */}
+        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-[#122b40] via-[#111d32] to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-200">
+                <Icono
+                  nombre="dumbbell"
+                  className="h-4 w-4"
+                />
+                Catálogo de entrenamiento
               </span>
-            </h1>
-            <p className="text-xs text-slate-400">
-              Catálogo de entrenamiento
+
+              <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+                Ejercicios y{" "}
+                <span className="text-cyan-300">
+                  rutinas
+                </span>
+              </h1>
+
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                Explora los ejercicios y las rutinas
+                disponibles en Supabase. Consulta
+                objetivos, niveles y composición de
+                cada rutina desde un mismo espacio.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={volver}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+              >
+                Volver a mi panel
+                <Icono
+                  nombre="arrow"
+                  className="h-4 w-4"
+                />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* INDICADORES REALES */}
+        <section
+          aria-label="Resumen del catálogo"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-3"
+        >
+          <TarjetaIndicador
+            titulo="Ejercicios registrados"
+            valor={ejercicios.length}
+            icono="dumbbell"
+            color="bg-cyan-400/10 text-cyan-300"
+          />
+
+          <TarjetaIndicador
+            titulo="Rutinas registradas"
+            valor={rutinas.length}
+            icono="layers"
+            color="bg-violet-400/10 text-violet-300"
+          />
+
+          <TarjetaIndicador
+            titulo="Vínculos rutina-ejercicio"
+            valor={relaciones.length}
+            icono="calendar"
+            color="bg-emerald-400/10 text-emerald-300"
+          />
+        </section>
+
+        {/* EXPLORADOR */}
+        <section aria-labelledby="titulo-explorador">
+          <div className="mb-5">
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              Explorador
+            </p>
+
+            <h2
+              id="titulo-explorador"
+              className="mt-2 text-2xl font-bold sm:text-3xl"
+            >
+              Descubre el catálogo
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Selecciona una vista, utiliza los filtros y
+              consulta los detalles de los registros.
             </p>
           </div>
 
-          <Link
-            href={volver}
-            className="text-sm font-medium text-cyan-400 hover:underline"
+          {/* PESTAÑAS */}
+          <div
+            aria-label="Tipo de catálogo"
+            className="flex flex-wrap gap-3"
           >
-            Volver a mi panel
-          </Link>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-sm font-semibold uppercase tracking-widest text-cyan-400">
-          HU-02 · Catálogo inteligente
-        </p>
-
-        <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-          Ejercicios y rutinas
-        </h2>
-
-        <p className="mt-3 text-slate-400">
-          Explora el catálogo almacenado en Supabase.
-          Estas rutinas todavía no están asignadas
-          ni aprobadas para un cliente específico.
-        </p>
-
-        {/* RESUMEN */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              nombre: "Ejercicios",
-              valor: ejercicios.length,
-            },
-            {
-              nombre: "Rutinas",
-              valor: rutinas.length,
-            },
-            {
-              nombre: "Ejercicios asignados",
-              valor: relaciones.length,
-            },
-          ].map((item) => (
-            <div
-              key={item.nombre}
-              className="rounded-2xl border border-white/10 bg-slate-900 p-6"
+            <button
+              type="button"
+              aria-pressed={vista === "rutinas"}
+              onClick={() => setVista("rutinas")}
+              className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold shadow-lg shadow-black/10 transition-[transform,background-color,border-color] duration-200 motion-safe:hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
+                vista === "rutinas"
+                  ? "bg-cyan-400 text-[#07121e]"
+                  : "border border-white/15 bg-white/5 text-slate-200 hover:bg-white/10"
+              }`}
             >
-              <p className="text-sm text-slate-400">
-                {item.nombre}
+              <Icono
+                nombre="layers"
+                className="h-4 w-4"
+              />
+              Rutinas
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={vista === "ejercicios"}
+              onClick={() => setVista("ejercicios")}
+              className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold shadow-lg shadow-black/10 transition-[transform,background-color,border-color] duration-200 motion-safe:hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
+                vista === "ejercicios"
+                  ? "bg-cyan-400 text-[#07121e]"
+                  : "border border-white/15 bg-white/5 text-slate-200 hover:bg-white/10"
+              }`}
+            >
+              <Icono
+                nombre="dumbbell"
+                className="h-4 w-4"
+              />
+              Ejercicios
+            </button>
+          </div>
+
+          {/* FILTROS */}
+          <div className="mt-5 grid gap-4 rounded-2xl border border-white/10 bg-[#111d31] p-4 shadow-[0_14px_35px_rgba(0,0,0,0.16)] sm:p-5 lg:grid-cols-[minmax(0,1fr)_190px_190px]">
+            <div className="min-w-0">
+              <label
+                htmlFor="buscar-catalogo"
+                className="mb-2 block text-xs font-semibold text-slate-300"
+              >
+                Buscar
+              </label>
+
+              <div className="relative">
+                <Icono
+                  nombre="search"
+                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  id="buscar-catalogo"
+                  type="search"
+                  value={busqueda}
+                  onChange={(e) =>
+                    setBusqueda(e.target.value)
+                  }
+                  placeholder={
+                    vista === "rutinas"
+                      ? "Buscar rutinas u objetivos..."
+                      : "Buscar ejercicios o grupos musculares..."
+                  }
+                  className={`${campo} pl-11`}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="nivel-catalogo"
+                className="mb-2 block text-xs font-semibold text-slate-300"
+              >
+                Nivel
+              </label>
+
+              <select
+                id="nivel-catalogo"
+                value={nivel}
+                onChange={(e) =>
+                  setNivel(e.target.value)
+                }
+                className={campo}
+              >
+                <option value="todos">
+                  Todos los niveles
+                </option>
+                <option value="principiante">
+                  Principiante
+                </option>
+                <option value="intermedio">
+                  Intermedio
+                </option>
+                <option value="avanzado">
+                  Avanzado
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="lugar-catalogo"
+                className="mb-2 block text-xs font-semibold text-slate-300"
+              >
+                Lugar
+              </label>
+
+              <select
+                id="lugar-catalogo"
+                value={lugar}
+                onChange={(e) =>
+                  setLugar(e.target.value)
+                }
+                className={campo}
+              >
+                <option value="todos">
+                  Todos los lugares
+                </option>
+                <option value="gimnasio">
+                  Gimnasio
+                </option>
+                <option value="casa">
+                  Casa
+                </option>
+                <option value="mixto">
+                  Mixto
+                </option>
+              </select>
+            </div>
+          </div>
+
+          {/* RESULTADOS */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <p
+              role="status"
+              className="text-sm text-slate-400"
+            >
+              {totalVisible} de {totalOriginal}{" "}
+              {vista === "rutinas"
+                ? "rutinas visibles"
+                : "ejercicios visibles"}
+            </p>
+
+            {hayFiltros && (
+              <button
+                type="button"
+                onClick={limpiarFiltros}
+                className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+              >
+                <Icono
+                  nombre="filter"
+                  className="h-4 w-4"
+                />
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+
+          {/* LISTADO DE RUTINAS */}
+          {vista === "rutinas" ? (
+            <div className="mt-5 grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
+              {rutinasFiltradas.map((rutina) => (
+                <TarjetaRutina
+                  key={rutina.id}
+                  rutina={rutina}
+                  componentes={
+                    relacionesPorRutina.get(
+                      rutina.id
+                    ) ?? []
+                  }
+                  ejerciciosPorId={ejerciciosPorId}
+                />
+              ))}
+            </div>
+          ) : (
+            /* LISTADO DE EJERCICIOS */
+            <div className="mt-5 grid grid-cols-1 items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {ejerciciosFiltrados.map((ejercicio) => (
+                <TarjetaEjercicio
+                  key={ejercicio.id}
+                  ejercicio={ejercicio}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* SIN COINCIDENCIAS */}
+          {totalVisible === 0 && (
+            <div className="mt-5 rounded-3xl border border-dashed border-white/15 bg-[#111d31] p-10 text-center shadow-lg shadow-black/10">
+              <Icono
+                nombre="search"
+                className="mx-auto h-10 w-10 text-slate-500"
+              />
+
+              <h3 className="mt-4 text-xl font-bold text-white">
+                No se encontraron resultados
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-400">
+                Prueba otros filtros para encontrar
+                {vista === "rutinas"
+                  ? " rutinas."
+                  : " ejercicios."}
               </p>
-              <p className="mt-2 text-3xl font-black text-cyan-400">
-                {item.valor}
+
+              {hayFiltros && (
+                <button
+                  type="button"
+                  onClick={limpiarFiltros}
+                  className="mt-5 min-h-11 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-300 focus-visible:outline-2 focus-visible:outline-cyan-300"
+                >
+                  Mostrar todos
+                </button>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* NOTA FUNCIONAL */}
+        <section className="rounded-2xl border border-cyan-400/15 bg-gradient-to-r from-cyan-500/[0.07] to-violet-500/[0.07] p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="rounded-xl bg-cyan-400/10 p-3 text-cyan-300">
+              <Icono nombre="check" />
+            </span>
+
+            <div>
+              <h2 className="font-bold text-white">
+                Consulta de entrenamiento
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Este catálogo muestra las rutinas y
+                ejercicios registrados. Consultar una
+                rutina no significa que haya sido
+                aprobada o asignada a un cliente.
+                Las asignaciones se gestionan mediante
+                los procesos autorizados del sistema.
               </p>
             </div>
-          ))}
-        </div>
-
-        {/* PESTAÑAS */}
-        <div className="mt-9 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => setVista("rutinas")}
-            aria-pressed={vista === "rutinas"}
-            className={`rounded-xl px-5 py-3 text-sm font-bold ${
-              vista === "rutinas"
-                ? "bg-cyan-400 text-slate-950"
-                : "bg-slate-800 text-slate-300"
-            }`}
-          >
-            Ver rutinas
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setVista("ejercicios")}
-            aria-pressed={vista === "ejercicios"}
-            className={`rounded-xl px-5 py-3 text-sm font-bold ${
-              vista === "ejercicios"
-                ? "bg-cyan-400 text-slate-950"
-                : "bg-slate-800 text-slate-300"
-            }`}
-          >
-            Ver ejercicios
-          </button>
-        </div>
-
-        {/* FILTROS */}
-        <div className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-slate-900 p-5 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="buscar-catalogo"
-              className="mb-2 block text-sm font-medium"
-            >
-              Buscar
-            </label>
-            <input
-              id="buscar-catalogo"
-              type="search"
-              placeholder="Buscar por nombre..."
-              value={busqueda}
-              onChange={(e) =>
-                setBusqueda(e.target.value)
-              }
-              className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 outline-none focus:border-cyan-400"
-            />
           </div>
+        </section>
 
-          <div>
-            <label
-              htmlFor="nivel-catalogo"
-              className="mb-2 block text-sm font-medium"
-            >
-              Nivel
-            </label>
-            <select
-              id="nivel-catalogo"
-              value={nivel}
-              onChange={(e) =>
-                setNivel(e.target.value)
-              }
-              className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 outline-none focus:border-cyan-400"
-            >
-              <option value="todos">Todos</option>
-              <option value="principiante">
-                Principiante
-              </option>
-              <option value="intermedio">
-                Intermedio
-              </option>
-              <option value="avanzado">
-                Avanzado
-              </option>
-            </select>
-          </div>
-        </div>
-
-        {/* RUTINAS */}
-        {vista === "rutinas" ? (
-          <section className="mt-7 space-y-5">
-            {rutinasFiltradas.length === 0 ? (
-              <div className="rounded-2xl bg-slate-900 p-8 text-center text-slate-400">
-                No se encontraron rutinas.
-              </div>
-            ) : (
-              rutinasFiltradas.map((rutina) => {
-                const componentes = relaciones
-                  .filter(
-                    (r) => r.rutina_id === rutina.id
-                  )
-                  .sort(
-                    (a, b) => a.orden - b.orden
-                  );
-
-                return (
-                  <article
-                    key={rutina.id}
-                    className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8"
-                  >
-                    <div className="flex flex-wrap justify-between gap-3">
-                      <h3 className="text-xl font-bold">
-                        {rutina.nombre}
-                      </h3>
-
-                      <span className="h-fit rounded-full bg-cyan-400/10 px-3 py-1 text-xs text-cyan-300">
-                        {formatear(rutina.estado)}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-3 text-sm text-slate-300">
-                      <span>{formatear(rutina.objetivo)}</span>
-                      <span>· {formatear(rutina.nivel)}</span>
-                      <span>· {rutina.duracion_min} min</span>
-                      <span>· {rutina.frecuencia_semanal} días/sem.</span>
-                      <span>· {formatear(rutina.lugar)}</span>
-                    </div>
-
-                    <h4 className="mt-7 font-semibold">
-                      Ejercicios incluidos
-                    </h4>
-
-                    <div className="mt-4 space-y-3">
-                      {componentes.length === 0 ? (
-                        <p className="text-sm text-slate-400">
-                          Esta rutina aún no tiene ejercicios.
-                        </p>
-                      ) : (
-                        componentes.map((item) => {
-                          const ejercicio = ejercicios.find(
-                            (e) =>
-                              e.id === item.ejercicio_id
-                          );
-
-                          return (
-                            <div
-                              key={`${item.rutina_id}-${item.orden}`}
-                              className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-800 p-4"
-                            >
-                              <div>
-                                <p className="font-medium">
-                                  {item.orden}.{" "}
-                                  {ejercicio?.nombre ??
-                                    "Ejercicio no encontrado"}
-                                </p>
-                                <p className="mt-1 text-xs text-slate-400">
-                                  {ejercicio?.grupo_muscular ??
-                                    "Sin grupo muscular"}
-                                </p>
-                              </div>
-
-                              <div className="text-sm text-cyan-300">
-                                {item.series !== null &&
-                                  `${item.series} series · `}
-                                {item.repeticiones !== null
-                                  ? `${item.repeticiones} rep.`
-                                  : item.duracion_min !== null
-                                  ? `${item.duracion_min} min`
-                                  : "Sin duración"}
-                                <p className="mt-1 text-xs text-slate-400">
-                                  Descanso: {item.descanso_seg} s
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  </article>
-                );
-              })
-            )}
-          </section>
-        ) : (
-          /* EJERCICIOS */
-          <section className="mt-7 grid gap-5 md:grid-cols-2">
-            {ejerciciosFiltrados.length === 0 ? (
-              <p className="text-slate-400">
-                No se encontraron ejercicios.
-              </p>
-            ) : (
-              ejerciciosFiltrados.map((ejercicio) => (
-                <article
-                  key={ejercicio.id}
-                  className="rounded-2xl border border-white/10 bg-slate-900 p-6"
-                >
-                  <div className="mb-4 text-3xl">
-                    🏋️
-                  </div>
-
-                  <h3 className="text-lg font-bold">
-                    {ejercicio.nombre}
-                  </h3>
-
-                  <p className="mt-2 text-sm text-slate-400">
-                    {ejercicio.descripcion ??
-                      "Sin descripción"}
-                  </p>
-
-                  <div className="mt-5 space-y-2 text-sm text-slate-300">
-                    <p>
-                      Grupo muscular:{" "}
-                      {ejercicio.grupo_muscular}
-                    </p>
-                    <p>
-                      Tipo: {formatear(ejercicio.tipo)}
-                    </p>
-                    <p>
-                      Nivel: {formatear(ejercicio.nivel)}
-                    </p>
-                    <p>
-                      Equipo:{" "}
-                      {formatear(ejercicio.equipamiento)}
-                    </p>
-                    <p>
-                      Lugar: {formatear(ejercicio.lugar)}
-                    </p>
-                    <p>
-                      Estado:{" "}
-                      {ejercicio.activo
-                        ? "Activo"
-                        : "Inactivo"}
-                    </p>
-                  </div>
-                </article>
-              ))
-            )}
-          </section>
-        )}
+        <footer className="pt-2 text-center text-xs text-slate-500">
+          Evolution Center Fit 2.0 · Catálogo de entrenamiento
+        </footer>
       </div>
     </main>
   );
