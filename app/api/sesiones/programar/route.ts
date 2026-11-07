@@ -640,9 +640,9 @@ export async function GET(request: Request) {
         .from(
           "sesiones_entrenamiento"
         )
-        .select(
-          "id,numero_sesion,fecha_programada,estado,duracion_real_min"
-        )
+.select(
+  "id,numero_sesion,fecha_programada,estado,duracion_real_min,inicio_real,fin_real"
+)
         .eq(
           "asignacion_id",
           asignacionId
@@ -705,22 +705,26 @@ export async function GET(request: Request) {
               .nombre,
         },
 
-        sesiones: (
-          consultaSesiones.data ??
-          []
-        ).map(
-          (sesion) => ({
-            id: sesion.id,
-            numeroSesion:
-              sesion.numero_sesion,
-            fechaProgramada:
-              sesion.fecha_programada,
-            estado:
-              sesion.estado,
-            duracionRealMin:
-              sesion.duracion_real_min,
-          })
-        ),
+sesiones: (
+  consultaSesiones.data ??
+  []
+).map(
+  (sesion) => ({
+    id: sesion.id,
+    numeroSesion:
+      sesion.numero_sesion,
+    fechaProgramada:
+      sesion.fecha_programada,
+    estado:
+      sesion.estado,
+    duracionRealMin:
+      sesion.duracion_real_min,
+    inicioReal:
+      sesion.inicio_real,
+    finReal:
+      sesion.fin_real,
+  })
+),
       },
       {
         status: 200,

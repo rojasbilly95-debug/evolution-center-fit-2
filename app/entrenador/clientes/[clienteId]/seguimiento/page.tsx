@@ -6,6 +6,7 @@ import { connection } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
 import ProgramarSesiones from "../../programar-sesiones";
+import CierrePlanEstudio from "../../cierre-plan-estudio";
 
 type Props = {
   params: Promise<{ clienteId: string }>;
@@ -178,10 +179,17 @@ export default async function SeguimientoClientePage({
             </p>
           </div>
         ) : (
-          <ProgramarSesiones
-            key={planVigente.id}
-            asignacionId={planVigente.id}
-          />
+          <>
+            <ProgramarSesiones
+              key={planVigente.id}
+              asignacionId={planVigente.id}
+            />
+
+            <CierrePlanEstudio
+              key={`cierre-${planVigente.id}`}
+              asignacionId={planVigente.id}
+            />
+          </>
         )}
 
         {/* HISTORIAL DE PLANES DE ENTRENAMIENTO */}
