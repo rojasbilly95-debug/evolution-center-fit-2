@@ -219,6 +219,18 @@ export default function ProgramarSesiones({
     setMostrarTodas,
   ] = useState(false);
 
+  
+type FiltroSesion =
+  | "todas"
+  | "programada"
+  | "en_curso"
+  | "realizada"
+  | "ausente"
+  | "cancelada";
+
+const [filtroSesion, setFiltroSesion] =
+  useState<FiltroSesion>("todas");
+
   // Sesion seleccionada para ver ejercicios.
 
   const [
@@ -489,10 +501,17 @@ export default function ProgramarSesiones({
   // 11. RESUMEN DE ASISTENCIA
   // ==========================================
 
-  const sesionesVisibles =
-    mostrarTodas
-      ? estado.sesiones
-      : estado.sesiones.slice(0, 8);
+
+const sesionesFiltradas = estado.sesiones.filter(
+  (sesion) =>
+    filtroSesion === "todas" ||
+    sesion.estado === filtroSesion
+);
+
+const sesionesVisibles = mostrarTodas
+  ? sesionesFiltradas
+  : sesionesFiltradas.slice(0, 8);
+
 
   const realizadas =
     estado.sesiones.filter(
@@ -716,118 +735,188 @@ export default function ProgramarSesiones({
                     SESIONES Y ASISTENCIA
                 ======================== */}
 
-                <ol className="space-y-3">
-                  {sesionesVisibles.map(
-                    (sesion) => {
-                      const ejerciciosAbiertos =
-                        sesionAbierta ===
-                        sesion.id;
 
-                      const panelId =
-                        `ejercicios-sesion-${sesion.id}`;
+{/* ========================================
+    FILTROS DE SESIONES
+======================================== */}
 
-                      return (
-                        <li
-                          key={sesion.id}
-                          className="space-y-2"
-                        >
-                          {/* CONTROL DE ASISTENCIA */}
+<div className="mt-7 rounded-2xl border border-white/10 bg-[#101d31] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
+  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h3 className="text-lg font-bold text-white">
+        Sesiones del entrenamiento
+      </h3>
 
-                          <ControlAsistencia
-                            sesion={sesion}
-                            estadoPlan={
-                              plan.estado
-                            }
-                            onActualizada={(
-                              nuevoMensaje
-                            ) => {
-                              setMensaje(
-                                nuevoMensaje
-                              );
+      <p className="mt-1 text-sm text-slate-400">
+        Filtra las sesiones según su estado.
+      </p>
+    </div>
 
-                              actualizar();
-                            }}
-                          />
+    <span className="self-start rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+      {sesionesFiltradas.length} de{" "}
+      {estado.sesiones.length} sesiones
+    </span>
+  </div>
 
-                          {/* ====================
-                              BOTON DE EJERCICIOS
-                          ==================== */}
+  <div
+    role="group"
+    aria-label="Filtrar sesiones por estado"
+    className="mt-4 flex flex-wrap gap-2"
+  >
+    {(
+      [
+        { valor: "todas", texto: "Todas" },
+        { valor: "programada", texto: "Programadas" },
+        { valor: "en_curso", texto: "En curso" },
+        { valor: "realizada", texto: "Realizadas" },
+        { valor: "ausente", texto: "Ausentes" },
+        { valor: "cancelada", texto: "Canceladas" },
+      ] as const
+    ).map((opcion) => (
+      <button
+        key={opcion.valor}
+        type="button"
+        aria-pressed={filtroSesion === opcion.valor}
+        onClick={() => {
+          setFiltroSesion(opcion.valor);
+          setMostrarTodas(false);
+        }}
+        className={`min-h-11 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-sm ${
+          filtroSesion === opcion.valor
+            ? "border-cyan-400 bg-cyan-400 text-[#07121e] shadow-[0_6px_20px_rgba(6,182,212,0.15)]"
+            : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+        }`}
+      >
+        {opcion.texto}
+      </button>
+    ))}
+  </div>
+</div>
 
-                          <div className="rounded-lg border border-cyan-400/15 bg-slate-900/40 p-3">
-                            <div className="flex flex-wrap items-center justify-between gap-3">
-                              <div>
-                                <p className="text-xs font-semibold text-white">
-                                  Cumplimiento de ejercicios
-                                </p>
+{/* ========================================
+    LISTADO RESPONSIVE DE SESIONES
+======================================== */}
 
-                                <p className="mt-1 text-xs leading-5 text-slate-400">
-                                  Consulta los objetivos y
-                                  registra las series
-                                  realizadas durante esta
-                                  sesión.
-                                </p>
-                              </div>
+<ol className="mt-5 grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
+  {sesionesVisibles.map((sesion) => {
+    const ejerciciosAbiertos =
+      sesionAbierta === sesion.id;
 
-                              <button
-                                type="button"
-                                aria-expanded={
-                                  ejerciciosAbiertos
-                                }
-                                aria-controls={
-                                  panelId
-                                }
-                                onClick={() =>
-                                  alternarEjercicios(
-                                    sesion.id
-                                  )
-                                }
-                                className={`rounded-lg border px-3 py-2 text-xs font-bold transition ${
-                                  ejerciciosAbiertos
-                                    ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-200"
-                                    : "border-cyan-400/30 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20"
-                                }`}
-                              >
-                                {ejerciciosAbiertos
-                                  ? "Ocultar ejercicios"
-                                  : "Ver ejercicios"}
-                              </button>
-                            </div>
+    const panelId =
+      `ejercicios-sesion-${sesion.id}`;
 
-                            {/* ==================
-                                REGISTRO DE
-                                EJERCICIOS Y SERIES
-                            ================== */}
+    return (
+      <li
+        key={sesion.id}
+        className="group min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#162840] to-[#0e1a2e] p-3 shadow-[0_14px_36px_rgba(0,0,0,0.2)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_22px_46px_rgba(0,0,0,0.28)] sm:p-4"
+      >
+        {/* CONTROL DE ASISTENCIA */}
 
-                            {ejerciciosAbiertos && (
-                              <div
-                                id={panelId}
-                                className="mt-3"
-                              >
-                                <RegistroEjercicios
-                                  sesionId={sesion.id}
-                                />
+        <ControlAsistencia
+          sesion={sesion}
+          estadoPlan={plan.estado}
+          onActualizada={(nuevoMensaje) => {
+            setMensaje(nuevoMensaje);
+            actualizar();
+          }}
+        />
 
-                                {/* RESUMEN POR SESION */}
+        {/* EJERCICIOS EN LA MISMA TARJETA */}
 
-                                <ResumenCumplimiento
-                                  key={`${sesion.id}-${consulta}`}
-                                  sesionId={sesion.id}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    }
-                  )}
-                </ol>
+        <div className="mt-3 rounded-xl border border-white/[0.07] bg-[#091628]/70 p-3 sm:p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-white">
+                Ejercicios y series
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-slate-400">
+                Consulta los objetivos y registra
+                las series realizadas durante esta sesión.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              aria-expanded={ejerciciosAbiertos}
+              aria-controls={panelId}
+              onClick={() =>
+                alternarEjercicios(sesion.id)
+              }
+              className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
+                ejerciciosAbiertos
+                  ? "border-emerald-400/35 bg-emerald-400/10 text-emerald-200"
+                  : "border-cyan-400/30 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20"
+              }`}
+            >
+              {ejerciciosAbiertos
+                ? "Ocultar ejercicios"
+                : "Ver ejercicios"}
+
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className={`h-4 w-4 transition-transform duration-200 ${
+                  ejerciciosAbiertos
+                    ? "rotate-180"
+                    : ""
+                }`}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* REGISTRO DE EJERCICIOS Y SERIES */}
+
+          <div
+            id={panelId}
+            hidden={!ejerciciosAbiertos}
+            className="mt-4 space-y-4 border-t border-white/10 pt-4"
+          >
+            {ejerciciosAbiertos && (
+              <>
+                <RegistroEjercicios
+                  sesionId={sesion.id}
+                />
+
+                <ResumenCumplimiento
+                  key={`${sesion.id}-${consulta}`}
+                  sesionId={sesion.id}
+                />
+              </>
+            )}
+          </div>
+        </div>
+      </li>
+    );
+  })}
+</ol>
+
+{/* MENSAJE CUANDO NO HAY COINCIDENCIAS */}
+
+{sesionesFiltradas.length === 0 && (
+  <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-[#111d31] p-7 text-center">
+    <p className="font-semibold text-white">
+      No hay sesiones en este estado
+    </p>
+
+    <p className="mt-2 text-sm text-slate-400">
+      Selecciona otro filtro para consultar
+      las sesiones del plan.
+    </p>
+  </div>
+)}
+
 
                 {/* ========================
                     MOSTRAR TODAS
                 ======================== */}
 
-                {estado.sesiones.length >
-                  8 && (
+{sesionesFiltradas.length > 8 && (
                     <button
                       type="button"
                       onClick={() =>
