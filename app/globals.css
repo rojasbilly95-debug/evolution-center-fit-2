@@ -320,3 +320,174 @@ body {
     border-radius: 16px;
   }
 }
+
+
+/* ============================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 110.10 - EJERCICIOS Y SERIES
+   ============================================ */
+
+/* CONTENEDOR GENERAL */
+.ecf-exercises {
+  min-width: 0;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 31, 51, 0.98),
+      rgba(8, 17, 32, 0.98)
+    );
+
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* TARJETA DE CADA EJERCICIO */
+.ecf-exercises .ecf-exercise-card {
+  position: relative;
+  min-width: 0;
+  container-type: inline-size;
+
+  background: linear-gradient(
+    145deg,
+    #192e47,
+    #101d31
+  );
+
+  border-color: rgba(148, 163, 184, 0.14);
+
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* TARJETA DE UNA SERIE */
+.ecf-exercises .ecf-series-card {
+  min-width: 0;
+
+  background: linear-gradient(
+    145deg,
+    rgba(13, 28, 48, 0.98),
+    rgba(8, 19, 36, 0.98)
+  );
+
+  border-color: rgba(148, 163, 184, 0.15);
+
+  box-shadow:
+    0 7px 20px rgba(0, 0, 0, 0.13);
+
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* CAMPOS DE REPETICIONES, DURACION Y PESO */
+.ecf-exercises .ecf-series-card input[type="number"],
+.ecf-exercises .ecf-series-card textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+
+  background: #091425;
+  color: #f8fafc;
+
+  padding: 10px 12px;
+
+  font-size: 14px;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.ecf-exercises .ecf-series-card input[type="number"]:focus,
+.ecf-exercises .ecf-series-card textarea:focus {
+  outline: none;
+  border-color: #22d3ee;
+
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.12);
+}
+
+/* CHECKBOX DE SERIE COMPLETADA */
+.ecf-exercises input[type="checkbox"] {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #34d399;
+}
+
+/* BOTONES */
+.ecf-exercises button {
+  min-height: 44px;
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.ecf-exercises button:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+/* DISTRIBUCION SEGUN EL ANCHO REAL
+   DE LA TARJETA DEL EJERCICIO */
+.ecf-exercises .ecf-series-card > .grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@container (min-width: 420px) {
+  .ecf-exercises .ecf-series-card > .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 650px) {
+  .ecf-exercises .ecf-series-card > .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* MICROINTERACCIONES PARA MOUSE */
+@media (hover: hover) and (pointer: fine) {
+  .ecf-exercises .ecf-exercise-card:hover {
+    border-color: rgba(34, 211, 238, 0.36);
+
+    box-shadow:
+      0 16px 36px rgba(0, 0, 0, 0.23);
+  }
+
+  .ecf-exercises .ecf-series-card:hover {
+    border-color: rgba(148, 163, 184, 0.32);
+  }
+
+  .ecf-exercises button:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+}
+
+.ecf-exercises button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+/* MOVIMIENTO REDUCIDO */
+@media (prefers-reduced-motion: reduce) {
+  .ecf-exercises *,
+  .ecf-exercises *::before,
+  .ecf-exercises *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

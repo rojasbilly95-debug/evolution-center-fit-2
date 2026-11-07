@@ -336,7 +336,7 @@ function FilaSerie({
   // ==========================================
 
   return (
-    <div className="rounded-lg border border-white/10 bg-slate-900/80 p-3">
+    <div className="ecf-series-card rounded-xl border border-white/10 bg-[#0d192b] p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold text-white">
           Serie {numeroSerie}
@@ -714,7 +714,7 @@ export default function RegistroEjercicios({
 
   return (
     <section
-      className="mt-3 w-full rounded-xl border border-cyan-400/20 bg-slate-950/80 p-3 sm:p-4"
+      className="ecf-exercises mt-3 w-full min-w-0 rounded-2xl border border-cyan-400/20 bg-[#0b1729] p-3 sm:p-5"
       aria-label={`Ejercicios de la sesión ${sesionId}`}
     >
       {/* ====================================
@@ -840,7 +840,7 @@ export default function RegistroEjercicios({
                   (ejercicio) => (
                     <div
                       key={ejercicio.id}
-                      className="rounded-xl border border-white/10 bg-slate-900/50 p-3"
+                      className="ecf-exercise-card rounded-2xl border border-white/10 bg-[#14243a] p-4 sm:p-5"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
