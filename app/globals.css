@@ -77,3 +77,246 @@ body {
     animation: none;
   }
 }
+
+
+/* =====================================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 110.4 - ACABADO VISUAL PROFESIONAL
+   Dashboard del entrenador
+   ===================================================== */
+
+/* FONDO CON PROFUNDIDAD */
+.ecf-dashboard {
+  background-color: #080d1a;
+  background-image:
+    radial-gradient(
+      ellipse at 85% 4%,
+      rgba(6, 182, 212, 0.075),
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 5% 80%,
+      rgba(139, 92, 246, 0.045),
+      transparent 36%
+    );
+}
+
+/* BARRA DE NAVEGACION */
+.ecf-dashboard .ecf-header {
+  border-bottom-color: rgba(148, 163, 184, 0.12);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+/* TARJETA PRINCIPAL DE BIENVENIDA */
+.ecf-dashboard .ecf-hero {
+  position: relative;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.24),
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+/* TARJETAS DE INDICADORES */
+.ecf-dashboard .ecf-stat-card {
+  position: relative;
+  background:
+    linear-gradient(
+      150deg,
+      rgba(23, 43, 67, 0.98),
+      rgba(14, 25, 43, 0.98)
+    );
+
+  border-color: rgba(148, 163, 184, 0.12);
+
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* TARJETAS INTERACTIVAS DE MODULOS */
+.ecf-dashboard .ecf-module-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22, 39, 63, 0.98),
+      rgba(14, 25, 43, 0.98)
+    );
+
+  border-color: rgba(148, 163, 184, 0.12);
+
+  box-shadow:
+    0 14px 38px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+
+/* BORDE SUPERIOR CON ACENTO GRADIENTE */
+.ecf-dashboard .ecf-module-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #22d3ee,
+      #818cf8,
+      transparent
+    );
+
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+/* BOTON PRINCIPAL */
+.ecf-dashboard .ecf-primary-action {
+  box-shadow:
+    0 8px 24px rgba(6, 182, 212, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+/* MENU DE CELULAR Y TABLET */
+.ecf-dashboard .ecf-menu-trigger {
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.15);
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.ecf-dashboard details[open] > .ecf-menu-trigger {
+  background-color: rgba(34, 211, 238, 0.10);
+  border-color: rgba(34, 211, 238, 0.38);
+}
+
+/* EFECTOS SOLO EN DISPOSITIVOS CON MOUSE */
+@media (hover: hover) and (pointer: fine) {
+  .ecf-dashboard .ecf-module-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(34, 211, 238, 0.38);
+  }
+
+  .ecf-dashboard .ecf-module-card:hover::before {
+    opacity: 1;
+  }
+
+  .ecf-dashboard .ecf-primary-action:hover {
+    transform: translateY(-2px);
+  }
+
+  .ecf-dashboard .ecf-menu-trigger:hover {
+    border-color: rgba(34, 211, 238, 0.35);
+    background-color: rgba(34, 211, 238, 0.08);
+  }
+}
+
+/* EFECTO DE PRESION */
+.ecf-dashboard .ecf-primary-action:active {
+  transform: scale(0.98);
+}
+
+.ecf-dashboard .ecf-module-card:active {
+  transform: scale(0.992);
+}
+
+/* FOCO VISIBLE PARA TECLADO */
+.ecf-dashboard a:focus-visible,
+.ecf-dashboard button:focus-visible,
+.ecf-dashboard summary:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+/* ENTRADA SUAVE */
+@keyframes ecf-dashboard-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ecf-dashboard .ecf-hero {
+    animation:
+      ecf-dashboard-entrada 420ms
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ecf-dashboard .ecf-stat-card {
+    animation:
+      ecf-dashboard-entrada 400ms
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ecf-dashboard .ecf-module-card {
+    animation:
+      ecf-dashboard-entrada 460ms
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ecf-dashboard .ecf-module-card:nth-child(2) {
+    animation-delay: 45ms;
+  }
+
+  .ecf-dashboard .ecf-module-card:nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .ecf-dashboard .ecf-module-card:nth-child(4) {
+    animation-delay: 135ms;
+  }
+}
+
+/* RESPETAR PREFERENCIA DE MOVIMIENTO REDUCIDO */
+@media (prefers-reduced-motion: reduce) {
+  .ecf-dashboard .ecf-hero,
+  .ecf-dashboard .ecf-stat-card,
+  .ecf-dashboard .ecf-module-card,
+  .ecf-dashboard .ecf-primary-action {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .ecf-dashboard .ecf-module-card:hover,
+  .ecf-dashboard .ecf-primary-action:hover,
+  .ecf-dashboard .ecf-primary-action:active,
+  .ecf-dashboard .ecf-module-card:active {
+    transform: none !important;
+  }
+}
+
+/* AJUSTE PARA CELULARES */
+@media (max-width: 640px) {
+  .ecf-dashboard .ecf-hero {
+    border-radius: 20px;
+  }
+
+  .ecf-dashboard .ecf-module-card {
+    border-radius: 16px;
+  }
+}
