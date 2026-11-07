@@ -1,20 +1,31 @@
 ﻿import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+// =====================================
+// RESPUESTA DE ACCESO DENEGADO
+// =====================================
+
 function denegar(mensaje: string, status: number) {
   return NextResponse.json(
     { error: mensaje },
     {
       status,
-      headers: { "Cache-Control": "no-store" },
+      headers: {
+        "Cache-Control": "no-store",
+      },
     }
   );
 }
+
+// =====================================
+// BLOQUEO DE IA SEGÚN EL ESTUDIO
+// =====================================
 
 export async function bloqueoIAEstudio(
   clienteId: string
 ): Promise<NextResponse | null> {
   try {
+    // 1. Configuración privada de Supabase.
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
     const clave =
@@ -28,6 +39,7 @@ export async function bloqueoIAEstudio(
       );
     }
 
+    // 2. Cliente administrativo exclusivo del servidor.
     const admin = createClient(url, clave, {
       auth: {
         persistSession: false,
@@ -35,6 +47,7 @@ export async function bloqueoIAEstudio(
       },
     });
 
+    // 3. Consultar inscripción del cliente.
     const { data: participante, error } = await admin
       .from("participantes_estudio")
       .select("grupo_estudio,fecha_inicio_estudio")
@@ -43,23 +56,14 @@ export async function bloqueoIAEstudio(
 
     if (error) {
       console.error("Error verificando grupo:", error);
+
       return denegar(
         "No se pudo verificar el grupo de investigación.",
         503
       );
     }
 
- // Sin inscripción verificada, no se permite
-// utilizar el motor inteligente.
-if (!participante) {
-  return denegar(
-    "El cliente no tiene una inscripción verificada en el estudio. La IA permanece deshabilitada.",
-    403
-  );
-}
-
-    // Sin inscripción verificada, no se permite
-    // utilizar el motor inteligente.
+    // 4. Bloquear clientes sin inscripción verificada.
     if (!participante) {
       return denegar(
         "El cliente no tiene una inscripción verificada en el estudio. La IA permanece deshabilitada.",
@@ -67,6 +71,15 @@ if (!participante) {
       );
     }
 
+    // 5. El grupo control (GC) nunca puede utilizar IA.
+    if (participante.grupo_estudio === "GC") {
+      return denegar(
+        "El grupo control no tiene acceso al motor inteligente.",
+        403
+      );
+    }
+
+    // 6. Rechazar grupos desconocidos o no válidos.
     if (participante.grupo_estudio !== "GE") {
       return denegar(
         "Grupo de investigación no válido.",
@@ -74,7 +87,7 @@ if (!participante) {
       );
     }
 
-    // Calcular la fecha actual en Lima.
+    // 7. Calcular fecha actual en Lima, Perú.
     const partes = new Intl.DateTimeFormat("en-US", {
       timeZone: "America/Lima",
       year: "numeric",
@@ -83,7 +96,9 @@ if (!participante) {
     }).formatToParts(new Date());
 
     const obtener = (tipo: string) =>
-      Number(partes.find((p) => p.type === tipo)?.value);
+      Number(
+        partes.find((p) => p.type === tipo)?.value
+      );
 
     const hoy = Date.UTC(
       obtener("year"),
@@ -91,22 +106,41 @@ if (!participante) {
       obtener("day")
     );
 
-    const inicio = Date.parse(
-      `${participante.fecha_inicio_estudio}T00:00:00.000Z`
-    );
+    // 8. Verificar fecha de inicio del estudio.
+    const fechaInicio = participante.fecha_inicio_estudio;
 
-    if (!Number.isFinite(inicio)) {
+    if (
+      typeof fechaInicio !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(fechaInicio)
+    ) {
       return denegar(
         "La fecha del estudio no es válida.",
         503
       );
     }
 
+    const inicio = Date.parse(
+      `${fechaInicio}T00:00:00.000Z`
+    );
+
+    if (
+      !Number.isFinite(hoy) ||
+      !Number.isFinite(inicio) ||
+      new Date(inicio).toISOString().slice(0, 10) !==
+        fechaInicio
+    ) {
+      return denegar(
+        "La fecha del estudio no es válida.",
+        503
+      );
+    }
+
+    // 9. Calcular días transcurridos.
     const diasTranscurridos = Math.floor(
       (hoy - inicio) / 86400000
     );
 
-    // Semanas 1 a 4: pretest sin intervención.
+    // 10. GE: impedir IA durante las semanas 1 a 4.
     if (diasTranscurridos < 28) {
       return denegar(
         "El grupo experimental todavía está en pretest. La IA se habilita desde la semana 5.",
@@ -114,10 +148,13 @@ if (!participante) {
       );
     }
 
-    // Desde la semana 5 se permite la IA para GE.
+    // 11. GE: permitir IA desde la semana 5.
     return null;
   } catch (error) {
-    console.error("Error en control de investigación:", error);
+    console.error(
+      "Error en control de investigación:",
+      error
+    );
 
     return denegar(
       "No se pudo verificar el acceso a la IA.",
