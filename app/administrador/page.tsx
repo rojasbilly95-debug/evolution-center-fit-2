@@ -739,7 +739,7 @@ async function ContenidoAdministrador({
         "Ver clientes, responsables y estado real de las relaciones.",
       tipo: "usuarios" as const,
       estado: "Disponible" as const,
-      href: "#asignaciones",
+      href: "/administrador/entrenadores",
     },
     {
       titulo: "Gestión de roles y permisos",
