@@ -6,7 +6,7 @@ import { Suspense, type ReactNode } from "react";
 
 import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
-import ProgresoCliente from "./progreso-cliente";
+
 import CalendarioCliente from "./calendario-cliente";
 
 
