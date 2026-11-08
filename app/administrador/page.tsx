@@ -715,7 +715,7 @@ async function ContenidoAdministrador({
         "Buscar cuentas registradas y consultar sus roles.",
       tipo: "usuarios" as const,
       estado: "Disponible" as const,
-      href: "#usuarios",
+      href: "/administrador/usuarios",
     },
     {
       titulo: "Catálogo de entrenamiento",
