@@ -6,6 +6,7 @@ import { Suspense, type ReactNode } from "react";
 
 import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
+import CalendarioCliente from "./calendario-cliente";
 
 type Asignacion = {
   id: number;
@@ -719,8 +720,8 @@ async function ContenidoCliente() {
                     : undefined
                 }
                 className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${enlace.href === "/cliente"
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-cyan-400/10 text-cyan-300"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
                   }`}
               >
                 {enlace.texto}
@@ -1067,61 +1068,66 @@ async function ContenidoCliente() {
               </Link>
             </section>
 
-            {/* CALENDARIO */}
+            {/* CALENDARIO INTERACTIVO DEL CLIENTE */}
             <section
               id="mi-calendario"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-5 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Organización"
                 titulo="Mi calendario de entrenamiento"
-                descripcion="Fechas y estados establecidos por tu entrenador."
+                descripcion="Consulta tus sesiones programadas, cambia de mes y filtra por estado. Los registros son establecidos por tu entrenador."
               />
 
               {errorSesiones ? (
-                <p className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">
+                <div
+                  role="alert"
+                  className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-5 text-sm text-rose-200"
+                >
                   No se pudo consultar el calendario.
                   Revisa los permisos de lectura.
-                </p>
-              ) : sesiones.length === 0 ? (
-                <p className="rounded-xl bg-[#091527] p-5 text-sm text-slate-400">
-                  Todavía no hay sesiones programadas.
-                </p>
-              ) : (
-                <div className="grid gap-3 md:grid-cols-2">
-                  {sesiones.map((sesion) => (
-                    <article
-                      key={sesion.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#091527] p-4 transition hover:border-cyan-400/20"
-                    >
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold">
-                          Sesión #
-                          {sesion.numero_sesion}
-                        </p>
-
-                        <p className="mt-1 text-xs text-slate-400">
-                          {fechaBonita(
-                            sesion.fecha_programada
-                          )}
-                        </p>
-                      </div>
-
-                      <Estado estado={sesion.estado} />
-                    </article>
-                  ))}
                 </div>
+              ) : sesiones.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1729] p-7 text-center">
+                  <Icon
+                    name="calendar"
+                    className="mx-auto h-10 w-10 text-slate-400"
+                  />
+
+                  <h3 className="mt-4 text-lg font-bold">
+                    Sin sesiones programadas
+                  </h3>
+
+                  <p className="mt-2 text-sm text-slate-400">
+                    Cuando tu entrenador programe los
+                    entrenamientos, aparecerán aquí.
+                  </p>
+                </div>
+              ) : (
+                <CalendarioCliente
+                  sesiones={sesiones}
+                  hoy={hoy}
+                />
               )}
 
               {proximasSesiones.length > 0 && (
-                <p className="mt-5 text-xs font-medium text-cyan-300">
-                  Próxima sesión: #
-                  {proximasSesiones[0].numero_sesion}
-                  {" · "}
-                  {fechaBonita(
-                    proximasSesiones[0].fecha_programada
-                  )}
-                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-cyan-400/20 bg-cyan-400/[0.06] px-4 py-3">
+                  <Icon
+                    name="calendar"
+                    className="h-5 w-5 text-cyan-300"
+                  />
+
+                  <p className="text-sm text-slate-200">
+                    <span className="font-bold text-cyan-300">
+                      Próxima sesión:
+                    </span>{" "}
+                    #{proximasSesiones[0].numero_sesion}
+                    {" · "}
+                    {fechaBonita(
+                      proximasSesiones[0].fecha_programada
+                    )}
+                  </p>
+                </div>
               )}
             </section>
 
@@ -1349,10 +1355,27 @@ async function ContenidoCliente() {
               />
 
               {historial.length === 0 ? (
-                <p className="rounded-xl bg-[#091527] p-5 text-sm text-slate-400">
-                  Todavía no tienes entrenamientos
-                  finalizados ni ausencias registradas.
-                </p>
+
+                <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1729] px-6 py-9 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+                    <Icon
+                      name="clock"
+                      className="h-7 w-7"
+                    />
+                  </span>
+
+                  <h3 className="mt-4 text-lg font-bold text-white">
+                    Tu historial está por comenzar
+                  </h3>
+
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
+                    Todavía no tienes entrenamientos
+                    finalizados ni ausencias confirmadas.
+                    Los registros aparecerán aquí cuando
+                    tu entrenador los actualice.
+                  </p>
+                </div>
+
               ) : (
                 <div className="space-y-3">
                   {historial.map((sesion) => (
