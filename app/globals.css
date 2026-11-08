@@ -729,3 +729,197 @@ body {
     transform: none !important;
   }
 }
+
+
+/* =============================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 110.12 - PORTAL DEL CLIENTE
+   ============================================= */
+
+/* FONDO GENERAL */
+.ecf-client {
+  background-color: #080d1a;
+
+  background-image:
+    radial-gradient(
+      ellipse at 86% 3%,
+      rgba(6, 182, 212, 0.08),
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 5% 78%,
+      rgba(139, 92, 246, 0.045),
+      transparent 36%
+    );
+}
+
+/* NAVEGACION */
+.ecf-client-header {
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.18);
+
+  backdrop-filter: blur(16px);
+}
+
+/* BIENVENIDA */
+.ecf-client-hero {
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.25),
+    0 6px 18px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* INDICADORES */
+.ecf-client-stat {
+  min-width: 0;
+
+  background: linear-gradient(
+    145deg,
+    #172b43,
+    #101c30
+  );
+
+  border-color: rgba(148, 163, 184, 0.14);
+
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+/* SECCIONES PRINCIPALES */
+.ecf-client-section {
+  min-width: 0;
+
+  background: linear-gradient(
+    145deg,
+    #15263d,
+    #0e1a2d
+  );
+
+  border-color: rgba(148, 163, 184, 0.13);
+
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* TARJETAS INTERNAS:
+   CALENDARIO, EJERCICIOS Y PROGRESO */
+.ecf-client-section article {
+  min-width: 0;
+
+  border-color: rgba(148, 163, 184, 0.14);
+
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.13);
+
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* BOTONES Y ENLACES */
+.ecf-client a,
+.ecf-client button,
+.ecf-client summary {
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.ecf-client a:focus-visible,
+.ecf-client button:focus-visible,
+.ecf-client summary:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+/* EFECTOS SOLO EN DISPOSITIVOS CON MOUSE */
+@media (hover: hover) and (pointer: fine) {
+  .ecf-client-stat:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34, 211, 238, 0.32);
+
+    box-shadow:
+      0 18px 42px rgba(0, 0, 0, 0.24);
+  }
+
+  .ecf-client-section article:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34, 211, 238, 0.24);
+  }
+
+  .ecf-client-hero a:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* EFECTO AL PRESIONAR */
+.ecf-client a:active,
+.ecf-client button:active {
+  transform: scale(0.98);
+}
+
+/* ANIMACION DE ENTRADA */
+@keyframes ecf-client-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ecf-client-hero {
+    animation:
+      ecf-client-entrada 420ms ease-out both;
+  }
+
+  .ecf-client-stat {
+    animation:
+      ecf-client-entrada 380ms ease-out both;
+  }
+}
+
+/* ACCESIBILIDAD */
+@media (prefers-reduced-motion: reduce) {
+  .ecf-client *,
+  .ecf-client *::before,
+  .ecf-client *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .ecf-client a:hover,
+  .ecf-client a:active,
+  .ecf-client button:hover,
+  .ecf-client button:active,
+  .ecf-client-stat:hover,
+  .ecf-client-section article:hover {
+    transform: none !important;
+  }
+}
+
+/* PANTALLAS PEQUEÑAS */
+@media (max-width: 640px) {
+  .ecf-client-hero {
+    border-radius: 20px;
+  }
+
+  .ecf-client-section {
+    border-radius: 18px;
+  }
+}
+

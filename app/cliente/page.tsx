@@ -222,7 +222,7 @@ function TarjetaIndicador({
   icono: IconName;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-[#111c30] p-5 transition-colors hover:border-cyan-400/25">
+    <article className="ecf-client-stat rounded-2xl border border-white/10 bg-[#111c30] p-5 transition-colors hover:border-cyan-400/25">
       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
         <Icon name={icono} />
       </div>
@@ -546,8 +546,8 @@ async function ContenidoCliente() {
   const asistenciaPct =
     !errorSesiones && evaluadas > 0
       ? Math.round(
-          (realizadas / evaluadas) * 100
-        )
+        (realizadas / evaluadas) * 100
+      )
       : null;
 
   const primeraFecha =
@@ -555,18 +555,18 @@ async function ContenidoCliente() {
 
   const semanasConAsistencia = primeraFecha
     ? new Set(
-        sesiones
-          .filter(
-            (sesion) =>
-              sesion.estado === "realizada"
+      sesiones
+        .filter(
+          (sesion) =>
+            sesion.estado === "realizada"
+        )
+        .map((sesion) =>
+          numeroSemana(
+            sesion.fecha_programada,
+            primeraFecha
           )
-          .map((sesion) =>
-            numeroSemana(
-              sesion.fecha_programada,
-              primeraFecha
-            )
-          )
-      ).size
+        )
+    ).size
     : 0;
 
   const continuidadTexto =
@@ -602,12 +602,12 @@ async function ContenidoCliente() {
 
   const cumplimientoPct =
     !errorEjercicios &&
-    !errorSeries &&
-    seriesObjetivo > 0
+      !errorSeries &&
+      seriesObjetivo > 0
       ? Math.round(
-          (seriesCompletadas / seriesObjetivo) *
-            100
-        )
+        (seriesCompletadas / seriesObjetivo) *
+        100
+      )
       : null;
 
   // ============================================
@@ -666,14 +666,14 @@ async function ContenidoCliente() {
   // ============================================
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#080e1b] text-white">
+    <main className="ecf-client relative min-h-screen overflow-hidden bg-[#080e1b] text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-cyan-500/[0.06] blur-3xl"
       />
 
       {/* ENCABEZADO */}
-      <header className="relative z-10 border-b border-white/10 bg-[#0d1729]/95">
+      <header className="ecf-client-header relative z-50 border-b border-white/10 bg-[#0d1729]/95">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <Link
             href="/cliente"
@@ -697,39 +697,106 @@ async function ContenidoCliente() {
             </span>
           </Link>
 
-          <nav
-            aria-label="Navegación principal"
-            className="flex flex-wrap items-center gap-2"
-          >
-            <Link
-              href="/cliente/mi-rutina"
-              className="rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/10 sm:text-sm"
-            >
-              Mi rutina
-            </Link>
 
-            <Link
-              href="/cliente/perfil"
-              className="rounded-xl border border-white/10 px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/10 sm:text-sm"
-            >
-              Mi perfil
-            </Link>
+          {/* NAVEGACION PARA COMPUTADORAS */}
+          <nav
+            aria-label="Navegación principal del cliente"
+            className="hidden items-center gap-1 lg:flex"
+          >
+            {[
+              { href: "/cliente", texto: "Inicio" },
+              { href: "/cliente/mi-rutina", texto: "Mi rutina" },
+              { href: "#mi-calendario", texto: "Calendario" },
+              { href: "#mi-progreso", texto: "Mi progreso" },
+              { href: "/cliente/perfil", texto: "Mi perfil" },
+            ].map((enlace) => (
+              <Link
+                key={enlace.href}
+                href={enlace.href}
+                aria-current={
+                  enlace.href === "/cliente"
+                    ? "page"
+                    : undefined
+                }
+                className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${enlace.href === "/cliente"
+                    ? "bg-cyan-400/10 text-cyan-300"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  }`}
+              >
+                {enlace.texto}
+              </Link>
+            ))}
 
             <form action={cerrarSesion}>
               <button
                 type="submit"
-                className="rounded-xl border border-rose-400/20 px-3 py-2.5 text-xs font-semibold text-rose-300 hover:bg-rose-400/10 sm:text-sm"
+                className="ml-1 min-h-11 rounded-xl border border-rose-400/20 px-3 py-2.5 text-sm font-semibold text-rose-300 transition hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
               >
                 Cerrar sesión
               </button>
             </form>
           </nav>
+
+          {/* NAVEGACION PARA CELULAR Y TABLET */}
+          <details className="group relative shrink-0 lg:hidden">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+              <svg
+                viewBox="0 0 24 24"
+                width="19"
+                height="19"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+              Menú
+            </summary>
+
+            <nav
+              aria-label="Navegación móvil del cliente"
+              className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+            >
+              {[
+                { href: "/cliente", texto: "Inicio" },
+                { href: "/cliente/mi-rutina", texto: "Mi rutina" },
+                { href: "#mi-calendario", texto: "Calendario" },
+                { href: "#mis-ejercicios", texto: "Mis ejercicios" },
+                { href: "#mi-progreso", texto: "Mi progreso" },
+                { href: "#mi-historial", texto: "Historial" },
+                { href: "/cliente/perfil", texto: "Mi perfil" },
+              ].map((enlace) => (
+                <Link
+                  key={enlace.href}
+                  href={enlace.href}
+                  className="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-cyan-400/10 hover:text-cyan-300"
+                >
+                  {enlace.texto}
+                </Link>
+              ))}
+
+              <form
+                action={cerrarSesion}
+                className="mt-2 border-t border-white/10 pt-2"
+              >
+                <button
+                  type="submit"
+                  className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-300 hover:bg-rose-400/10"
+                >
+                  Cerrar sesión
+                </button>
+              </form>
+            </nav>
+          </details>
+
         </div>
       </header>
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-9 px-5 py-8 sm:px-8 sm:py-10">
         {/* BIENVENIDA */}
-        <section className="relative overflow-hidden rounded-3xl border border-cyan-400/10 bg-gradient-to-br from-[#14253d] via-[#111d31] to-[#17172f] p-6 sm:p-9">
+        <section className="ecf-client-hero relative overflow-hidden rounded-3xl border border-cyan-400/10 bg-gradient-to-br from-[#14253d] via-[#111d31] to-[#17172f] p-6 sm:p-9">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl"
@@ -876,7 +943,7 @@ async function ContenidoCliente() {
                 descripcion="Indicadores obtenidos de tus sesiones y registros confirmados."
               />
 
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 lg:gap-5">
                 <TarjetaIndicador
                   titulo="Sesiones del plan"
                   valor={
@@ -922,7 +989,7 @@ async function ContenidoCliente() {
             {/* PLAN DE ENTRENAMIENTO */}
             <section
               id="mi-rutina"
-              className="scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -950,8 +1017,8 @@ async function ContenidoCliente() {
                       ? "—"
                       : sesiones[0]
                         ? fechaBonita(
-                            sesiones[0].fecha_programada
-                          )
+                          sesiones[0].fecha_programada
+                        )
                         : "Pendiente",
                   },
                   {
@@ -960,10 +1027,10 @@ async function ContenidoCliente() {
                       ? "—"
                       : sesiones.length
                         ? fechaBonita(
-                            sesiones[
-                              sesiones.length - 1
-                            ].fecha_programada
-                          )
+                          sesiones[
+                            sesiones.length - 1
+                          ].fecha_programada
+                        )
                         : "Pendiente",
                   },
                   {
@@ -1003,7 +1070,7 @@ async function ContenidoCliente() {
             {/* CALENDARIO */}
             <section
               id="mi-calendario"
-              className="scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Organización"
@@ -1061,7 +1128,7 @@ async function ContenidoCliente() {
             {/* EJERCICIOS */}
             <section
               id="mis-ejercicios"
-              className="scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Preparación"
@@ -1118,35 +1185,35 @@ async function ContenidoCliente() {
 
                               {ejercicio.repeticiones_objetivo !==
                                 null && (
-                                <p className="mt-1 text-xs text-slate-400">
-                                  {
-                                    ejercicio.repeticiones_objetivo
-                                  }{" "}
-                                  repeticiones por serie
-                                </p>
-                              )}
+                                  <p className="mt-1 text-xs text-slate-400">
+                                    {
+                                      ejercicio.repeticiones_objetivo
+                                    }{" "}
+                                    repeticiones por serie
+                                  </p>
+                                )}
 
                               {ejercicio.duracion_objetivo_min !==
                                 null && (
-                                <p className="mt-1 text-xs text-slate-400">
-                                  Duración objetivo:{" "}
-                                  {
-                                    ejercicio.duracion_objetivo_min
-                                  }{" "}
-                                  min
-                                </p>
-                              )}
+                                  <p className="mt-1 text-xs text-slate-400">
+                                    Duración objetivo:{" "}
+                                    {
+                                      ejercicio.duracion_objetivo_min
+                                    }{" "}
+                                    min
+                                  </p>
+                                )}
 
                               {ejercicio.descanso_objetivo_seg !==
                                 null && (
-                                <p className="mt-1 text-xs text-slate-400">
-                                  Descanso:{" "}
-                                  {
-                                    ejercicio.descanso_objetivo_seg
-                                  }{" "}
-                                  segundos
-                                </p>
-                              )}
+                                  <p className="mt-1 text-xs text-slate-400">
+                                    Descanso:{" "}
+                                    {
+                                      ejercicio.descanso_objetivo_seg
+                                    }{" "}
+                                    segundos
+                                  </p>
+                                )}
                             </div>
                           </div>
                         </article>
@@ -1178,7 +1245,7 @@ async function ContenidoCliente() {
             {/* PROGRESO */}
             <section
               id="mi-progreso"
-              className="scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Seguimiento"
@@ -1273,7 +1340,7 @@ async function ContenidoCliente() {
             {/* HISTORIAL */}
             <section
               id="mi-historial"
-              className="scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Registro"
