@@ -191,14 +191,22 @@ function EstadoCarga() {
   );
 }
 
+
 async function ContenidoAdministrador({
-  busqueda,
-}: {
-  busqueda: string;
-}) {
+  searchParams,
+}: Props) {
   await connection();
 
+  // Leer los parametros dentro de Suspense.
+  const parametros = await searchParams;
+
+  const busqueda =
+    typeof parametros?.q === "string"
+      ? parametros.q.trim().slice(0, 60)
+      : "";
+
   const supabase = await createClient();
+
 
   // 1. Verificar sesion real.
   const { data: identidad, error: errorIdentidad } =
@@ -741,18 +749,16 @@ async function ContenidoAdministrador({
   );
 }
 
-export default async function AdministradorPage({
+
+export default function AdministradorPage({
   searchParams,
 }: Props) {
-  const parametros = await searchParams;
-  const busqueda =
-    typeof parametros?.q === "string"
-      ? parametros.q.trim().slice(0, 60)
-      : "";
-
   return (
     <Suspense fallback={<EstadoCarga />}>
-      <ContenidoAdministrador busqueda={busqueda} />
+      <ContenidoAdministrador
+        searchParams={searchParams}
+      />
     </Suspense>
   );
 }
+
