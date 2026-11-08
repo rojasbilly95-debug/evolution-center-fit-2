@@ -923,3 +923,276 @@ body {
   }
 }
 
+
+
+/* ============================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 110.16 - PERFIL DEL CLIENTE
+   ============================================ */
+
+/* FORMULARIO - CONTENEDOR */
+.ecf-profile .ecf-profile-content {
+  min-width: 0;
+}
+
+/* CINCO SECCIONES DEL FORMULARIO */
+.ecf-profile-content form > section {
+  min-width: 0;
+
+  border-radius: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+
+  background: linear-gradient(
+    145deg,
+    #172940,
+    #101c30
+  );
+
+  box-shadow:
+    0 16px 42px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* TITULOS DE LOS APARTADOS */
+.ecf-profile-content form > section h2 {
+  color: #f8fafc;
+
+  font-size: 1.2rem;
+  font-weight: 800;
+
+  letter-spacing: -0.025em;
+}
+
+/* ETIQUETAS DE CAMPOS */
+.ecf-profile-content form > section label {
+  color: #dce7f4;
+  font-weight: 600;
+}
+
+/* CAMPOS DE TEXTO Y NUMERICOS */
+.ecf-profile-content input:not([type="checkbox"]),
+.ecf-profile-content select,
+.ecf-profile-content textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+
+  border-radius: 13px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+
+  background: #0a1629;
+  color: #f8fafc;
+
+  padding: 12px 15px;
+
+  font-size: 14px;
+
+  color-scheme: dark;
+
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.12);
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.ecf-profile-content textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.ecf-profile-content input::placeholder,
+.ecf-profile-content textarea::placeholder {
+  color: #8292a9;
+}
+
+/* FOCO DE FORMULARIOS */
+.ecf-profile-content input:not([type="checkbox"]):focus,
+.ecf-profile-content select:focus,
+.ecf-profile-content textarea:focus {
+  outline: none;
+
+  background: #0d1b30;
+  border-color: #22d3ee;
+
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.13),
+    inset 0 1px 4px rgba(0, 0, 0, 0.10);
+}
+
+/* IMC ESTIMADO */
+.ecf-profile-content form > section:first-of-type > div:last-child {
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  border-radius: 16px;
+
+  background: linear-gradient(
+    120deg,
+    rgba(8, 70, 87, 0.28),
+    rgba(23, 43, 72, 0.85)
+  );
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.13);
+}
+
+/* OPCIONES DE EQUIPAMIENTO */
+.ecf-profile-content form > section:nth-of-type(4) label {
+  min-width: 0;
+
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+
+  background: linear-gradient(
+    145deg,
+    rgba(23, 41, 65, 0.98),
+    rgba(13, 27, 46, 0.98)
+  );
+
+  box-shadow:
+    0 7px 20px rgba(0, 0, 0, 0.12);
+
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+/* EQUIPO SELECCIONADO */
+.ecf-profile-content form > section:nth-of-type(4) label:has(
+  input[type="checkbox"]:checked
+) {
+  border-color: rgba(34, 211, 238, 0.48);
+
+  background: linear-gradient(
+    120deg,
+    rgba(8, 87, 107, 0.32),
+    rgba(13, 34, 53, 0.98)
+  );
+
+  box-shadow:
+    0 9px 25px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(34, 211, 238, 0.08);
+}
+
+.ecf-profile-content input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+  cursor: pointer;
+
+  accent-color: #22d3ee;
+}
+
+/* BOTON GUARDAR */
+.ecf-profile-content form > button[type="submit"] {
+  min-height: 56px;
+
+  border-radius: 16px;
+
+  background: linear-gradient(
+    100deg,
+    #22d3ee,
+    #2dd4bf
+  );
+
+  color: #07121e;
+  font-size: 15px;
+  font-weight: 800;
+
+  box-shadow:
+    0 12px 32px rgba(6, 182, 212, 0.22);
+
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    box-shadow 180ms ease;
+}
+
+/* BOTON DESHABILITADO */
+.ecf-profile-content form > button[type="submit"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+/* ACCESIBILIDAD */
+.ecf-profile-content button:focus-visible,
+.ecf-profile-content input[type="checkbox"]:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+/* MENSAJES DE ERROR Y EXITO */
+.ecf-profile-content [role="alert"],
+.ecf-profile-content [role="status"] {
+  border-radius: 15px;
+  padding: 17px 19px;
+
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.13);
+}
+
+/* MICROINTERACCIONES */
+@media (hover: hover) and (pointer: fine) {
+  .ecf-profile-content form > section:hover {
+    border-color: rgba(34, 211, 238, 0.25);
+
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.25);
+  }
+
+  .ecf-profile-content form > section:nth-of-type(4) label:hover {
+    border-color: rgba(34, 211, 238, 0.36);
+    transform: translateY(-2px);
+  }
+
+  .ecf-profile-content form > button[type="submit"]:not(:disabled):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+
+    box-shadow:
+      0 16px 38px rgba(6, 182, 212, 0.30);
+  }
+}
+
+.ecf-profile-content form > button[type="submit"]:not(:disabled):active {
+  transform: scale(0.99);
+}
+
+/* AJUSTE PARA CELULARES */
+@media (max-width: 640px) {
+  .ecf-profile-content form > section {
+    border-radius: 18px;
+    padding: 20px;
+  }
+
+  .ecf-profile-content form > section h2 {
+    font-size: 1.08rem;
+  }
+}
+
+/* MOVIMIENTO REDUCIDO */
+@media (prefers-reduced-motion: reduce) {
+  .ecf-profile-content *,
+  .ecf-profile-content *::before,
+  .ecf-profile-content *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .ecf-profile-content form > section:nth-of-type(4) label:hover,
+  .ecf-profile-content form > button[type="submit"]:hover,
+  .ecf-profile-content form > button[type="submit"]:active {
+    transform: none !important;
+  }
+}
+
