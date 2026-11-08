@@ -594,6 +594,13 @@ async function ContenidoEntrenadores({
             </Link>
 
             <Link
+              href="/administrador/entrenadores/asignar"
+              className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-200 hover:bg-emerald-400/20"
+            >
+              + Asignar entrenador
+            </Link>
+
+            <Link
               href="/administrador/usuarios/nuevo"
               className="rounded-xl border border-cyan-400/25 bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/20"
             >
