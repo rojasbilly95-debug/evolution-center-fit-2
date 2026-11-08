@@ -227,7 +227,7 @@ export default function ResumenCumplimiento({
 
   return (
     <section
-      className="mt-3 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-3 sm:p-4"
+      className="ecf-compliance mt-3 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-3 sm:p-4"
       aria-label={`Cumplimiento de la sesión ${sesionId}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -294,7 +294,7 @@ export default function ResumenCumplimiento({
 
             {/* INDICADORES PRINCIPALES */}
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="ecf-compliance-grid grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
                 {
                   nombre: "Ejercicios",
@@ -319,7 +319,7 @@ export default function ResumenCumplimiento({
               ].map((dato) => (
                 <div
                   key={dato.nombre}
-                  className="rounded-lg border border-white/10 bg-slate-900/60 p-3 text-center"
+                  className="ecf-compliance-stat rounded-lg border border-white/10 bg-slate-900/60 p-3 text-center"
                 >
                   <p className="text-lg font-bold text-white">
                     {dato.valor}
@@ -340,7 +340,7 @@ export default function ResumenCumplimiento({
               medicion === "sin_evidencia" ||
               medicion === "verificada"
             ) && (
-              <div className="space-y-3 rounded-lg border border-white/10 bg-slate-900/40 p-3">
+              <div className="ecf-compliance-bars space-y-3 rounded-lg border border-white/10 bg-slate-900/40 p-3">
                 <Barra
                   etiqueta="Cobertura de registros"
                   valor={

@@ -491,3 +491,241 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* =============================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 110.11 - CUMPLIMIENTO Y ADHERENCIA
+   ============================================= */
+
+/* PANELES PRINCIPALES */
+.ecf-compliance,
+.ecf-adherence {
+  min-width: 0;
+  container-type: inline-size;
+  border-radius: 20px;
+  border-color: rgba(34, 211, 238, 0.17);
+
+  background: linear-gradient(
+    145deg,
+    #15273e 0%,
+    #0c192c 100%
+  );
+
+  box-shadow:
+    0 16px 42px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* TARJETAS ESTADISTICAS */
+.ecf-compliance-stat,
+.ecf-adherence-metric {
+  min-width: 0;
+  border-radius: 15px;
+  padding: 16px;
+
+  background: linear-gradient(
+    150deg,
+    rgba(28, 49, 75, 0.98),
+    rgba(15, 29, 49, 0.98)
+  );
+
+  border-color: rgba(148, 163, 184, 0.15);
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+
+/* NUMEROS DE INDICADORES */
+.ecf-compliance-stat > p:first-child {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.ecf-adherence-metric > p:nth-child(2) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* BARRAS DE PROGRESO */
+.ecf-compliance-bars {
+  border-radius: 15px;
+  padding: 16px;
+
+  background: rgba(8, 19, 35, 0.65);
+  border-color: rgba(148, 163, 184, 0.13);
+}
+
+.ecf-compliance-bars .bg-cyan-400,
+.ecf-adherence-metric .bg-cyan-400 {
+  background: linear-gradient(
+    90deg,
+    #06b6d4,
+    #22d3ee,
+    #67e8f9
+  );
+
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.20);
+}
+
+/* TARJETAS DE SEMANAS */
+.ecf-week-card {
+  min-width: 0;
+  border-radius: 14px;
+  padding: 16px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(25, 43, 67, 0.95),
+    rgba(12, 27, 46, 0.95)
+  );
+
+  border-color: rgba(148, 163, 184, 0.14);
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.13);
+
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* EXPORTACION DE REGISTROS */
+.ecf-export-panel {
+  border-radius: 18px;
+
+  background: linear-gradient(
+    120deg,
+    rgba(8, 64, 83, 0.33),
+    rgba(25, 30, 61, 0.62)
+  );
+
+  border-color: rgba(34, 211, 238, 0.18);
+
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* BOTONES DE ACTUALIZACION */
+.ecf-compliance button,
+.ecf-adherence button {
+  min-height: 42px;
+  border-radius: 11px;
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+/* ENLACES DE EXPORTACION */
+.ecf-adherence .ecf-export-panel a {
+  border-radius: 12px;
+  min-height: 44px;
+
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+/* ADAPTACION AL ANCHO DE CADA PANEL */
+.ecf-compliance-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ecf-adherence-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ecf-week-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@container (max-width: 340px) {
+  .ecf-compliance-grid,
+  .ecf-week-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container (min-width: 560px) {
+  .ecf-compliance-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ecf-week-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 740px) {
+  .ecf-adherence-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ecf-week-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* EFECTOS DE MOUSE */
+@media (hover: hover) and (pointer: fine) {
+  .ecf-compliance-stat:hover,
+  .ecf-adherence-metric:hover,
+  .ecf-week-card:hover {
+    transform: translateY(-3px);
+
+    border-color: rgba(34, 211, 238, 0.35);
+
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.25);
+  }
+
+  .ecf-compliance button:not(:disabled):hover,
+  .ecf-adherence button:not(:disabled):hover,
+  .ecf-export-panel a:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* PRESION Y ACCESIBILIDAD */
+.ecf-compliance button:not(:disabled):active,
+.ecf-adherence button:not(:disabled):active,
+.ecf-export-panel a:active {
+  transform: scale(0.98);
+}
+
+.ecf-compliance button:focus-visible,
+.ecf-adherence button:focus-visible,
+.ecf-export-panel a:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+}
+
+/* RESPETAR MOVIMIENTO REDUCIDO */
+@media (prefers-reduced-motion: reduce) {
+  .ecf-compliance *,
+  .ecf-adherence * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .ecf-compliance-stat:hover,
+  .ecf-adherence-metric:hover,
+  .ecf-week-card:hover,
+  .ecf-compliance button:hover,
+  .ecf-adherence button:hover,
+  .ecf-export-panel a:hover {
+    transform: none !important;
+  }
+}

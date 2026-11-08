@@ -109,7 +109,7 @@ function Tarjeta({
   definitivo: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-slate-900/70 p-3">
+    <div className="ecf-adherence-metric rounded-xl border border-white/10 bg-slate-900/70 p-3">
       <p className="text-xs font-semibold text-slate-300">
         {titulo}
       </p>
@@ -292,7 +292,7 @@ export default function ResumenAdherencia({
 
   return (
     <section
-      className="mt-4 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-4"
+      className="ecf-adherence mt-4 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-4"
       aria-label="Adherencia del plan"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -363,7 +363,7 @@ export default function ResumenAdherencia({
 
             {/* TRES DIMENSIONES */}
 
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="ecf-adherence-grid grid gap-3 md:grid-cols-3">
               <Tarjeta
                 titulo="Asistencia"
                 valor={
@@ -449,12 +449,12 @@ export default function ResumenAdherencia({
                 Continuidad por semana
               </p>
 
-              <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="ecf-week-grid mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {continuidad.semanas.map(
                   (semana) => (
                     <div
                       key={semana.numero}
-                      className="rounded-lg border border-white/10 bg-slate-900/50 p-3"
+                      className="ecf-week-card rounded-lg border border-white/10 bg-slate-900/50 p-3"
                     >
                       <p className="text-xs font-bold text-white">
                         Semana {semana.numero}
@@ -484,7 +484,7 @@ export default function ResumenAdherencia({
 
             {/* PASO 65.10: EXPORTACION CSV */}
 
-            <div className="rounded-xl border border-cyan-400/20 bg-slate-900/60 p-4">
+            <div className="ecf-export-panel rounded-xl border border-cyan-400/20 bg-slate-900/60 p-4">
               <p className="text-sm font-semibold text-white">
                 Exportar registros para análisis estadístico
               </p>
