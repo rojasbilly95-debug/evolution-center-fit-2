@@ -6,7 +6,9 @@ import { Suspense, type ReactNode } from "react";
 
 import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
+import ProgresoCliente from "./progreso-cliente";
 import CalendarioCliente from "./calendario-cliente";
+
 
 type Asignacion = {
   id: number;
@@ -1248,100 +1250,364 @@ async function ContenidoCliente() {
               </div>
             </section>
 
-            {/* PROGRESO */}
+
+            {/* ============================================
+    FASE 110.15 - MI PROGRESO PROFESIONAL
+    ============================================ */}
+
             <section
               id="mi-progreso"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.22)] sm:p-8"
             >
               <EncabezadoSeccion
-                etiqueta="Seguimiento"
+                etiqueta="Seguimiento personalizado"
                 titulo="Mi progreso"
-                descripcion="Adherencia calculada con registros confirmados, sin contar sesiones futuras como ausencias."
+                descripcion="Consulta tu asistencia, cumplimiento y continuidad mediante registros confirmados, sin considerar automáticamente las sesiones futuras como ausencias."
               />
 
-              <div className="grid gap-4 lg:grid-cols-3">
+              {/* TRES DIMENSIONES DE ADHERENCIA */}
+              <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3">
+
+                {/* ASISTENCIA Y CUMPLIMIENTO */}
                 {[
                   {
                     titulo: "Asistencia",
+                    subtitulo: "Sesiones con resultado confirmado",
                     valor: asistenciaPct,
                     detalle: `${realizadas} realizadas · ${ausencias} ausencias confirmadas`,
+                    color: "cyan" as const,
+                    icono: (
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-6 w-6"
+                      >
+                        <rect x="3" y="5" width="18" height="16" rx="2" />
+                        <path d="M8 3v4M16 3v4M3 10h18" />
+                        <path d="m8 15 3 3 5-5" />
+                      </svg>
+                    ),
                   },
                   {
                     titulo: "Cumplimiento de series",
+                    subtitulo: "Objetivos completados durante las sesiones",
                     valor: cumplimientoPct,
                     detalle:
                       cumplimientoPct === null
-                        ? "Pendiente de sesiones realizadas con objetivos registrados"
+                        ? "Pendiente de sesiones realizadas con objetivos registrados."
                         : `${seriesCompletadas} de ${seriesObjetivo} series completadas`,
+                    color: "violet" as const,
+                    icono: (
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-6 w-6"
+                      >
+                        <path d="m6.5 6.5 11 11M4 9l5-5M15 20l5-5M2 7l5-5M17 22l5-5" />
+                      </svg>
+                    ),
                   },
-                ].map((indicador) => (
-                  <article
-                    key={indicador.titulo}
-                    className="rounded-2xl border border-white/10 bg-[#091527] p-5"
-                  >
-                    <p className="text-sm font-semibold text-slate-300">
-                      {indicador.titulo}
-                    </p>
+                ].map((indicador) => {
+                  const esCyan = indicador.color === "cyan";
 
-                    <p className="mt-3 text-3xl font-black text-cyan-300">
-                      {indicador.valor === null
-                        ? "Sin datos"
-                        : `${indicador.valor}%`}
-                    </p>
+                  const colorTexto = esCyan
+                    ? "text-cyan-300"
+                    : "text-violet-300";
 
-                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-                      {indicador.valor !== null && (
-                        <div
-                          className="h-full rounded-full bg-cyan-400"
-                          style={{
-                            width: `${Math.max(
-                              0,
-                              Math.min(
-                                100,
-                                indicador.valor
-                              )
-                            )}%`,
-                          }}
-                        />
-                      )}
-                    </div>
+                  const colorIcono = esCyan
+                    ? "bg-cyan-400/10 text-cyan-300"
+                    : "bg-violet-400/10 text-violet-300";
 
-                    <p className="mt-3 text-xs leading-5 text-slate-400">
-                      {indicador.detalle}
-                    </p>
-                  </article>
-                ))}
+                  const colorBarra = esCyan
+                    ? "from-cyan-500 to-cyan-300"
+                    : "from-violet-500 to-violet-300";
 
-                <article className="rounded-2xl border border-white/10 bg-[#091527] p-5">
-                  <p className="text-sm font-semibold text-slate-300">
+                  const porcentaje =
+                    indicador.valor === null
+                      ? null
+                      : Math.max(
+                        0,
+                        Math.min(100, indicador.valor)
+                      );
+
+                  return (
+                    <article
+                      key={indicador.titulo}
+                      className="group flex min-w-0 flex-col rounded-2xl border border-white/10 bg-gradient-to-br from-[#192d45] to-[#0c192d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:p-6"
+                    >
+                      {/* ICONO Y ESTADO */}
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <span
+                          className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colorIcono}`}
+                        >
+                          {indicador.icono}
+                        </span>
+
+                        <span
+                          className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${porcentaje === null
+                              ? "border-white/10 bg-white/5 text-slate-400"
+                              : "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                            }`}
+                        >
+                          {porcentaje === null
+                            ? "Pendiente"
+                            : "Con evidencia"}
+                        </span>
+                      </div>
+
+                      {/* TITULO */}
+                      <h3 className="mt-5 text-base font-bold text-white">
+                        {indicador.titulo}
+                      </h3>
+
+                      <p className="mt-1 min-h-10 text-xs leading-5 text-slate-400">
+                        {indicador.subtitulo}
+                      </p>
+
+                      {/* VALOR */}
+                      <p
+                        className={`mt-4 text-3xl font-black tracking-tight tabular-nums sm:text-4xl ${colorTexto}`}
+                      >
+                        {porcentaje === null
+                          ? "Sin datos"
+                          : `${indicador.valor}%`}
+                      </p>
+
+                      {/* BARRA DE PROGRESO */}
+                      <div className="mt-5">
+                        {porcentaje !== null ? (
+                          <div
+                            role="progressbar"
+                            aria-label={indicador.titulo}
+                            aria-valuenow={porcentaje}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            className="h-2.5 overflow-hidden rounded-full bg-[#071321]"
+                          >
+                            <div
+                              className={`h-full rounded-full bg-gradient-to-r ${colorBarra} transition-[width] duration-500 motion-reduce:transition-none`}
+                              style={{
+                                width: `${porcentaje}%`,
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            aria-label="Todavía no hay datos para calcular este indicador"
+                            className="h-2.5 rounded-full border border-dashed border-white/15 bg-[#071321]"
+                          />
+                        )}
+                      </div>
+
+                      {/* DESCRIPCION */}
+                      <div className="mt-auto pt-5">
+                        <p className="border-t border-white/10 pt-4 text-xs leading-6 text-slate-300">
+                          {indicador.detalle}
+                        </p>
+                      </div>
+                    </article>
+                  );
+                })}
+
+                {/* CONTINUIDAD */}
+                <article className="group flex min-w-0 flex-col rounded-2xl border border-white/10 bg-gradient-to-br from-[#192d45] to-[#0c192d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-emerald-400/25 hover:shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:p-6">
+
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-300">
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-6 w-6"
+                      >
+                        <path d="M3 3v18h18" />
+                        <path d="m7 16 4-5 3 2 5-7" />
+                      </svg>
+                    </span>
+
+                    <span
+                      className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${continuidadTexto === "Sin datos"
+                          ? "border-white/10 bg-white/5 text-slate-400"
+                          : "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                        }`}
+                    >
+                      {continuidadTexto === "Sin datos"
+                        ? "Pendiente"
+                        : "Con evidencia"}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-5 text-base font-bold text-white">
                     Continuidad
+                  </h3>
+
+                  <p className="mt-1 min-h-10 text-xs leading-5 text-slate-400">
+                    Regularidad semanal de tus entrenamientos
                   </p>
 
-                  <p className="mt-3 text-3xl font-black text-cyan-300">
+                  <p className="mt-4 break-words text-3xl font-black tracking-tight text-emerald-300 sm:text-4xl">
                     {continuidadTexto}
                   </p>
 
-                  <p className="mt-3 text-xs leading-5 text-slate-400">
-                    Semanas con al menos una sesión
-                    realizada.
-                  </p>
+                  {/* LA CONTINUIDAD NO SE CONVIERTE
+          ARTIFICIALMENTE A PORCENTAJE */}
+                  <div className="mt-5 flex h-2.5 items-center gap-1">
+                    {Array.from({ length: 12 }).map((_, indice) => (
+                      <span
+                        key={indice}
+                        className={`h-2.5 min-w-0 flex-1 rounded-full ${continuidadTexto !== "Sin datos" &&
+                            indice < semanasConAsistencia
+                            ? "bg-emerald-400"
+                            : "bg-white/10"
+                          }`}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="mt-auto pt-5">
+                    <p className="border-t border-white/10 pt-4 text-xs leading-6 text-slate-300">
+                      {continuidadTexto === "Sin datos"
+                        ? "La continuidad se mostrará cuando existan sesiones con resultados confirmados."
+                        : "Semanas con al menos una sesión realizada."}
+                    </p>
+                  </div>
                 </article>
               </div>
 
+              {/* EVIDENCIAS DEL ENTRENAMIENTO */}
+              <div className="mt-6 rounded-2xl border border-white/10 bg-gradient-to-r from-[#14273e] to-[#101a2e] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.15)] sm:p-6">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-bold text-white">
+                      Evidencias del entrenamiento
+                    </h3>
+
+                    <p className="mt-2 text-xs leading-6 text-slate-400">
+                      Registros utilizados para evaluar tu asistencia.
+                    </p>
+                  </div>
+
+                  <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-200">
+                    {realizadas + ausencias} evaluadas
+                  </span>
+                </div>
+
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {[
+                    {
+                      titulo: "Sesiones realizadas",
+                      valor: realizadas,
+                      color: "text-emerald-300",
+                    },
+                    {
+                      titulo: "Ausencias confirmadas",
+                      valor: ausencias,
+                      color: "text-rose-300",
+                    },
+                    {
+                      titulo: "Sesiones evaluadas",
+                      valor: realizadas + ausencias,
+                      color: "text-cyan-300",
+                    },
+                  ].map((dato) => (
+                    <div
+                      key={dato.titulo}
+                      className="rounded-xl border border-white/[0.07] bg-[#081525]/80 p-4"
+                    >
+                      <p className="text-xs leading-5 text-slate-400">
+                        {dato.titulo}
+                      </p>
+
+                      <p
+                        className={`mt-2 text-2xl font-extrabold tabular-nums ${dato.color}`}
+                      >
+                        {dato.valor}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SESIONES PENDIENTES DE CONFIRMACION */}
               {pendientesVencidas > 0 && (
-                <p className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200">
-                  Hay {pendientesVencidas} sesiones
-                  vencidas que requieren confirmación
-                  del entrenador.
-                </p>
+                <div
+                  role="status"
+                  className="mt-5 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-200"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mt-0.5 h-5 w-5 shrink-0"
+                  >
+                    <path d="M12 3 2 21h20L12 3Z" />
+                    <path d="M12 9v5M12 18h.01" />
+                  </svg>
+
+                  <p>
+                    Hay <strong>{pendientesVencidas}</strong>{" "}
+                    sesiones con fecha pasada que todavía
+                    requieren confirmación del entrenador.
+                    No se consideran ausencias automáticamente.
+                  </p>
+                </div>
               )}
 
+              {/* SESIONES EN CURSO */}
               {enCurso > 0 && (
-                <p className="mt-4 text-sm text-cyan-300">
-                  Tienes {enCurso} sesión(es) en curso.
-                </p>
+                <div
+                  role="status"
+                  className="mt-4 flex items-start gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] p-4 text-sm leading-6 text-cyan-200"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mt-0.5 h-5 w-5 shrink-0"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+
+                  <p>
+                    Tienes <strong>{enCurso}</strong>{" "}
+                    sesión(es) en curso.
+                  </p>
+                </div>
               )}
+
+              {/* NOTA METODOLOGICA */}
+              <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-6 text-slate-400">
+                Los indicadores se calculan utilizando los
+                registros confirmados del entrenamiento.
+                Las sesiones futuras no se consideran ausencias.
+                La asistencia, el cumplimiento y la continuidad
+                se presentan por separado.
+              </p>
             </section>
+
 
             {/* HISTORIAL */}
             <section
