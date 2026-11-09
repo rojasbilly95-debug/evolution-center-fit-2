@@ -7,6 +7,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient as crearAdmin } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import TrazabilidadRevisiones from "./_components/trazabilidad-revisiones";
 import HistorialEvaluaciones from "./_components/historial-evaluaciones";
 
 // ==================================================
@@ -1156,6 +1157,7 @@ async function Contenido({
 
         {vista === "revisiones" && (
           <>
+            <TrazabilidadRevisiones />
             <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
               <h2 className="text-xl font-bold">
                 Buscar decisiones

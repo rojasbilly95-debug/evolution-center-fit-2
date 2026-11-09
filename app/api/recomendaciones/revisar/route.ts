@@ -1,6 +1,7 @@
 import { bloqueoIAEstudio } from "@/lib/investigacion/bloqueo-ia-estudio";
 
 import { NextResponse } from "next/server";
+import { registrarRevisionIA } from "@/lib/ia/registrar-revision-ia";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 
@@ -648,6 +649,14 @@ export async function POST(request: Request) {
     // 11. RESPUESTA FINAL
     // =====================================
 
+    // FASE 111.17.4
+    // Registrar la reevaluacion que produjo
+    // esta revision. No altera la decision.
+
+    await registrarRevisionIA({
+      revisionId: revision.id,
+      elegible: evaluacion.elegible,
+    });
     return NextResponse.json(
       {
         mensaje:
