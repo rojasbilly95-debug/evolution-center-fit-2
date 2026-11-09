@@ -731,7 +731,7 @@ async function ContenidoAdministrador({
         "Consultar los estados generales de las sesiones.",
       tipo: "sesiones" as const,
       estado: "Disponible" as const,
-      href: "#sesiones",
+      href: "/administrador/entrenamientos",
     },
     {
       titulo: "Asignaciones de entrenadores",
