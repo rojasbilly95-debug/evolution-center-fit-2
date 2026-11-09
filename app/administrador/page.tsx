@@ -723,7 +723,7 @@ async function ContenidoAdministrador({
         "Consultar ejercicios y rutinas del sistema.",
       tipo: "rutinas" as const,
       estado: "Disponible" as const,
-      href: "/catalogo",
+      href: "/administrador/catalogo",
     },
     {
       titulo: "Supervisión de sesiones",
