@@ -68,6 +68,10 @@ const SECCIONES: {
         texto: "Supervisión IA",
         href: "/administrador/ia",
       },
+      {
+        texto: "Reportes",
+        href: "/administrador/reportes",
+      },
     ],
   },
 ];
