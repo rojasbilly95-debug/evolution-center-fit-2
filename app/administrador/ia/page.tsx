@@ -7,6 +7,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient as crearAdmin } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import HistorialEvaluaciones from "./_components/historial-evaluaciones";
 
 // ==================================================
 // EVOLUTION CENTER FIT 2.0
@@ -1104,98 +1105,49 @@ async function Contenido({
         ====================================== */}
 
         {vista === "evaluaciones" && (
-          <>
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6 sm:p-8">
+          <div className="space-y-5">
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
               <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
                 Motor recomendador
               </p>
 
-              <h2 className="mt-2 text-2xl font-black">
-                Historial de evaluaciones IA
+              <h2 className="mt-3 text-2xl font-black">
+                Evaluaciones reales de inteligencia artificial
               </h2>
 
-              <p className="mt-4 text-sm leading-7 text-slate-300">
-                El motor evalúa compatibilidad de
-                rutinas, pero todavía no se ha
-                confirmado un registro persistente
-                de cada solicitud y su resultado.
+              <p className="mt-3 text-sm leading-7 text-slate-300">
+                Historial de llamadas registradas
+                desde el endpoint del entrenador.
+                Los eventos empiezan a almacenarse
+                cuando se activa la auditoria.
               </p>
-
-              <Aviso titulo="Historial de ejecuciones pendiente">
-                No mostraremos un número inventado
-                de evaluaciones ni una tasa de
-                éxito calculada a partir de las
-                aprobaciones del entrenador.
-
-                Para disponer de esas métricas
-                tendremos que registrar los eventos
-                reales de cada ejecución del motor.
-              </Aviso>
-
-              <div className="mt-6 grid gap-3 md:grid-cols-3">
-                <div className="rounded-xl bg-[#081728] p-5">
-                  <p className="text-sm font-bold">
-                    Solicitud
-                  </p>
-
-                  <p className="mt-2 text-xs leading-6 text-slate-400">
-                    Cliente, grupo, fecha y
-                    entrenador responsable.
-                  </p>
-                </div>
-
-                <div className="rounded-xl bg-[#081728] p-5">
-                  <p className="text-sm font-bold">
-                    Evaluación
-                  </p>
-
-                  <p className="mt-2 text-xs leading-6 text-slate-400">
-                    Elegibilidad, puntaje,
-                    método y rutinas candidatas.
-                  </p>
-                </div>
-
-                <div className="rounded-xl bg-[#081728] p-5">
-                  <p className="text-sm font-bold">
-                    Resultado técnico
-                  </p>
-
-                  <p className="mt-2 text-xs leading-6 text-slate-400">
-                    Éxito, rechazo, error,
-                    código y duración.
-                  </p>
-                </div>
-              </div>
             </section>
+
+            <HistorialEvaluaciones />
 
             <section className="grid gap-4 md:grid-cols-2">
-              <article className="rounded-2xl border border-cyan-400/20 bg-[#112039] p-6">
-                <h3 className="text-lg font-bold text-cyan-200">
-                  Grupo experimental · GE
+              <article className="rounded-2xl border border-cyan-400/20 bg-[#112039] p-5">
+                <h3 className="font-bold text-cyan-200">
+                  Grupo experimental (GE)
                 </h3>
-
-                <p className="mt-3 text-sm leading-7 text-slate-300">
-                  Las evaluaciones del motor
-                  corresponden al tratamiento
-                  experimental, sujeto a las reglas
-                  de inscripción y permisos.
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Las evaluaciones estan sujetas
+                  a los permisos y fechas del estudio.
                 </p>
               </article>
 
-              <article className="rounded-2xl border border-white/10 bg-[#112039] p-6">
-                <h3 className="text-lg font-bold">
-                  Grupo control · GC
+              <article className="rounded-2xl border border-white/10 bg-[#112039] p-5">
+                <h3 className="font-bold text-white">
+                  Grupo control (GC)
                 </h3>
-
-                <p className="mt-3 text-sm leading-7 text-slate-300">
-                  Se conserva el procedimiento
-                  habitual. Este panel no ofrece
-                  una acción para ejecutar IA
-                  sobre sus participantes.
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Mantiene el procedimiento manual.
+                  No se registran evaluaciones IA
+                  atribuidas a este grupo.
                 </p>
               </article>
             </section>
-          </>
+          </div>
         )}
 
         {/* ======================================
