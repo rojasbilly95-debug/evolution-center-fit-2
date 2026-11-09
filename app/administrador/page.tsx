@@ -862,7 +862,13 @@ async function ContenidoAdministrador({
                 Cerrar sesión
               </button>
             </form>
-          </nav>
+                      <Link
+              href="/administrador/ia"
+              className="rounded-xl px-3 py-2.5 text-slate-300 hover:bg-white/10 hover:text-white"
+            >
+              Supervisión IA
+            </Link>
+</nav>
         </div>
       </header>
 
