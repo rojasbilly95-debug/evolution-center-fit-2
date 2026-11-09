@@ -8,11 +8,22 @@ import { Suspense } from "react";
 import { createClient as crearAdmin } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
-// EVOLUTION CENTER FIT 2.0 - FASE 111.17
-// Supervisión de IA y revisiones. Solo lectura.
+// ==================================================
+// EVOLUTION CENTER FIT 2.0
+// FASE 111.17.1
+// CENTRO PROFESIONAL DE SUPERVISION IA
+// SOLO LECTURA - PROTECCION GE / GC
+// ==================================================
 
 const RUTA = "/administrador/ia";
 const POR_PAGINA = 10;
+
+const VISTAS = [
+  "resumen",
+  "evaluaciones",
+  "revisiones",
+  "monitor",
+] as const;
 
 const DECISIONES = [
   "todas",
@@ -21,9 +32,13 @@ const DECISIONES = [
   "rechazada",
 ];
 
+type Vista = (typeof VISTAS)[number];
+
 type Props = {
   searchParams: Promise<{
+    vista?: string;
     decision?: string;
+    grupo?: string;
     entrenador?: string;
     pagina?: string;
   }>;
@@ -57,32 +72,33 @@ type Participante = {
 };
 
 type Salud = {
-  estado:
-    | "operativo"
-    | "sin_respuesta"
-    | "respuesta_invalida"
-    | "no_configurado";
-  detalle: string;
+  estado: "responde" | "error" | "configuracion";
+  descripcion: string;
   version: string | null;
-  duracionMs: number | null;
+  ms: number | null;
 };
 
-// ============================================
-// FUNCIONES AUXILIARES
-// ============================================
+const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function objeto(
+// ==================================================
+// UTILIDADES
+// ==================================================
+
+function esObjeto(
   valor: unknown
 ): valor is Record<string, unknown> {
   return (
-    valor !== null &&
     typeof valor === "object" &&
+    valor !== null &&
     !Array.isArray(valor)
   );
 }
 
-function paginaValida(valor?: string) {
-  if (!valor || !/^\d+$/.test(valor)) return 1;
+function numeroPagina(valor?: string) {
+  if (!valor || !/^\d+$/.test(valor)) {
+    return 1;
+  }
 
   const n = Number(valor);
 
@@ -105,142 +121,143 @@ function fechaLima(valor: string) {
   });
 }
 
-function etiquetaDecision(valor: string) {
-  const etiquetas: Record<string, string> = {
+function decisionTexto(valor: string) {
+  const nombres: Record<string, string> = {
     aprobada: "Aprobada",
     rechazada: "Rechazada",
     ajustes_solicitados: "Ajustes solicitados",
   };
 
-  return etiquetas[valor] ?? "Otra decisión";
+  return nombres[valor] ?? "Otra decisión";
 }
 
-function claseDecision(valor: string) {
-  if (valor === "aprobada") {
-    return "border-emerald-400/25 bg-emerald-400/10 text-emerald-200";
-  }
+function decisionClase(valor: string) {
+  switch (valor) {
+    case "aprobada":
+      return "border-emerald-400/25 bg-emerald-400/10 text-emerald-200";
 
-  if (valor === "rechazada") {
-    return "border-rose-400/25 bg-rose-400/10 text-rose-200";
-  }
+    case "rechazada":
+      return "border-rose-400/25 bg-rose-400/10 text-rose-200";
 
-  return "border-amber-400/25 bg-amber-400/10 text-amber-200";
+    default:
+      return "border-amber-400/25 bg-amber-400/10 text-amber-200";
+  }
 }
 
-// ============================================
-// ESTADO DEL MOTOR EN RENDER
-// ============================================
+// ==================================================
+// COMPROBAR RENDER
+// ==================================================
 
-async function consultarSalud(): Promise<Salud> {
+async function comprobarMotor(): Promise<Salud> {
   const origen = process.env.IA_SERVICE_URL;
 
   if (!origen) {
     return {
-      estado: "no_configurado",
-      detalle:
-        "IA_SERVICE_URL no está configurada en Vercel.",
+      estado: "configuracion",
+      descripcion:
+        "IA_SERVICE_URL no esta configurada en Vercel.",
       version: null,
-      duracionMs: null,
+      ms: null,
     };
   }
 
-  let destino: URL;
+  let url: URL;
 
   try {
     const base = new URL(origen);
 
-    const local =
-      base.hostname === "127.0.0.1" ||
-      base.hostname === "localhost";
+    const entornoLocal =
+      base.hostname === "localhost" ||
+      base.hostname === "127.0.0.1";
 
-    const protocoloValido =
+    const permitido =
       base.protocol === "https:" ||
       (
         process.env.NODE_ENV !== "production" &&
-        local &&
+        entornoLocal &&
         base.protocol === "http:"
       );
 
-    if (!protocoloValido) {
-      throw new Error("Protocolo no permitido");
+    if (!permitido) {
+      throw new Error("URL no permitida");
     }
 
-    destino = new URL("/health", base);
+    url = new URL("/health", base);
   } catch {
     return {
-      estado: "no_configurado",
-      detalle:
-        "La dirección del servicio IA no es válida para este entorno.",
+      estado: "configuracion",
+      descripcion:
+        "La URL del motor IA no es valida.",
       version: null,
-      duracionMs: null,
+      ms: null,
     };
   }
 
   const inicio = Date.now();
 
   try {
-    const respuesta = await fetch(destino, {
+    const respuesta = await fetch(url, {
       method: "GET",
       cache: "no-store",
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(15000),
       headers: {
         Accept: "application/json",
       },
     });
 
-    const duracionMs = Date.now() - inicio;
+    const ms = Date.now() - inicio;
 
     if (!respuesta.ok) {
       return {
-        estado: "sin_respuesta",
-        detalle:
-          `Render respondió con HTTP ${respuesta.status}.`,
+        estado: "error",
+        descripcion:
+          `Render respondio con HTTP ${respuesta.status}.`,
         version: null,
-        duracionMs,
+        ms,
       };
     }
 
-    const contenido: unknown =
+    const datos: unknown =
       await respuesta.json().catch(() => null);
 
     if (
-      !objeto(contenido) ||
-      contenido.estado !== "activo" ||
-      contenido.servicio !== "motor-recomendador"
+      !esObjeto(datos) ||
+      datos.estado !== "activo" ||
+      datos.servicio !== "motor-recomendador"
     ) {
       return {
-        estado: "respuesta_invalida",
-        detalle:
-          "El servicio respondió, pero no devolvió el estado esperado del motor.",
+        estado: "error",
+        descripcion:
+          "Render respondio, pero el estado no coincide con el esperado.",
         version: null,
-        duracionMs,
+        ms,
       };
     }
 
     return {
-      estado: "operativo",
-      detalle:
-        "El endpoint /health respondió correctamente.",
+      estado: "responde",
+      descripcion:
+        "El endpoint /health respondio correctamente.",
       version:
-        typeof contenido.version === "string"
-          ? contenido.version
+        typeof datos.version === "string"
+          ? datos.version
           : null,
-      duracionMs,
+      ms,
     };
   } catch {
     return {
-      estado: "sin_respuesta",
-      detalle:
-        "Sin respuesta antes de 12 segundos o error de conexión. Render podría estar iniciándose.",
+      estado: "error",
+      descripcion:
+        "No hubo respuesta dentro de 15 segundos o se produjo un error de conexion.",
       version: null,
-      duracionMs: Date.now() - inicio,
+      ms: Date.now() - inicio,
     };
   }
 }
 
-// ============================================
-// INDICADORES
-// ============================================
+// ==================================================
+// COMPONENTES VISUALES
+// ==================================================
 
 function Indicador({
   titulo,
@@ -252,12 +269,12 @@ function Indicador({
   detalle: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-[#14263f] p-5">
-      <p className="text-xs text-slate-400">
+    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1a304a] to-[#111e33] p-5">
+      <p className="text-sm font-medium text-slate-300">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums">
+      <p className="mt-3 text-3xl font-black tabular-nums text-white">
         {valor}
       </p>
 
@@ -268,154 +285,160 @@ function Indicador({
   );
 }
 
-function Cargando() {
+function EstadoCarga() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
-      Cargando supervisión de IA...
+      Cargando supervision del motor IA...
     </main>
   );
 }
 
-// ============================================
-// CONTENIDO PROTEGIDO
-// ============================================
+function Aviso({
+  titulo,
+  children,
+}: {
+  titulo: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5">
+      <h3 className="font-bold text-amber-200">
+        {titulo}
+      </h3>
+
+      <div className="mt-2 text-sm leading-7 text-slate-300">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+// ==================================================
+// CONTENIDO ADMINISTRATIVO
+// ==================================================
 
 async function Contenido({
   searchParams,
 }: Props) {
   await connection();
 
-  const parametros = await searchParams;
-  const sesion = await createClient();
+  const params = await searchParams;
+  const supabase = await createClient();
 
-  // ==========================================
-  // 1. COMPROBAR IDENTIDAD
-  // ==========================================
+  // ================================================
+  // 1. IDENTIDAD
+  // ================================================
 
   const {
     data: identidad,
     error: errorIdentidad,
-  } = await sesion.auth.getUser();
+  } = await supabase.auth.getUser();
 
   if (errorIdentidad || !identidad.user) {
     redirect("/login");
   }
 
-  // ==========================================
-  // 2. COMPROBAR ROL ADMINISTRADOR
-  // ==========================================
+  // ================================================
+  // 2. ROL ADMINISTRADOR
+  // ================================================
 
   const {
-    data: rol,
-    error: errorRol,
-  } = await sesion
+    data: acceso,
+    error: errorAcceso,
+  } = await supabase
     .from("usuario_roles")
     .select("rol")
     .eq("usuario_id", identidad.user.id)
     .maybeSingle();
 
   if (
-    errorRol ||
-    rol?.rol !== "administrador"
+    errorAcceso ||
+    acceso?.rol !== "administrador"
   ) {
     redirect("/administrador");
   }
 
-  // ==========================================
-  // 3. CONFIGURACION PRIVADA
-  // ==========================================
+  // ================================================
+  // 3. CLIENTE PRIVADO DE SERVIDOR
+  // ================================================
 
-  const supabaseUrl =
-    process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const clave = process.env.SUPABASE_SECRET_KEY;
 
-  const supabaseKey =
-    process.env.SUPABASE_SECRET_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
+  if (!url || !clave) {
     return (
       <main className="min-h-screen bg-[#080e1b] p-8 text-white">
-        Falta configurar la clave privada
-        de Supabase en Vercel.
+        <h1 className="text-xl font-bold">
+          Configuracion incompleta
+        </h1>
+
+        <p className="mt-3 text-amber-200">
+          Faltan credenciales privadas de Supabase
+          en el servidor de Vercel.
+        </p>
       </main>
     );
   }
 
-  const db = crearAdmin(
-    supabaseUrl,
-    supabaseKey,
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    }
-  );
+  const db = crearAdmin(url, clave, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 
-  // ==========================================
-  // 4. FILTROS
-  // ==========================================
+  // ================================================
+  // 4. PESTANA SELECCIONADA
+  // ================================================
+
+  const vista: Vista = VISTAS.includes(
+    params.vista as Vista
+  )
+    ? (params.vista as Vista)
+    : "resumen";
 
   const decision = DECISIONES.includes(
-    parametros.decision ?? ""
+    params.decision ?? ""
   )
-    ? parametros.decision!
+    ? params.decision!
     : "todas";
 
-  const entrenador =
-    typeof parametros.entrenador === "string" &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      parametros.entrenador
-    )
-      ? parametros.entrenador
+  const grupo =
+    params.grupo === "GE" ||
+    params.grupo === "GC"
+      ? params.grupo
       : "todos";
 
-  const pagina = paginaValida(
-    parametros.pagina
+  const entrenador =
+    typeof params.entrenador === "string" &&
+    UUID.test(params.entrenador)
+      ? params.entrenador
+      : "todos";
+
+  const pagina = numeroPagina(
+    params.pagina
   );
 
-  // ==========================================
-  // 5. CONSULTAR REVISIONES
-  // ==========================================
+  // Comprobar Render solo al abrir Resumen o Monitor.
+  // Así las otras pestañas no dependen de su latencia.
 
-  let consulta = db
-    .from("revisiones_rutinas")
-    .select(
-      "id,cliente_id,entrenador_id,rutina_id,decision,observaciones,puntaje_compatibilidad,metodo_motor,revisado_en",
-      { count: "exact" }
-    );
+  const promesaSalud =
+    vista === "resumen" || vista === "monitor"
+      ? comprobarMotor()
+      : Promise.resolve(null);
 
-  if (decision !== "todas") {
-    consulta = consulta.eq(
-      "decision",
-      decision
-    );
-  }
-
-  if (entrenador !== "todos") {
-    consulta = consulta.eq(
-      "entrenador_id",
-      entrenador
-    );
-  }
+  // ================================================
+  // 5. INDICADORES DE REVISIONES
+  // ================================================
 
   const [
-    salud,
-    historial,
-    total,
-    aprobadas,
-    rechazadas,
-    ajustes,
-    respuestaRoles,
+    rTotal,
+    rAprobadas,
+    rRechazadas,
+    rAjustes,
+    rParticipantes,
+    rEntrenadores,
   ] = await Promise.all([
-    consultarSalud(),
-
-    consulta
-      .order("id", { ascending: false })
-      .range(
-        (pagina - 1) * POR_PAGINA,
-        pagina * POR_PAGINA - 1
-      ),
-
     db
       .from("revisiones_rutinas")
       .select("id", {
@@ -448,6 +471,13 @@ async function Contenido({
       .eq("decision", "ajustes_solicitados"),
 
     db
+      .from("participantes_estudio")
+      .select("cliente_id,grupo_estudio", {
+        count: "exact",
+      })
+      .range(0, 999),
+
+    db
       .from("usuario_roles")
       .select("usuario_id", {
         count: "exact",
@@ -456,152 +486,253 @@ async function Contenido({
       .range(0, 199),
   ]);
 
-  if (
-    historial.error ||
-    total.error ||
-    aprobadas.error ||
-    rechazadas.error ||
-    ajustes.error ||
-    respuestaRoles.error
-  ) {
+  const errorGeneral =
+    rTotal.error ||
+    rAprobadas.error ||
+    rRechazadas.error ||
+    rAjustes.error;
+
+  if (errorGeneral) {
     return (
       <main className="min-h-screen bg-[#080e1b] p-8 text-white">
-        <Link
-          href="/administrador"
-          className="text-cyan-300"
-        >
-          ← Volver
-        </Link>
+        <h1 className="text-xl font-bold">
+          Error consultando revisiones
+        </h1>
 
-        <p
-          role="alert"
-          className="mt-6 text-amber-200"
-        >
-          No se pudieron consultar las
-          revisiones. Comprueba los permisos
-          y la estructura de Supabase.
+        <p className="mt-3 text-amber-200">
+          No se pudieron leer los indicadores
+          de revisiones_rutinas desde Supabase.
         </p>
       </main>
     );
   }
 
-  const revisiones =
-    (historial.data ?? []) as Revision[];
+  // ================================================
+  // 6. PARTICIPANTES GE / GC
+  // ================================================
+
+  const gruposVerificados =
+    !rParticipantes.error &&
+    rParticipantes.count !== null &&
+    rParticipantes.count ===
+      (rParticipantes.data?.length ?? 0);
+
+  const participantes =
+    gruposVerificados
+      ? (rParticipantes.data ?? []) as Participante[]
+      : [];
+
+  const mapaGrupos = new Map(
+    participantes.map((item) => [
+      item.cliente_id,
+      item.grupo_estudio,
+    ])
+  );
+
+  const idsGE = participantes
+    .filter((p) => p.grupo_estudio === "GE")
+    .map((p) => p.cliente_id);
+
+  const idsGC = participantes
+    .filter((p) => p.grupo_estudio === "GC")
+    .map((p) => p.cliente_id);
+
+  async function contarGrupo(ids: string[]) {
+    if (!gruposVerificados) {
+      return null;
+    }
+
+    if (ids.length === 0) {
+      return 0;
+    }
+
+    const resultado = await db
+      .from("revisiones_rutinas")
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
+      .in("cliente_id", ids);
+
+    return resultado.error
+      ? null
+      : resultado.count;
+  }
+
+  const [totalGE, totalGC] =
+    vista === "resumen"
+      ? await Promise.all([
+          contarGrupo(idsGE),
+          contarGrupo(idsGC),
+        ])
+      : [null, null];
+
+  // ================================================
+  // 7. HISTORIAL REAL
+  // ================================================
+
+  let revisiones: Revision[] = [];
+  let totalFiltrado = 0;
+  let errorHistorial = false;
+
+  const mostrarHistorial =
+    vista === "resumen" ||
+    vista === "revisiones";
+
+  if (mostrarHistorial) {
+    const grupoElegido =
+      vista === "revisiones" &&
+      grupo !== "todos" &&
+      gruposVerificados;
+
+    const idsGrupo =
+      grupo === "GE" ? idsGE : idsGC;
+
+    if (grupoElegido && idsGrupo.length === 0) {
+      revisiones = [];
+      totalFiltrado = 0;
+    } else {
+      let consulta = db
+        .from("revisiones_rutinas")
+        .select(
+          "id,cliente_id,entrenador_id,rutina_id,decision,observaciones,puntaje_compatibilidad,metodo_motor,revisado_en",
+          { count: "exact" }
+        );
+
+      if (vista === "revisiones") {
+        if (decision !== "todas") {
+          consulta = consulta.eq(
+            "decision",
+            decision
+          );
+        }
+
+        if (entrenador !== "todos") {
+          consulta = consulta.eq(
+            "entrenador_id",
+            entrenador
+          );
+        }
+
+        if (grupoElegido) {
+          consulta = consulta.in(
+            "cliente_id",
+            idsGrupo
+          );
+        }
+      }
+
+      const resultado = await consulta
+        .order("revisado_en", {
+          ascending: false,
+        })
+        .range(
+          vista === "resumen"
+            ? 0
+            : (pagina - 1) * POR_PAGINA,
+
+          vista === "resumen"
+            ? 3
+            : pagina * POR_PAGINA - 1
+        );
+
+      if (resultado.error) {
+        errorHistorial = true;
+      } else {
+        revisiones =
+          (resultado.data ?? []) as Revision[];
+
+        totalFiltrado =
+          resultado.count ?? revisiones.length;
+      }
+    }
+  }
+
+  // ================================================
+  // 8. NOMBRES Y RUTINAS
+  // ================================================
 
   const idsEntrenadores =
-    (respuestaRoles.data ?? []).map(
-      (x) => x.usuario_id as string
+    (rEntrenadores.data ?? []).map(
+      (item) => item.usuario_id as string
     );
-
-  const listaEntrenadoresParcial =
-    (respuestaRoles.count ?? 0) >
-    idsEntrenadores.length;
-
-  // ==========================================
-  // 6. CONSULTAR NOMBRES Y GRUPOS
-  // ==========================================
 
   const idsUsuarios = [
     ...new Set([
       ...idsEntrenadores,
-      ...revisiones.flatMap((x) => [
-        x.cliente_id,
-        x.entrenador_id,
+      ...revisiones.flatMap((item) => [
+        item.cliente_id,
+        item.entrenador_id,
       ]),
     ]),
   ];
 
   const idsRutinas = [
     ...new Set(
-      revisiones.map((x) => x.rutina_id)
+      revisiones.map((item) => item.rutina_id)
     ),
   ];
 
-  const idsClientes = [
-    ...new Set(
-      revisiones.map((x) => x.cliente_id)
-    ),
-  ];
+  const [respuestaUsuarios, respuestaRutinas] =
+    await Promise.all([
+      idsUsuarios.length
+        ? db
+            .from("usuarios")
+            .select("id,nombre_completo")
+            .in("id", idsUsuarios)
+        : Promise.resolve({
+            data: [],
+            error: null,
+          }),
 
-  const [
-    rUsuarios,
-    rRutinas,
-    rGrupos,
-  ] = await Promise.all([
-    idsUsuarios.length
-      ? db
-          .from("usuarios")
-          .select("id,nombre_completo")
-          .in("id", idsUsuarios)
-      : Promise.resolve({
-          data: [],
-          error: null,
-        }),
-
-    idsRutinas.length
-      ? db
-          .from("rutinas")
-          .select("id,nombre")
-          .in("id", idsRutinas)
-      : Promise.resolve({
-          data: [],
-          error: null,
-        }),
-
-    idsClientes.length
-      ? db
-          .from("participantes_estudio")
-          .select("cliente_id,grupo_estudio")
-          .in("cliente_id", idsClientes)
-      : Promise.resolve({
-          data: [],
-          error: null,
-        }),
-  ]);
-
-  const nombresDisponibles = !rUsuarios.error;
-  const rutinasDisponibles = !rRutinas.error;
-  const gruposDisponibles = !rGrupos.error;
+      idsRutinas.length
+        ? db
+            .from("rutinas")
+            .select("id,nombre")
+            .in("id", idsRutinas)
+        : Promise.resolve({
+            data: [],
+            error: null,
+          }),
+    ]);
 
   const nombres = new Map<string, string>(
-    ((rUsuarios.data ?? []) as Usuario[]).map(
-      (x) => [
-        x.id,
-        x.nombre_completo ?? "Sin nombre",
-      ]
-    )
+    (
+      (respuestaUsuarios.data ?? []) as Usuario[]
+    ).map((usuario) => [
+      usuario.id,
+      usuario.nombre_completo ??
+        "Usuario sin nombre",
+    ])
   );
 
   const nombresRutinas = new Map<number, string>(
-    ((rRutinas.data ?? []) as Rutina[]).map(
-      (x) => [
-        x.id,
-        x.nombre,
-      ]
-    )
+    (
+      (respuestaRutinas.data ?? []) as Rutina[]
+    ).map((rutina) => [
+      rutina.id,
+      rutina.nombre,
+    ])
   );
 
-  const grupos = new Map<string, string>(
-    ((rGrupos.data ?? []) as Participante[]).map(
-      (x) => [
-        x.cliente_id,
-        x.grupo_estudio,
-      ]
-    )
-  );
+  const salud = await promesaSalud;
 
-  const paginas = Math.max(
+  const totalPaginas = Math.max(
     1,
-    Math.ceil(
-      (historial.count ?? 0) / POR_PAGINA
-    )
+    Math.ceil(totalFiltrado / POR_PAGINA)
   );
 
-  function enlace(n: number) {
+  function enlacePagina(n: number) {
     const query = new URLSearchParams();
+
+    query.set("vista", "revisiones");
 
     if (decision !== "todas") {
       query.set("decision", decision);
+    }
+
+    if (grupo !== "todos") {
+      query.set("grupo", grupo);
     }
 
     if (entrenador !== "todos") {
@@ -613,405 +744,742 @@ async function Contenido({
     return `${RUTA}?${query.toString()}`;
   }
 
-  // ==========================================
-  // 7. INTERFAZ
-  // ==========================================
+  function tarjetaRevision(item: Revision) {
+    const grupoRegistro = gruposVerificados
+      ? mapaGrupos.get(item.cliente_id) ??
+        "Sin inscripción"
+      : "No verificado";
+
+    const tieneDatosIA =
+      item.puntaje_compatibilidad !== null ||
+      Boolean(item.metodo_motor);
+
+    const conflictoGC =
+      grupoRegistro === "GC" &&
+      tieneDatosIA;
+
+    return (
+      <article
+        key={item.id}
+        className="rounded-2xl border border-white/10 bg-[#091728] p-5"
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="break-words text-base font-bold text-white">
+              {nombresRutinas.get(item.rutina_id) ??
+                `Rutina #${item.rutina_id}`}
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-300">
+              Cliente:{" "}
+              {nombres.get(item.cliente_id) ??
+                "Nombre no disponible"}
+            </p>
+
+            <p className="mt-1 text-sm text-slate-400">
+              Entrenador:{" "}
+              {nombres.get(item.entrenador_id) ??
+                "Nombre no disponible"}
+            </p>
+          </div>
+
+          <span
+            className={`rounded-full border px-3 py-1.5 text-xs font-bold ${decisionClase(
+              item.decision
+            )}`}
+          >
+            {decisionTexto(item.decision)}
+          </span>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200">
+            Grupo: {grupoRegistro}
+          </span>
+
+          <span className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
+            {fechaLima(item.revisado_en)}
+          </span>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl bg-[#13263e] p-4">
+            <p className="text-xs text-slate-400">
+              Compatibilidad registrada
+            </p>
+
+            <p className="mt-1 text-lg font-bold">
+              {typeof item.puntaje_compatibilidad ===
+              "number"
+                ? `${item.puntaje_compatibilidad.toFixed(1)} / 100`
+                : "No registrada"}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-[#13263e] p-4">
+            <p className="text-xs text-slate-400">
+              Método registrado
+            </p>
+
+            <p className="mt-1 break-words text-sm font-semibold text-white">
+              {item.metodo_motor ??
+                "No registrado"}
+            </p>
+          </div>
+        </div>
+
+        {grupoRegistro === "GC" && (
+          <p
+            className={`mt-4 rounded-xl border p-3 text-xs leading-6 ${
+              conflictoGC
+                ? "border-amber-400/20 bg-amber-400/10 text-amber-200"
+                : "border-white/10 bg-white/5 text-slate-300"
+            }`}
+          >
+            {conflictoGC
+              ? "Atención: hay metadatos de compatibilidad en un registro GC. Verificar su origen antes de atribuirlo a IA."
+              : "Revisión de grupo control: no hay metadatos de IA en esta decisión. Su origen manual debe verificarse en el flujo correspondiente."}
+          </p>
+        )}
+
+        {grupoRegistro === "GE" && (
+          <p className="mt-4 text-xs leading-6 text-cyan-200">
+            Grupo experimental. El puntaje y el
+            método, cuando están registrados,
+            corresponden a información de
+            compatibilidad y no a adherencia.
+          </p>
+        )}
+
+        {item.observaciones && (
+          <details className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary className="cursor-pointer text-sm font-bold text-cyan-200">
+              Ver observaciones del entrenador
+            </summary>
+
+            <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-slate-300">
+              {item.observaciones}
+            </p>
+          </details>
+        )}
+      </article>
+    );
+  }
+
+  // ================================================
+  // 9. INTERFAZ
+  // ================================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] text-white">
+    <main className="min-h-screen bg-[#080e1b] px-4 py-7 text-white sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-6">
 
-      {/* CABECERA */}
+        {/* CABECERA */}
 
-      <header className="border-b border-white/10 bg-[#101d30]">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 p-5">
-          <strong>
-            EVOLUTION CENTER FIT{" "}
-            <span className="text-cyan-300">
-              2.0
-            </span>
-          </strong>
+        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#17394f] via-[#14263d] to-[#211d3d] p-6 shadow-xl shadow-black/10 sm:p-9">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300">
+                Evolution Center Fit 2.0
+              </p>
 
-          <Link
-            href="/administrador"
-            className="rounded-xl border border-white/20 px-4 py-2 text-sm"
-          >
-            ← Volver al administrador
-          </Link>
-        </div>
-      </header>
+              <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                Centro de supervisión IA
+              </h1>
 
-      <div className="mx-auto max-w-7xl space-y-7 px-5 py-8">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+                Supervisa el servicio recomendador,
+                las revisiones de entrenadores y
+                las diferencias entre los grupos
+                experimental y control.
+              </p>
+            </div>
 
-        {/* PRESENTACION */}
-
-        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#17364c] to-[#1a1b36] p-7 sm:p-9">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
-            FASE 111.17 · ADMINISTRACIÓN
-          </p>
-
-          <h1 className="mt-3 text-3xl font-black">
-            Supervisión del motor IA
-          </h1>
-
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
-            Consulta la disponibilidad del
-            servicio en Render y el historial
-            real de decisiones de los entrenadores.
-
-            No genera recomendaciones ni
-            cambia los grupos del estudio.
-          </p>
+            <Link
+              href="/administrador"
+              className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10"
+            >
+              Volver al panel
+            </Link>
+          </div>
         </section>
 
-        {/* CONEXION CON RENDER */}
+        {/* PESTANAS */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-6 sm:p-7">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold">
-              Conexión con Render
-            </h2>
-
-            <span
-              className={`rounded-full border px-3 py-1.5 text-xs font-bold ${
-                salud.estado === "operativo"
-                  ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
-                  : "border-amber-400/25 bg-amber-400/10 text-amber-200"
+        <nav
+          aria-label="Secciones de supervisión IA"
+          className="flex gap-2 overflow-x-auto rounded-2xl border border-white/10 bg-[#112039] p-2"
+        >
+          {[
+            {
+              id: "resumen",
+              nombre: "Resumen",
+            },
+            {
+              id: "evaluaciones",
+              nombre: "Evaluaciones",
+            },
+            {
+              id: "revisiones",
+              nombre: "Revisiones",
+            },
+            {
+              id: "monitor",
+              nombre: "Monitor",
+            },
+          ].map((item) => (
+            <Link
+              key={item.id}
+              href={`${RUTA}?vista=${item.id}`}
+              aria-current={
+                vista === item.id
+                  ? "page"
+                  : undefined
+              }
+              className={`shrink-0 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${
+                vista === item.id
+                  ? "bg-cyan-400 text-[#07121e]"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
               }`}
             >
-              {salud.estado === "operativo"
-                ? "Servicio responde"
-                : "Requiere revisión"}
-            </span>
-          </div>
+              {item.nombre}
+            </Link>
+          ))}
+        </nav>
 
-          <p className="mt-3 text-sm text-slate-300">
-            {salud.detalle}
-          </p>
+        {/* ======================================
+            RESUMEN
+        ====================================== */}
 
-          <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-400">
-            <span>Endpoint: /health</span>
+        {vista === "resumen" && (
+          <>
+            <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Indicador
+                titulo="Revisiones registradas"
+                valor={rTotal.count ?? "—"}
+                detalle="Decisiones almacenadas"
+              />
 
-            <span>
-              Versión:{" "}
-              {salud.version ?? "No disponible"}
-            </span>
+              <Indicador
+                titulo="Aprobadas"
+                valor={rAprobadas.count ?? "—"}
+                detalle="Decisiones de aprobación"
+              />
 
-            <span>
-              Respuesta:{" "}
-              {salud.duracionMs === null
-                ? "—"
-                : `${salud.duracionMs} ms`}
-            </span>
-          </div>
+              <Indicador
+                titulo="Ajustes solicitados"
+                valor={rAjustes.count ?? "—"}
+                detalle="Revisiones que piden cambios"
+              />
 
-          <p className="mt-3 text-xs text-slate-400">
-            Esta comprobación verifica /health;
-            no ejecuta /evaluar ni prueba
-            la calidad de las recomendaciones.
-          </p>
-        </section>
+              <Indicador
+                titulo="Rechazadas"
+                valor={rRechazadas.count ?? "—"}
+                detalle="Decisiones de rechazo"
+              />
+            </section>
 
-        {/* INDICADORES */}
+            <section className="grid gap-4 lg:grid-cols-2">
+              <article className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+                <h2 className="text-lg font-bold">
+                  Estado de Render
+                </h2>
 
-        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Indicador
-            titulo="Revisiones registradas"
-            valor={total.count ?? "—"}
-            detalle="Decisiones almacenadas en Supabase"
-          />
+                <span
+                  className={`mt-4 inline-flex rounded-full border px-3 py-1.5 text-xs font-bold ${
+                    salud?.estado === "responde"
+                      ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
+                      : "border-amber-400/20 bg-amber-400/10 text-amber-200"
+                  }`}
+                >
+                  {salud?.estado === "responde"
+                    ? "Endpoint responde"
+                    : "Requiere revisión"}
+                </span>
 
-          <Indicador
-            titulo="Aprobadas"
-            valor={aprobadas.count ?? "—"}
-            detalle="Aprobaciones de entrenadores"
-          />
+                <p className="mt-4 text-sm leading-6 text-slate-300">
+                  {salud?.descripcion}
+                </p>
 
-          <Indicador
-            titulo="Ajustes solicitados"
-            valor={ajustes.count ?? "—"}
-            detalle="Decisiones que solicitan ajustes"
-          />
+                <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-400">
+                  <span>
+                    Versión:{" "}
+                    {salud?.version ?? "—"}
+                  </span>
 
-          <Indicador
-            titulo="Rechazadas"
-            valor={rechazadas.count ?? "—"}
-            detalle="Rechazos registrados"
-          />
-        </section>
+                  <span>
+                    /health:{" "}
+                    {salud?.ms === null ||
+                    salud?.ms === undefined
+                      ? "—"
+                      : `${salud.ms} ms`}
+                  </span>
+                </div>
 
-        {/* FILTROS */}
+                <Link
+                  href={`${RUTA}?vista=monitor`}
+                  className="mt-5 inline-block text-sm font-bold text-cyan-300 hover:underline"
+                >
+                  Ver diagnóstico técnico
+                </Link>
+              </article>
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
-          <h2 className="text-xl font-bold">
-            Filtros del historial
-          </h2>
+              <article className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+                <h2 className="text-lg font-bold">
+                  Revisiones por grupo
+                </h2>
 
-          <form
-            action={RUTA}
-            method="get"
-            className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_auto]"
-          >
-            <label className="text-xs text-slate-300">
-              Decisión
-
-              <select
-                name="decision"
-                defaultValue={decision}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081525] p-3 text-sm"
-              >
-                {DECISIONES.map((item) => (
-                  <option
-                    key={item}
-                    value={item}
-                  >
-                    {item === "todas"
-                      ? "Todas las decisiones"
-                      : etiquetaDecision(item)}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="text-xs text-slate-300">
-              Entrenador
-
-              <select
-                name="entrenador"
-                defaultValue={entrenador}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081525] p-3 text-sm"
-              >
-                <option value="todos">
-                  Todos los entrenadores
-                </option>
-
-                {idsEntrenadores.map((id) => (
-                  <option
-                    key={id}
-                    value={id}
-                  >
-                    {nombres.get(id) ??
-                      "Entrenador sin nombre"}
-                  </option>
-                ))}
-
-                {entrenador !== "todos" &&
-                  !idsEntrenadores.includes(
-                    entrenador
-                  ) && (
-                    <option value={entrenador}>
-                      Entrenador seleccionado
-                    </option>
-                  )}
-              </select>
-            </label>
-
-            <button
-              type="submit"
-              className="min-h-12 self-end rounded-xl bg-cyan-400 px-6 py-3 text-sm font-bold text-[#08101e]"
-            >
-              Filtrar
-            </button>
-          </form>
-
-          {listaEntrenadoresParcial && (
-            <p className="mt-3 text-xs text-amber-200">
-              Solo se muestran los primeros
-              200 entrenadores para filtrar.
-            </p>
-          )}
-        </section>
-
-        {/* HISTORIAL */}
-
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold">
-              Decisiones registradas
-            </h2>
-
-            <p className="text-xs text-slate-400">
-              {historial.count ?? 0} resultado(s)
-              {" · "}Página {pagina} de {paginas}
-            </p>
-          </div>
-
-          {(
-            !nombresDisponibles ||
-            !rutinasDisponibles ||
-            !gruposDisponibles
-          ) && (
-            <p
-              role="alert"
-              className="mt-4 rounded-xl bg-amber-400/10 p-4 text-sm text-amber-200"
-            >
-              Algunos datos complementarios
-              no se pudieron verificar.
-              Las decisiones mostradas sí
-              proceden del historial.
-            </p>
-          )}
-
-          <div className="mt-5 space-y-3">
-            {revisiones.length === 0 && (
-              <p className="rounded-xl bg-[#081525] p-5 text-sm text-slate-400">
-                No hay revisiones en esta página
-                o con estos filtros.
-              </p>
-            )}
-
-            {revisiones.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-xl border border-white/10 bg-[#081525] p-5"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="font-bold">
-                      {nombresRutinas.get(
-                        item.rutina_id
-                      ) ??
-                        `Rutina #${item.rutina_id}`}
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-cyan-400/15 bg-[#081728] p-4">
+                    <p className="text-sm text-cyan-200">
+                      Experimental · GE
                     </p>
 
-                    <p className="mt-2 text-sm text-slate-300">
-                      Cliente:{" "}
-                      {nombres.get(
-                        item.cliente_id
-                      ) ?? "Nombre no disponible"}
+                    <p className="mt-2 text-3xl font-black">
+                      {totalGE ?? "—"}
                     </p>
 
-                    <p className="mt-1 text-sm text-slate-400">
-                      Entrenador:{" "}
-                      {nombres.get(
-                        item.entrenador_id
-                      ) ?? "Nombre no disponible"}
+                    <p className="mt-2 text-xs text-slate-400">
+                      Revisiones registradas
                     </p>
                   </div>
 
-                  <span
-                    className={`rounded-full border px-3 py-1 text-xs font-bold ${claseDecision(
-                      item.decision
-                    )}`}
-                  >
-                    {etiquetaDecision(item.decision)}
-                  </span>
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-400">
-                  <span>
-                    Fecha:{" "}
-                    {fechaLima(item.revisado_en)}
-                  </span>
-
-                  <span>
-                    Puntaje:{" "}
-                    {typeof item.puntaje_compatibilidad ===
-                    "number"
-                      ? `${item.puntaje_compatibilidad.toFixed(1)} / 100`
-                      : "No registrado"}
-                  </span>
-
-                  <span>
-                    Método:{" "}
-                    {item.metodo_motor ||
-                      "No registrado"}
-                  </span>
-
-                  <span>
-                    Grupo:{" "}
-                    {!gruposDisponibles
-                      ? "No verificado"
-                      : grupos.get(item.cliente_id) ??
-                        "Sin inscripción encontrada"}
-                  </span>
-                </div>
-
-                {item.observaciones && (
-                  <details className="mt-4 rounded-lg border border-white/10 bg-white/5 p-3">
-                    <summary className="cursor-pointer text-sm font-semibold text-cyan-200">
-                      Ver observaciones del entrenador
-                    </summary>
-
-                    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-300">
-                      {item.observaciones}
+                  <div className="rounded-xl border border-white/10 bg-[#081728] p-4">
+                    <p className="text-sm text-slate-200">
+                      Control · GC
                     </p>
-                  </details>
-                )}
+
+                    <p className="mt-2 text-3xl font-black">
+                      {totalGC ?? "—"}
+                    </p>
+
+                    <p className="mt-2 text-xs text-slate-400">
+                      Revisiones registradas
+                    </p>
+                  </div>
+                </div>
+
+                <p className="mt-4 text-xs leading-6 text-slate-400">
+                  Una revisión del grupo control
+                  no constituye evidencia de
+                  que se ejecutó la IA.
+                </p>
               </article>
-            ))}
-          </div>
+            </section>
 
-          {/* PAGINACION */}
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-xl font-bold">
+                  Actividad reciente
+                </h2>
 
-          <div className="mt-5 flex items-center justify-between gap-3">
-            {pagina > 1 ? (
-              <Link
-                href={enlace(pagina - 1)}
-                className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                <Link
+                  href={`${RUTA}?vista=revisiones`}
+                  className="text-sm font-bold text-cyan-300 hover:underline"
+                >
+                  Ver todas las revisiones
+                </Link>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {errorHistorial ? (
+                  <p className="text-sm text-amber-200">
+                    No se pudo consultar el historial.
+                  </p>
+                ) : revisiones.length === 0 ? (
+                  <p className="text-sm text-slate-400">
+                    Todavía no hay revisiones
+                    registradas.
+                  </p>
+                ) : (
+                  revisiones.map(tarjetaRevision)
+                )}
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* ======================================
+            EVALUACIONES
+        ====================================== */}
+
+        {vista === "evaluaciones" && (
+          <>
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+                Motor recomendador
+              </p>
+
+              <h2 className="mt-2 text-2xl font-black">
+                Historial de evaluaciones IA
+              </h2>
+
+              <p className="mt-4 text-sm leading-7 text-slate-300">
+                El motor evalúa compatibilidad de
+                rutinas, pero todavía no se ha
+                confirmado un registro persistente
+                de cada solicitud y su resultado.
+              </p>
+
+              <Aviso titulo="Historial de ejecuciones pendiente">
+                No mostraremos un número inventado
+                de evaluaciones ni una tasa de
+                éxito calculada a partir de las
+                aprobaciones del entrenador.
+
+                Para disponer de esas métricas
+                tendremos que registrar los eventos
+                reales de cada ejecución del motor.
+              </Aviso>
+
+              <div className="mt-6 grid gap-3 md:grid-cols-3">
+                <div className="rounded-xl bg-[#081728] p-5">
+                  <p className="text-sm font-bold">
+                    Solicitud
+                  </p>
+
+                  <p className="mt-2 text-xs leading-6 text-slate-400">
+                    Cliente, grupo, fecha y
+                    entrenador responsable.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#081728] p-5">
+                  <p className="text-sm font-bold">
+                    Evaluación
+                  </p>
+
+                  <p className="mt-2 text-xs leading-6 text-slate-400">
+                    Elegibilidad, puntaje,
+                    método y rutinas candidatas.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#081728] p-5">
+                  <p className="text-sm font-bold">
+                    Resultado técnico
+                  </p>
+
+                  <p className="mt-2 text-xs leading-6 text-slate-400">
+                    Éxito, rechazo, error,
+                    código y duración.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="grid gap-4 md:grid-cols-2">
+              <article className="rounded-2xl border border-cyan-400/20 bg-[#112039] p-6">
+                <h3 className="text-lg font-bold text-cyan-200">
+                  Grupo experimental · GE
+                </h3>
+
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Las evaluaciones del motor
+                  corresponden al tratamiento
+                  experimental, sujeto a las reglas
+                  de inscripción y permisos.
+                </p>
+              </article>
+
+              <article className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+                <h3 className="text-lg font-bold">
+                  Grupo control · GC
+                </h3>
+
+                <p className="mt-3 text-sm leading-7 text-slate-300">
+                  Se conserva el procedimiento
+                  habitual. Este panel no ofrece
+                  una acción para ejecutar IA
+                  sobre sus participantes.
+                </p>
+              </article>
+            </section>
+          </>
+        )}
+
+        {/* ======================================
+            REVISIONES
+        ====================================== */}
+
+        {vista === "revisiones" && (
+          <>
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+              <h2 className="text-xl font-bold">
+                Buscar decisiones
+              </h2>
+
+              <p className="mt-2 text-sm text-slate-400">
+                Filtra por decisión, grupo
+                de investigación y entrenador.
+              </p>
+
+              <form
+                action={RUTA}
+                method="get"
+                className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4"
               >
-                ← Anterior
-              </Link>
-            ) : (
-              <span />
-            )}
+                <input
+                  type="hidden"
+                  name="vista"
+                  value="revisiones"
+                />
 
-            {pagina < paginas ? (
-              <Link
-                href={enlace(pagina + 1)}
-                className="rounded-xl border border-white/20 px-4 py-2 text-sm"
-              >
-                Siguiente →
-              </Link>
-            ) : (
-              <span />
-            )}
-          </div>
-        </section>
+                <label className="text-xs text-slate-300">
+                  Decisión
 
-        {/* SEGURIDAD */}
+                  <select
+                    name="decision"
+                    defaultValue={decision}
+                    className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081728] px-3 text-sm"
+                  >
+                    <option value="todas">
+                      Todas
+                    </option>
 
-        <section className="rounded-2xl border border-cyan-400/15 bg-[#112039] p-6">
-          <h2 className="font-bold">
-            Alcance de la supervisión
-          </h2>
+                    <option value="aprobada">
+                      Aprobadas
+                    </option>
 
-          <p className="mt-3 text-sm leading-7 text-slate-300">
-            Este módulo consulta el estado de
-            /health y las decisiones guardadas
-            en revisiones_rutinas.
+                    <option value="ajustes_solicitados">
+                      Ajustes solicitados
+                    </option>
 
-            No contabiliza todas las evaluaciones
-            del motor, porque no se ha confirmado
-            una tabla de eventos por cada ejecución.
+                    <option value="rechazada">
+                      Rechazadas
+                    </option>
+                  </select>
+                </label>
 
-            Tampoco modifica las decisiones ni
-            permite usar IA para clientes del
-            grupo control.
-          </p>
+                <label className="text-xs text-slate-300">
+                  Grupo
 
-          <p className="mt-3 text-xs text-amber-200">
-            La disponibilidad de /health no
-            garantiza que el algoritmo /evaluar
-            funcione ni valida sus recomendaciones.
+                  <select
+                    name="grupo"
+                    defaultValue={grupo}
+                    disabled={!gruposVerificados}
+                    className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081728] px-3 text-sm disabled:opacity-50"
+                  >
+                    <option value="todos">
+                      Todos
+                    </option>
 
-            El motor debe seguir respetando las
-            restricciones GE/GC existentes.
-          </p>
-        </section>
+                    <option value="GE">
+                      Experimental · GE
+                    </option>
+
+                    <option value="GC">
+                      Control · GC
+                    </option>
+                  </select>
+                </label>
+
+                <label className="text-xs text-slate-300">
+                  Entrenador
+
+                  <select
+                    name="entrenador"
+                    defaultValue={entrenador}
+                    className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081728] px-3 text-sm"
+                  >
+                    <option value="todos">
+                      Todos
+                    </option>
+
+                    {idsEntrenadores.map((id) => (
+                      <option key={id} value={id}>
+                        {nombres.get(id) ??
+                          "Entrenador sin nombre"}
+                      </option>
+                    ))}
+
+                    {entrenador !== "todos" &&
+                      !idsEntrenadores.includes(
+                        entrenador
+                      ) && (
+                        <option value={entrenador}>
+                          Entrenador seleccionado
+                        </option>
+                      )}
+                  </select>
+                </label>
+
+                <button
+                  type="submit"
+                  className="min-h-12 self-end rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300"
+                >
+                  Aplicar filtros
+                </button>
+              </form>
+
+              {!gruposVerificados && (
+                <p className="mt-4 text-xs text-amber-200">
+                  No se pudo consultar completamente
+                  la inscripción GE/GC. El filtro
+                  por grupo está deshabilitado.
+                </p>
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-xl font-bold">
+                  Historial de revisiones
+                </h2>
+
+                <span className="text-xs text-slate-400">
+                  {totalFiltrado} registros · Página{" "}
+                  {pagina} de {totalPaginas}
+                </span>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {errorHistorial ? (
+                  <p className="text-amber-200">
+                    No se pudieron consultar
+                    las revisiones.
+                  </p>
+                ) : revisiones.length === 0 ? (
+                  <p className="rounded-xl bg-[#081728] p-5 text-sm text-slate-400">
+                    No hay resultados con
+                    estos filtros.
+                  </p>
+                ) : (
+                  revisiones.map(tarjetaRevision)
+                )}
+              </div>
+
+              <div className="mt-6 flex items-center justify-between gap-3 border-t border-white/10 pt-5">
+                {pagina > 1 ? (
+                  <Link
+                    href={enlacePagina(pagina - 1)}
+                    className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                  >
+                    ← Anterior
+                  </Link>
+                ) : (
+                  <span />
+                )}
+
+                {pagina < totalPaginas ? (
+                  <Link
+                    href={enlacePagina(pagina + 1)}
+                    className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                  >
+                    Siguiente →
+                  </Link>
+                ) : (
+                  <span />
+                )}
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* ======================================
+            MONITOR
+        ====================================== */}
+
+        {vista === "monitor" && (
+          <>
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6 sm:p-8">
+              <h2 className="text-2xl font-black">
+                Diagnóstico técnico
+              </h2>
+
+              <p className="mt-3 text-sm text-slate-400">
+                Comprobaciones puntuales de
+                disponibilidad y lectura de datos.
+              </p>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <Indicador
+                  titulo="Endpoint /health"
+                  valor={
+                    salud?.estado === "responde"
+                      ? "Responde"
+                      : "Revisar"
+                  }
+                  detalle={
+                    salud?.descripcion ??
+                    "No consultado"
+                  }
+                />
+
+                <Indicador
+                  titulo="Latencia /health"
+                  valor={
+                    salud?.ms === null ||
+                    salud?.ms === undefined
+                      ? "—"
+                      : `${salud.ms} ms`
+                  }
+                  detalle="Tiempo de esta comprobación, no de /evaluar"
+                />
+
+                <Indicador
+                  titulo="Versión FastAPI"
+                  valor={salud?.version ?? "—"}
+                  detalle="Reportada por el servicio"
+                />
+
+                <Indicador
+                  titulo="Revisiones en Supabase"
+                  valor={rTotal.count ?? "—"}
+                  detalle="Registros persistentes consultados"
+                />
+              </div>
+            </section>
+
+            <Aviso titulo="Monitoreo de evaluaciones pendiente">
+              Todavía no contamos con datos
+              históricos verificados de latencia,
+              errores, solicitudes y respuestas
+              de cada ejecución del motor.
+
+              La conexión exitosa de /health no
+              garantiza que /evaluar esté
+              funcionando correctamente.
+            </Aviso>
+
+            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+              <h3 className="text-lg font-bold">
+                Controles de investigación
+              </h3>
+
+              <p className="mt-3 text-sm leading-7 text-slate-300">
+                El registro de evaluaciones
+                deberá respetar la inscripción
+                en el estudio y los permisos
+                existentes. No debemos ejecutar
+                recomendaciones sobre el grupo
+                control ni exponer claves privadas
+                en el navegador.
+              </p>
+            </section>
+          </>
+        )}
+
+        {/* PIE */}
+
+        <footer className="border-t border-white/10 py-5 text-center text-xs text-slate-500">
+          Evolution Center Fit 2.0 · Supervisión IA
+          · Consulta administrativa de solo lectura
+        </footer>
       </div>
     </main>
   );
 }
 
-// ============================================
-// EXPORTACION PRINCIPAL DE NEXT.JS
-// ============================================
+// ==================================================
+// PAGINA PRINCIPAL
+// ==================================================
 
 export default function AdministradorIAPage({
   searchParams,
 }: Props) {
   return (
-    <Suspense fallback={<Cargando />}>
+    <Suspense fallback={<EstadoCarga />}>
       <Contenido searchParams={searchParams} />
     </Suspense>
   );
