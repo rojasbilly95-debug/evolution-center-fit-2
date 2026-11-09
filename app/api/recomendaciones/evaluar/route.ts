@@ -8,11 +8,9 @@ import {
   createClient as crearClienteAdmin,
 } from "@supabase/supabase-js";
 
-// ==============================================
 // EVOLUTION CENTER FIT 2.0
-// FASE 111.17.2
-// EVALUACION IA CON AUDITORIA EN SUPABASE
-// ==============================================
+// FASE 111.17.3
+// Evaluacion IA y registro de compatibilidad.
 
 type EjercicioMotor = {
   nombre: string;
@@ -33,22 +31,46 @@ type RutinaMotor = {
   ejercicios: EjercicioMotor[];
 };
 
-type ResultadoAuditoria = "exitosa" | "error_api";
+type DetalleRutina = {
+  posicion: number;
+  rutina_id: number;
+  elegible: boolean;
+  puntaje_compatibilidad: number | null;
+};
+
+type ResumenIA = {
+  total_evaluadas: number;
+  total_elegibles: number;
+  metodo: string | null;
+  similitud_aplicada: boolean | null;
+  logica_difusa_aplicada: boolean | null;
+  detalle_rutinas: DetalleRutina[];
+  detalle_truncado: boolean;
+};
 
 type DatosAuditoria = {
   entrenadorId: string;
   clienteId: string;
-  resultado: ResultadoAuditoria;
+  resultado: "exitosa" | "error_api";
   codigoHttp: number;
   duracionMs: number;
+  resumen?: ResumenIA | null;
 };
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// ==============================================
-// RESPUESTAS DE ERROR
-// ==============================================
+const MAX_RUTINAS_DETALLE = 50;
+
+function esObjeto(
+  valor: unknown
+): valor is Record<string, unknown> {
+  return (
+    typeof valor === "object" &&
+    valor !== null &&
+    !Array.isArray(valor)
+  );
+}
 
 function respuestaError(
   mensaje: string,
@@ -65,9 +87,112 @@ function respuestaError(
   );
 }
 
-// ==============================================
-// REGISTRAR EVENTO DEL MOTOR EN SUPABASE
-// ==============================================
+// ============================================
+// OBTENER UN RESUMEN SEGURO DEL MOTOR
+// ============================================
+
+function resumirEvaluacion(
+  valor: unknown
+): ResumenIA | null {
+  if (
+    !esObjeto(valor) ||
+    !Array.isArray(valor.resultados)
+  ) {
+    return null;
+  }
+
+  const total = valor.total_evaluadas;
+  const elegibles = valor.total_elegibles;
+
+  if (
+    typeof total !== "number" ||
+    !Number.isSafeInteger(total) ||
+    total < 0 ||
+    total > 100000 ||
+    typeof elegibles !== "number" ||
+    !Number.isSafeInteger(elegibles) ||
+    elegibles < 0 ||
+    elegibles > total ||
+    total !== valor.resultados.length
+  ) {
+    return null;
+  }
+
+  const detalle: DetalleRutina[] = [];
+
+  for (
+    const [indice, elemento] of valor.resultados
+      .slice(0, MAX_RUTINAS_DETALLE)
+      .entries()
+  ) {
+    if (!esObjeto(elemento)) {
+      continue;
+    }
+
+    const id = elemento.rutina_id;
+    const elegible = elemento.elegible;
+
+    if (
+      typeof id !== "number" ||
+      !Number.isSafeInteger(id) ||
+      id <= 0 ||
+      typeof elegible !== "boolean"
+    ) {
+      continue;
+    }
+
+    const puntuacion =
+      elemento.puntaje_compatibilidad;
+
+    const puntajeSeguro =
+      typeof puntuacion === "number" &&
+      Number.isFinite(puntuacion) &&
+      puntuacion >= 0 &&
+      puntuacion <= 100
+        ? Math.round(puntuacion * 10) / 10
+        : null;
+
+    detalle.push({
+      posicion: indice + 1,
+      rutina_id: id,
+      elegible,
+      puntaje_compatibilidad: puntajeSeguro,
+    });
+  }
+
+  return {
+    total_evaluadas: total,
+    total_elegibles: elegibles,
+
+    metodo:
+      typeof valor.metodo === "string" &&
+      valor.metodo.trim()
+        ? valor.metodo.trim().slice(0, 160)
+        : null,
+
+    similitud_aplicada:
+      typeof valor.similitud_aplicada ===
+      "boolean"
+        ? valor.similitud_aplicada
+        : null,
+
+    logica_difusa_aplicada:
+      typeof valor.logica_difusa_aplicada ===
+      "boolean"
+        ? valor.logica_difusa_aplicada
+        : null,
+
+    detalle_rutinas: detalle,
+
+    detalle_truncado:
+      valor.resultados.length >
+      MAX_RUTINAS_DETALLE,
+  };
+}
+
+// ============================================
+// GUARDAR EVENTO CON RESUMEN OPCIONAL
+// ============================================
 
 async function registrarEventoIA({
   entrenadorId,
@@ -75,6 +200,7 @@ async function registrarEventoIA({
   resultado,
   codigoHttp,
   duracionMs,
+  resumen,
 }: DatosAuditoria): Promise<void> {
   const url =
     process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -84,35 +210,21 @@ async function registrarEventoIA({
 
   if (!url || !clave) {
     console.error(
-      "Auditoria IA: falta configuracion privada."
+      "Auditoria IA: configuracion incompleta."
     );
-
     return;
   }
 
   try {
-    // Esta clave solo se utiliza en el servidor.
-    const admin = crearClienteAdmin(
-      url,
-      clave,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
-
-    const duracionSegura = Math.min(
-      300000,
-      Math.max(
-        0,
-        Math.round(duracionMs)
-      )
-    );
+    const admin = crearClienteAdmin(url, clave, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
     const {
-      error: errorAuditoria,
+      error,
     } = await admin
       .from("ecf_eventos_evaluacion_ia")
       .insert({
@@ -121,20 +233,48 @@ async function registrarEventoIA({
         grupo_estudio: "GE",
         resultado,
         codigo_http: codigoHttp,
-        duracion_ms: duracionSegura,
+
+        duracion_ms: Math.min(
+          300000,
+          Math.max(0, Math.round(duracionMs))
+        ),
+
         origen: "evaluar",
+
+        ...(resumen
+          ? {
+              total_evaluadas:
+                resumen.total_evaluadas,
+
+              total_elegibles:
+                resumen.total_elegibles,
+
+              metodo: resumen.metodo,
+
+              similitud_aplicada:
+                resumen.similitud_aplicada,
+
+              logica_difusa_aplicada:
+                resumen.logica_difusa_aplicada,
+
+              detalle_rutinas:
+                resumen.detalle_rutinas,
+
+              detalle_truncado:
+                resumen.detalle_truncado,
+            }
+          : {}),
       });
 
-    if (errorAuditoria) {
+    if (error) {
       console.error(
-        "Auditoria IA: insercion rechazada.",
-        errorAuditoria.code,
-        errorAuditoria.message
+        "Auditoria IA: insercion rechazada",
+        error.code
       );
     }
   } catch (error) {
     console.error(
-      "Auditoria IA: fallo inesperado.",
+      "Auditoria IA: error inesperado",
       error instanceof Error
         ? error.name
         : "desconocido"
@@ -142,26 +282,21 @@ async function registrarEventoIA({
   }
 }
 
-// ==============================================
-// POST /api/recomendaciones/evaluar
-// ==============================================
+// ============================================
+// ENDPOINT DE EVALUACION
+// ============================================
 
 export async function POST(request: Request) {
   try {
-    // ==========================================
-    // 1. RECIBIR Y VALIDAR EL CLIENTE
-    // ==========================================
+    // 1. Validar cliente.
 
     const body: unknown = await request
       .json()
       .catch(() => null);
 
-    const clienteId =
-      body !== null &&
-      typeof body === "object" &&
-      "clienteId" in body
-        ? body.clienteId
-        : null;
+    const clienteId = esObjeto(body)
+      ? body.clienteId
+      : null;
 
     if (
       typeof clienteId !== "string" ||
@@ -175,9 +310,7 @@ export async function POST(request: Request) {
 
     const supabase = await createClient();
 
-    // ==========================================
-    // 2. VERIFICAR SESION
-    // ==========================================
+    // 2. Verificar autenticacion.
 
     const {
       data: auth,
@@ -186,19 +319,14 @@ export async function POST(request: Request) {
 
     const entrenadorId = auth?.claims?.sub;
 
-    if (
-      authError ||
-      !entrenadorId
-    ) {
+    if (authError || !entrenadorId) {
       return respuestaError(
         "Debes iniciar sesión.",
         401
       );
     }
 
-    // ==========================================
-    // 3. VERIFICAR ROL ENTRENADOR
-    // ==========================================
+    // 3. Comprobar rol entrenador.
 
     const {
       data: acceso,
@@ -206,10 +334,7 @@ export async function POST(request: Request) {
     } = await supabase
       .from("usuario_roles")
       .select("rol")
-      .eq(
-        "usuario_id",
-        entrenadorId
-      )
+      .eq("usuario_id", entrenadorId)
       .single();
 
     if (
@@ -222,9 +347,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 4. VERIFICAR ASIGNACION ACTIVA
-    // ==========================================
+    // 4. Comprobar asignacion activa.
 
     const {
       data: asignacion,
@@ -250,18 +373,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 5. BLOQUEO DE INVESTIGACION GE / GC
-    // ==========================================
-
-    // IMPORTANTE:
-    // Esta validacion se realiza antes
-    // de consultar y evaluar las rutinas.
-    //
-    // Se conservan las reglas existentes
-    // de inscripcion, grupo y fechas.
-    //
-    // GC NO puede utilizar el motor IA.
+    // 5. Proteger la investigacion GE / GC.
 
     const bloqueoIA = await bloqueoIAEstudio(
       clienteId
@@ -271,9 +383,7 @@ export async function POST(request: Request) {
       return bloqueoIA;
     }
 
-    // ==========================================
-    // 6. OBTENER PERFIL DEL CLIENTE
-    // ==========================================
+    // 6. Obtener perfil autorizado.
 
     const {
       data: perfil,
@@ -299,9 +409,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 7. CONSULTAR RUTINAS PUBLICADAS
-    // ==========================================
+    // 7. Obtener rutinas publicadas.
 
     const {
       data: rutinas,
@@ -321,9 +429,7 @@ export async function POST(request: Request) {
 
     const idsRutinas = (
       rutinas ?? []
-    ).map(
-      (rutina) => rutina.id
-    );
+    ).map((rutina) => rutina.id);
 
     const resultadoVacio = {
       total_evaluadas: 0,
@@ -333,9 +439,6 @@ export async function POST(request: Request) {
       logica_difusa_aplicada: false,
       resultados: [],
     };
-
-    // Si no hay rutinas, no se llama a FastAPI.
-    // Por tanto, no se registra una evaluacion.
 
     if (idsRutinas.length === 0) {
       return NextResponse.json(
@@ -348,22 +451,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 8. CONSULTAR RELACIONES
-    // ==========================================
+    // 8. Consultar relaciones.
 
     const {
       data: relaciones,
       error: errorRelaciones,
     } = await supabase
       .from("rutina_ejercicios")
-      .select(
-        "rutina_id,ejercicio_id,orden"
-      )
-      .in(
-        "rutina_id",
-        idsRutinas
-      );
+      .select("rutina_id,ejercicio_id,orden")
+      .in("rutina_id", idsRutinas);
 
     if (errorRelaciones) {
       throw new Error(
@@ -374,8 +470,7 @@ export async function POST(request: Request) {
     const idsEjercicios = [
       ...new Set(
         (relaciones ?? []).map(
-          (relacion) =>
-            relacion.ejercicio_id
+          (r) => r.ejercicio_id
         )
       ),
     ];
@@ -395,9 +490,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 9. CONSULTAR EJERCICIOS ACTIVOS
-    // ==========================================
+    // 9. Consultar ejercicios activos.
 
     const {
       data: ejercicios,
@@ -407,10 +500,7 @@ export async function POST(request: Request) {
       .select(
         "id,nombre,nivel,lugar,equipamiento,activo"
       )
-      .in(
-        "id",
-        idsEjercicios
-      );
+      .in("id", idsEjercicios);
 
     if (errorEjercicios) {
       throw new Error(
@@ -420,16 +510,11 @@ export async function POST(request: Request) {
 
     const ejerciciosPorId = new Map(
       (ejercicios ?? []).map(
-        (ejercicio) => [
-          ejercicio.id,
-          ejercicio,
-        ]
+        (e) => [e.id, e]
       )
     );
 
-    // ==========================================
-    // 10. PREPARAR RUTINAS PARA FASTAPI
-    // ==========================================
+    // 10. Preparar rutinas para el motor.
 
     const rutinasMotor: RutinaMotor[] = [];
 
@@ -440,13 +525,10 @@ export async function POST(request: Request) {
         relaciones ?? []
       )
         .filter(
-          (relacion) =>
-            relacion.rutina_id ===
-            rutina.id
+          (r) => r.rutina_id === rutina.id
         )
         .sort(
-          (a, b) =>
-            a.orden - b.orden
+          (a, b) => a.orden - b.orden
         );
 
       let completa =
@@ -482,7 +564,6 @@ export async function POST(request: Request) {
         rutinasOmitidas.push(
           rutina.nombre
         );
-
         continue;
       }
 
@@ -505,8 +586,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ...resultadoVacio,
-          rutinas_omitidas:
-            rutinasOmitidas,
+          rutinas_omitidas: rutinasOmitidas,
         },
         {
           headers: {
@@ -516,9 +596,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 11. COMPROBAR CONFIGURACION PRIVADA
-    // ==========================================
+    // 11. Configuracion privada de FastAPI.
 
     const servicio =
       process.env.IA_SERVICE_URL;
@@ -540,12 +618,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 12. LLAMAR AL MOTOR FASTAPI
-    // ==========================================
-
-    // Medimos la llamada a FastAPI.
-    // No medimos el tiempo total del endpoint.
+    // 12. Solicitar evaluacion a FastAPI.
 
     const inicioMotor = Date.now();
 
@@ -579,9 +652,6 @@ export async function POST(request: Request) {
         }
       );
     } catch {
-      // FastAPI no pudo responder.
-      // La llamada SI se intento realizar.
-
       await registrarEventoIA({
         entrenadorId,
         clienteId,
@@ -597,9 +667,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 13. COMPROBAR RESPUESTA HTTP
-    // ==========================================
+    // 13. Comprobar estado HTTP.
 
     if (!respuestaIA.ok) {
       console.error(
@@ -622,15 +690,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 14. LEER RESPUESTA DEL MOTOR
-    // ==========================================
+    // 14. Leer JSON del motor.
 
     let resultado: unknown;
 
     try {
-      resultado =
-        await respuestaIA.json();
+      resultado = await respuestaIA.json();
     } catch {
       await registrarEventoIA({
         entrenadorId,
@@ -647,22 +712,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 15. VALIDAR RESPUESTA DE FASTAPI
-    // ==========================================
+    // 15. Validar la estructura.
 
     if (
-      !resultado ||
-      typeof resultado !== "object" ||
-      Array.isArray(resultado) ||
-      !("resultados" in resultado) ||
-      !Array.isArray(
-        resultado.resultados
-      ) ||
-      !("total_evaluadas" in resultado) ||
+      !esObjeto(resultado) ||
+      !Array.isArray(resultado.resultados) ||
       typeof resultado.total_evaluadas !==
         "number" ||
-      !("total_elegibles" in resultado) ||
       typeof resultado.total_elegibles !==
         "number"
     ) {
@@ -681,39 +737,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // ==========================================
-    // 16. REGISTRAR EVALUACION EXITOSA
-    // ==========================================
-
-    const duracionMotor =
-      Date.now() - inicioMotor;
+    // 16. Registrar evaluacion exitosa
+    // con sus detalles de compatibilidad.
 
     await registrarEventoIA({
       entrenadorId,
       clienteId,
       resultado: "exitosa",
       codigoHttp: 200,
-      duracionMs: duracionMotor,
+      duracionMs:
+        Date.now() - inicioMotor,
+
+      resumen:
+        resumirEvaluacion(resultado),
     });
 
-    // ==========================================
-    // 17. ENVIAR RESULTADO AL ENTRENADOR
-    // ==========================================
-
-    // Se conservan los campos devueltos
-    // por FastAPI:
-    //
-    // - ajuste_difuso
-    // - similitud_semantica
-    // - desglose_puntaje
-    // - ranking
-    // - elegibilidad
+    // 17. Conservar la respuesta completa
+    // para la pantalla del entrenador.
 
     return NextResponse.json(
       {
         ...resultado,
-        rutinas_omitidas:
-          rutinasOmitidas,
+        rutinas_omitidas: rutinasOmitidas,
       },
       {
         headers: {
