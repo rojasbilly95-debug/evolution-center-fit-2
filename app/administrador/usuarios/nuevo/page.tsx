@@ -199,15 +199,17 @@ async function invitarUsuario(
   // 5. INVITAR USUARIO
   // ----------------------------------------------
 
-  const invitacion =
-    await admin.auth.admin.inviteUserByEmail(
-      correo,
-      {
-        data: {
-          nombre_completo: nombre,
-        },
-      }
-    );
+const invitacion =
+  await admin.auth.admin.inviteUserByEmail(
+    correo,
+    {
+      data: {
+        nombre_completo: nombre,
+      },
+      redirectTo:
+        "https://evolution-center-fit-2.vercel.app/invitacion/recibir",
+    }
+  );
 
   const nuevoId =
     invitacion.data.user?.id;
