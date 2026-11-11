@@ -19,6 +19,7 @@ type Sesion = {
   asignacion_id: number;
   numero_sesion: number;
   fecha_programada: string;
+  hora_programada: string | null;
   estado: string;
   inicio_real: string | null;
   fin_real: string | null;
@@ -116,6 +117,37 @@ function mostrarFecha(valor: string) {
   }).format(desdeISO(valor));
 }
 
+// ============================================
+// FASE 114.1.3
+// FORMATO DE HORA DEL ENTRENAMIENTO
+// ============================================
+
+function mostrarHora(
+  hora: string | null
+): string {
+  if (!hora) {
+    return "Horario por definir";
+  }
+
+  const [horas, minutos] = hora.split(":").map(Number);
+
+  if (
+    !Number.isInteger(horas) ||
+    !Number.isInteger(minutos) ||
+    horas < 0 ||
+    horas > 23 ||
+    minutos < 0 ||
+    minutos > 59
+  ) {
+    return "Horario no válido";
+  }
+
+  const periodo = horas < 12 ? "a. m." : "p. m.";
+  const hora12 = horas % 12 || 12;
+
+  return `${hora12}:${String(minutos).padStart(2, "0")} ${periodo}`;
+}
+
 function colorEstado(estado: string) {
   switch (estado) {
     case "programada":
@@ -188,7 +220,7 @@ function CalendarioEntrenadorContenido() {
           if (!respuesta.ok) {
             throw new Error(
               datos.error ||
-                `Error del servidor (${respuesta.status})`
+              `Error del servidor (${respuesta.status})`
             );
           }
 
@@ -315,9 +347,9 @@ function CalendarioEntrenadorContenido() {
   const etiquetaPeriodo =
     vista === "mes"
       ? new Intl.DateTimeFormat("es-PE", {
-          month: "long",
-          year: "numeric",
-        }).format(fecha)
+        month: "long",
+        year: "numeric",
+      }).format(fecha)
       : vista === "semana"
         ? `${mostrarFecha(rango.desde)} — ${mostrarFecha(rango.hasta)}`
         : mostrarFecha(rango.desde);
@@ -371,7 +403,12 @@ function CalendarioEntrenadorContenido() {
           {sesion.cliente_nombre || "Cliente"}
         </p>
 
-        <p className="mt-1 break-words text-xs text-slate-300">
+        <div className="mt-2 flex items-center gap-2 text-xs font-semibold text-cyan-300">
+          <span aria-hidden="true">◷</span>
+          <span>{mostrarHora(sesion.hora_programada)}</span>
+        </div>
+
+        <p className="mt-2 break-words text-xs text-slate-300">
           {sesion.rutina_nombre || "Rutina asignada"}
         </p>
 
@@ -490,11 +527,10 @@ function CalendarioEntrenadorContenido() {
                     type="button"
                     key={opcion}
                     onClick={() => cambiarVista(opcion)}
-                    className={`rounded-lg px-4 py-2 text-sm font-semibold capitalize ${
-                      vista === opcion
+                    className={`rounded-lg px-4 py-2 text-sm font-semibold capitalize ${vista === opcion
                         ? "bg-cyan-400 text-[#07121e]"
                         : "bg-white/10 text-slate-300 hover:bg-white/20"
-                    }`}
+                      }`}
                   >
                     {opcion === "dia"
                       ? "Día"
@@ -602,11 +638,10 @@ function CalendarioEntrenadorContenido() {
           ) : (
             <div className="overflow-x-auto">
               <div
-                className={`grid gap-2 ${
-                  vista === "semana"
+                className={`grid gap-2 ${vista === "semana"
                     ? "min-w-[1050px] grid-cols-7"
                     : "min-w-[750px] grid-cols-7"
-                }`}
+                  }`}
               >
                 {diasSemana.map((dia, i) => (
                   <div
@@ -627,15 +662,13 @@ function CalendarioEntrenadorContenido() {
                   return (
                     <div
                       key={clave}
-                      className={`rounded-xl border p-2 ${
-                        vista === "semana"
+                      className={`rounded-xl border p-2 ${vista === "semana"
                           ? "min-h-[340px]"
                           : "min-h-[135px]"
-                      } ${
-                        otroMes
+                        } ${otroMes
                           ? "border-white/5 bg-[#0b1422] opacity-50"
                           : "border-white/10 bg-[#0c1728]"
-                      }`}
+                        }`}
                     >
                       <button
                         type="button"
@@ -666,9 +699,17 @@ function CalendarioEntrenadorContenido() {
                               key={s.id}
                               type="button"
                               onClick={() => setSeleccionada(s)}
-                              className="block w-full truncate rounded-md bg-cyan-500/15 p-2 text-left text-[11px] text-cyan-200 hover:bg-cyan-500/25"
+                              className="block w-full rounded-md bg-cyan-500/15 p-2 text-left text-[11px] text-cyan-200 transition hover:bg-cyan-500/25"
                             >
-                              {s.cliente_nombre || "Cliente"}
+                              <span className="block truncate font-semibold">
+                                {s.cliente_nombre || "Cliente"}
+                              </span>
+
+                              <span className="mt-1 block truncate text-[10px] text-cyan-300/80">
+                                {s.hora_programada
+                                  ? mostrarHora(s.hora_programada)
+                                  : "Sin horario"}
+                              </span>
                             </button>
                           ))}
 
@@ -732,8 +773,13 @@ function CalendarioEntrenadorContenido() {
             <dl className="mt-6 space-y-4 text-sm">
               {[
                 ["Cliente", seleccionada.cliente_nombre],
+
                 ["Fecha", mostrarFecha(seleccionada.fecha_programada)],
+
+                ["Hora programada", mostrarHora(seleccionada.hora_programada)],
+
                 ["Rutina", seleccionada.rutina_nombre],
+
                 ["Estado", seleccionada.estado],
                 [
                   "Duración programada",
