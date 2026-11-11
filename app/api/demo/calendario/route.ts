@@ -1,5 +1,5 @@
 
-import { NextResponse } from "next/server";
+import { NextResponse, connection } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
@@ -19,6 +19,10 @@ function respuesta(
 }
 
 export async function GET() {
+    // Esperar una petición real antes de acceder
+    // a la sesión y consultar datos privados.
+    await connection();
+
     try {
         const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
         const publicKey =
