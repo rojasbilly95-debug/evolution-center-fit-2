@@ -741,13 +741,16 @@ async function ContenidoAdministrador({
       estado: "Disponible" as const,
       href: "/administrador/entrenadores",
     },
-    {
-      titulo: "Gestión de roles y permisos",
-      descripcion:
-        "Crear o cambiar roles con auditoría y controles de seguridad.",
-      tipo: "seguridad" as const,
-      estado: "En desarrollo" as const,
-    },
+
+{
+  titulo: "Roles y permisos (consulta)",
+  descripcion:
+    "Consultar los roles de los usuarios, relaciones activas y participación en la investigación. Los cambios de rol permanecen bloqueados.",
+  tipo: "seguridad" as const,
+  estado: "Disponible" as const,
+  href: "/administrador/roles",
+},
+
     
 {
   titulo: "Reportes operativos",
