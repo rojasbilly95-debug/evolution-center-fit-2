@@ -119,7 +119,7 @@ function Icon({
 const navegacion = [
   { titulo: "Inicio", href: "/entrenador" },
   { titulo: "Mis clientes", href: "/entrenador/clientes" },
-  { titulo: "Calendario demo", href: "/entrenador/calendario-demo" },
+  { titulo: "Calendario", href: "/entrenador/calendario" },
   { titulo: "Investigación", href: "/entrenador/investigacion" },
   {
     titulo: "Reportes",
@@ -180,16 +180,16 @@ const modulos: Modulo[] = [
     href: "/entrenador/clientes",
     color: "bg-amber-400/10 text-amber-300",
   },
-  {
-    titulo: "Calendario de entrenamiento",
-    descripcion:
-      "Consulta las sesiones programadas de demostración de tus clientes durante cuatro semanas, sin modificar el seguimiento real.",
-    icono: "calendar",
-    etiqueta: "DEMOSTRACIÓN",
-    accion: "Abrir calendario",
-    href: "/entrenador/calendario-demo",
-    color: "bg-blue-400/10 text-blue-300",
-  },
+{
+  titulo: "Calendario de entrenamiento",
+  descripcion:
+    "Consulta las sesiones programadas de tus clientes, revisa sus rutinas y accede al seguimiento de cada entrenamiento.",
+  icono: "calendar",
+  etiqueta: "PROGRAMACIÓN",
+  accion: "Abrir calendario",
+  href: "/entrenador/calendario",
+  color: "bg-blue-400/10 text-blue-300",
+},
   {
     titulo: "Participantes GE y GC",
     descripcion:
