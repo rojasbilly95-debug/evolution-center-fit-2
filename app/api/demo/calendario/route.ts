@@ -4,9 +4,6 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
 const headers = {
     "Cache-Control": "private, no-store, max-age=0",
 };
