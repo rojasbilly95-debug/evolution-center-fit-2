@@ -19,62 +19,72 @@ const SECCIONES: {
   titulo: string;
   enlaces: Enlace[];
 }[] = [
-  {
-    titulo: "Personas",
-    enlaces: [
-      {
-        texto: "Usuarios",
-        href: "/administrador/usuarios",
-      },
-      {
-        texto: "Invitar usuario",
-        href: "/administrador/usuarios/nuevo",
-      },
-      {
-        texto: "Entrenadores",
-        href: "/administrador/entrenadores",
-      },
-      {
-        texto: "Asignar entrenador",
-        href: "/administrador/entrenadores/asignar",
-      },
-    ],
-  },
-  {
-    titulo: "Entrenamiento",
-    enlaces: [
-      {
-        texto: "Catálogo",
-        href: "/administrador/catalogo",
-      },
-      {
-        texto: "Ejercicios",
-        href: "/administrador/catalogo/ejercicios",
-      },
-      {
-        texto: "Editor de rutinas",
-        href: "/administrador/catalogo/componer",
-      },
-      {
-        texto: "Entrenamientos",
-        href: "/administrador/entrenamientos",
-      },
-    ],
-  },
-  {
-    titulo: "Sistema",
-    enlaces: [
-      {
-        texto: "Supervisión IA",
-        href: "/administrador/ia",
-      },
-      {
-        texto: "Reportes",
-        href: "/administrador/reportes",
-      },
-    ],
-  },
-];
+    {
+      titulo: "Personas",
+      enlaces: [
+        {
+          texto: "Usuarios",
+          href: "/administrador/usuarios",
+        },
+        {
+          texto: "Invitar usuario",
+          href: "/administrador/usuarios/nuevo",
+        },
+        {
+          texto: "Entrenadores",
+          href: "/administrador/entrenadores",
+        },
+        {
+          texto: "Asignar entrenador",
+          href: "/administrador/entrenadores/asignar",
+        },
+      ],
+    },
+    {
+      titulo: "Entrenamiento",
+      enlaces: [
+        {
+          texto: "Catálogo",
+          href: "/administrador/catalogo",
+        },
+        {
+          texto: "Ejercicios",
+          href: "/administrador/catalogo/ejercicios",
+        },
+        {
+          texto: "Editor de rutinas",
+          href: "/administrador/catalogo/componer",
+        },
+        {
+          texto: "Entrenamientos",
+          href: "/administrador/entrenamientos",
+        },
+      ],
+    },
+
+    {
+      titulo: "Sistema",
+      enlaces: [
+        {
+          texto: "Supervisión IA",
+          href: "/administrador/ia",
+        },
+        {
+          texto: "Reportes operativos",
+          href: "/administrador/reportes",
+        },
+        {
+          texto: "Roles y permisos",
+          href: "/administrador/roles",
+        },
+        {
+          texto: "Historial de roles",
+          href: "/administrador/roles/historial",
+        },
+      ],
+    },
+
+  ];
 
 // ==========================================
 // ENLACE DEL MENU
@@ -96,16 +106,14 @@ function Item({
       href={href}
       onClick={alNavegar}
       aria-current={activo ? "page" : undefined}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-        activo
+      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${activo
           ? "bg-cyan-400/15 font-bold text-cyan-200 ring-1 ring-cyan-400/25"
           : "text-slate-300 hover:bg-white/10 hover:text-white"
-      }`}
+        }`}
     >
       <span
-        className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-          activo ? "bg-cyan-300" : "bg-slate-600"
-        }`}
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${activo ? "bg-cyan-300" : "bg-slate-600"
+          }`}
       />
       {texto}
     </Link>
@@ -279,7 +287,7 @@ export default function MarcoAdministrador({
       <aside className="sticky top-0 hidden h-screen w-[278px] shrink-0 border-r border-white/10 bg-[#101d30] lg:block">
         <Navegacion
           cerrarSesion={cerrarSesion}
-          alNavegar={() => {}}
+          alNavegar={() => { }}
         />
       </aside>
 
