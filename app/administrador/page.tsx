@@ -748,13 +748,16 @@ async function ContenidoAdministrador({
       tipo: "seguridad" as const,
       estado: "En desarrollo" as const,
     },
-    {
-      titulo: "Reportes y auditoría",
-      descripcion:
-        "Reportes históricos y registro de acciones administrativas.",
-      tipo: "seguridad" as const,
-      estado: "En desarrollo" as const,
-    },
+    
+{
+  titulo: "Reportes operativos",
+  descripcion:
+    "Consultar indicadores administrativos, revisar resultados y exportar información en formato CSV.",
+  tipo: "seguridad" as const,
+  estado: "Disponible" as const,
+  href: "/administrador/reportes",
+},
+
   ];
 
   // ===================================================
