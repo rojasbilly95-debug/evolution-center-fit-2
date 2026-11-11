@@ -269,7 +269,7 @@ export async function GET(request: Request) {
     let consulta = supabase
       .from("sesiones_entrenamiento")
       .select(
-        "id,asignacion_id,numero_sesion,fecha_programada,estado,inicio_real,fin_real,duracion_real_min,observaciones",
+        "id,asignacion_id,numero_sesion,fecha_programada,hora_programada,estado,inicio_real,fin_real,duracion_real_min,observaciones",
         {
           count: "exact",
         }
@@ -405,8 +405,13 @@ export async function GET(request: Request) {
           id: sesion.id,
           asignacion_id: sesion.asignacion_id,
           numero_sesion: sesion.numero_sesion,
+
           fecha_programada:
             sesion.fecha_programada,
+
+          hora_programada:
+            sesion.hora_programada,
+
           estado: sesion.estado,
 
           inicio_real: sesion.inicio_real,
@@ -422,8 +427,8 @@ export async function GET(request: Request) {
 
           cliente_nombre: plan
             ? mapaClientes.get(
-                plan.cliente_id
-              ) ?? null
+              plan.cliente_id
+            ) ?? null
             : null,
 
           rutina_id:
