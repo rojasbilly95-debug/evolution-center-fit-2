@@ -13,6 +13,7 @@ export type SesionResumen = {
   id: number;
   numeroSesion: number;
   fechaProgramada: string;
+  horaProgramada?: string | null;
   estado: string;
   duracionRealMin: number | null;
 };
@@ -124,7 +125,8 @@ function fechaEnLima(): string {
 
 function mostrarFecha(
   fecha: string
-): string {
+)
+  : string {
   const partes = fecha.split("-");
 
   if (partes.length !== 3) {
@@ -134,6 +136,30 @@ function mostrarFecha(
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
+function mostrarHora(
+  hora?: string | null
+): string {
+  if (!hora) {
+    return "Horario por definir";
+  }
+
+  const partes = /^([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$/.exec(hora);
+
+  if (!partes) {
+    return "Horario por definir";
+  }
+
+  const horas = Number(partes[1]);
+  const minutos = partes[2];
+
+  const periodo =
+    horas >= 12 ? "p. m." : "a. m.";
+
+  const hora12 =
+    horas % 12 || 12;
+
+  return `${hora12}:${minutos} ${periodo}`;
+}
 // ============================================
 // 3. COMPONENTE PRINCIPAL
 // ============================================
@@ -255,14 +281,14 @@ export default function ControlAsistencia({
       if (!respuesta.ok) {
         throw new Error(
           datos.error ??
-            "No se pudo actualizar la sesión."
+          "No se pudo actualizar la sesión."
         );
       }
 
       if (
         datos.sesion?.id !== sesion.id ||
         datos.sesion.estado !==
-          ESTADO_FINAL[accion]
+        ESTADO_FINAL[accion]
       ) {
         throw new Error(
           "El resultado no se pudo confirmar. Actualiza el calendario antes de reintentar."
@@ -274,7 +300,7 @@ export default function ControlAsistencia({
 
       onActualizada(
         datos.mensaje ??
-          "La sesión se actualizó correctamente."
+        "La sesión se actualizó correctamente."
       );
     } catch (problema) {
       setError(
@@ -292,26 +318,25 @@ export default function ControlAsistencia({
   // ==========================================
 
   return (
-    <article className="rounded-xl border border-white/10 bg-slate-900/75 p-3 sm:p-4">
+    <article className="min-w-0 rounded-xl bg-white/[0.035] p-4 sm:p-5">
       {/* ENCABEZADO */}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-white">
+          <p className="text-base font-extrabold tracking-tight text-white sm:text-lg">
             Sesión #{sesion.numeroSesion}
           </p>
 
           <p className="mt-1 text-xs text-slate-400">
-            {mostrarFecha(
-              sesion.fechaProgramada
-            )}
-
+            {mostrarFecha(sesion.fechaProgramada)}
+            {" · "}
+            {mostrarHora(sesion.horaProgramada)}
             {esHoy ? " · Hoy" : ""}
           </p>
         </div>
 
         <span
-          className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${estadoVisual.clases}`}
+          className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-bold ${estadoVisual.clases}`}
         >
           {estadoVisual.nombre}
         </span>
@@ -426,7 +451,7 @@ export default function ControlAsistencia({
                     "cancelar"
                   )
                 }
-                className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/5 disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-rose-400/20 bg-rose-400/[0.04] px-4 py-2.5 text-xs font-bold text-rose-200 transition-[background-color,border-color,transform] duration-200 hover:border-rose-400/40 hover:bg-rose-400/10 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Cancelar sesión
               </button>
@@ -442,7 +467,7 @@ export default function ControlAsistencia({
             {confirmacion === "finalizar"
               ? "¿Confirmas que el entrenamiento terminó?"
               : confirmacion ===
-                  "marcar_ausente"
+                "marcar_ausente"
                 ? "¿Confirmas que el cliente no asistió?"
                 : "¿Confirmas la cancelación de esta sesión?"}
           </p>
@@ -487,7 +512,7 @@ export default function ControlAsistencia({
                 procesando ||
                 (
                   confirmacion ===
-                    "cancelar" &&
+                  "cancelar" &&
                   observaciones.trim()
                     .length < 10
                 )

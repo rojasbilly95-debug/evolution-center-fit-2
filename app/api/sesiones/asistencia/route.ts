@@ -84,7 +84,7 @@ function esResultadoAsistencia(
     esIdValido(valor.asignacionId) &&
     esIdValido(valor.numeroSesion) &&
     typeof valor.fechaProgramada ===
-      "string" &&
+    "string" &&
     typeof valor.estado === "string" &&
     typeof valor.mensaje === "string" &&
     (
@@ -98,13 +98,13 @@ function esResultadoAsistencia(
     (
       valor.observaciones === null ||
       typeof valor.observaciones ===
-        "string"
+      "string"
     ) &&
     (
       valor.duracionRealMin === null ||
       (
         typeof valor.duracionRealMin ===
-          "number" &&
+        "number" &&
         Number.isFinite(
           valor.duracionRealMin
         ) &&
@@ -388,7 +388,7 @@ export async function POST(
           string
         > = {
           iniciar:
-            "No se puede iniciar: debe estar programada y corresponder a la fecha actual.",
+            "No se puede iniciar la sesión. Debe estar programada para hoy y haber llegado su hora de inicio.",
 
           finalizar:
             "No se puede finalizar: debe estar en curso y haber transcurrido al menos un minuto.",
@@ -444,7 +444,7 @@ export async function POST(
     if (
       resultado.id !== sesionId ||
       resultado.estado !==
-        ESTADO_POR_ACCION[accion]
+      ESTADO_POR_ACCION[accion]
     ) {
       console.error(
         "La respuesta SQL no coincide con la acción solicitada.",
