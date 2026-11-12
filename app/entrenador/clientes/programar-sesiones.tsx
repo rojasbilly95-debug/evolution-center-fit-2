@@ -200,6 +200,9 @@ export default function ProgramarSesiones({
   const [dias, setDias] =
     useState<number[]>([]);
 
+  const [horaProgramada, setHoraProgramada] =
+    useState("");
+
   const [consulta, setConsulta] =
     useState(0);
 
@@ -219,17 +222,17 @@ export default function ProgramarSesiones({
     setMostrarTodas,
   ] = useState(false);
 
-  
-type FiltroSesion =
-  | "todas"
-  | "programada"
-  | "en_curso"
-  | "realizada"
-  | "ausente"
-  | "cancelada";
 
-const [filtroSesion, setFiltroSesion] =
-  useState<FiltroSesion>("todas");
+  type FiltroSesion =
+    | "todas"
+    | "programada"
+    | "en_curso"
+    | "realizada"
+    | "ausente"
+    | "cancelada";
+
+  const [filtroSesion, setFiltroSesion] =
+    useState<FiltroSesion>("todas");
 
   // Sesion seleccionada para ver ejercicios.
 
@@ -267,7 +270,7 @@ const [filtroSesion, setFiltroSesion] =
         if (!respuesta.ok) {
           throw new Error(
             datos.error ??
-              "No se pudo consultar la programación."
+            "No se pudo consultar la programación."
           );
         }
 
@@ -325,22 +328,27 @@ const [filtroSesion, setFiltroSesion] =
     () =>
       plan?.fechaFin
         ? calcularFechas(
-            plan.fechaInicio,
-            plan.fechaFin,
-            dias
-          )
+          plan.fechaInicio,
+          plan.fechaFin,
+          dias
+        )
         : [],
     [plan, dias]
   );
 
   const diasCorrectos = Boolean(
     plan &&
-      Number.isInteger(
-        plan.frecuenciaSemanal
-      ) &&
-      dias.length ===
-        plan.frecuenciaSemanal
+    Number.isInteger(
+      plan.frecuenciaSemanal
+    ) &&
+    dias.length ===
+    plan.frecuenciaSemanal
   );
+
+  const horaValida =
+    /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(
+      horaProgramada
+    );
 
   const planProgramable =
     plan?.estado === "programada" ||
@@ -348,13 +356,14 @@ const [filtroSesion, setFiltroSesion] =
 
   const puedeProgramar = Boolean(
     !estado.cargando &&
-      !estado.error &&
-      !guardando &&
-      !yaProgramadas &&
-      planProgramable &&
-      plan?.fechaFin &&
-      diasCorrectos &&
-      fechasPrevistas.length > 0
+    !estado.error &&
+    !guardando &&
+    !yaProgramadas &&
+    planProgramable &&
+    plan?.fechaFin &&
+    diasCorrectos &&
+    horaValida &&
+    fechasPrevistas.length > 0
   );
 
   // ==========================================
@@ -394,14 +403,14 @@ const [filtroSesion, setFiltroSesion] =
     setDias((anteriores) =>
       anteriores.includes(numero)
         ? anteriores.filter(
-            (dia) => dia !== numero
-          )
+          (dia) => dia !== numero
+        )
         : [
-            ...anteriores,
-            numero,
-          ].sort(
-            (a, b) => a - b
-          )
+          ...anteriores,
+          numero,
+        ].sort(
+          (a, b) => a - b
+        )
     );
 
     setErrorGuardar("");
@@ -430,10 +439,11 @@ const [filtroSesion, setFiltroSesion] =
             "Content-Type":
               "application/json",
           },
-          body: JSON.stringify({
-            asignacionId,
-            diasSemana: dias,
-          }),
+body: JSON.stringify({
+  asignacionId,
+  diasSemana: dias,
+  horaProgramada,
+}),
           cache: "no-store",
         }
       );
@@ -446,7 +456,7 @@ const [filtroSesion, setFiltroSesion] =
       if (!respuesta.ok) {
         throw new Error(
           datos.error ??
-            "No se pudieron programar las sesiones."
+          "No se pudieron programar las sesiones."
         );
       }
 
@@ -460,7 +470,7 @@ const [filtroSesion, setFiltroSesion] =
 
       setMensaje(
         datos.mensaje ??
-          `Programación registrada: ${datos.total} sesiones.`
+        `Programación registrada: ${datos.total} sesiones.`
       );
 
       setEstado((anterior) => ({
@@ -502,15 +512,15 @@ const [filtroSesion, setFiltroSesion] =
   // ==========================================
 
 
-const sesionesFiltradas = estado.sesiones.filter(
-  (sesion) =>
-    filtroSesion === "todas" ||
-    sesion.estado === filtroSesion
-);
+  const sesionesFiltradas = estado.sesiones.filter(
+    (sesion) =>
+      filtroSesion === "todas" ||
+      sesion.estado === filtroSesion
+  );
 
-const sesionesVisibles = mostrarTodas
-  ? sesionesFiltradas
-  : sesionesFiltradas.slice(0, 8);
+  const sesionesVisibles = mostrarTodas
+    ? sesionesFiltradas
+    : sesionesFiltradas.slice(0, 8);
 
 
   const realizadas =
@@ -736,201 +746,198 @@ const sesionesVisibles = mostrarTodas
                 ======================== */}
 
 
-{/* ========================================
+                {/* ========================================
     FILTROS DE SESIONES
 ======================================== */}
 
-<div className="mt-7 rounded-2xl border border-white/10 bg-[#101d31] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
-  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h3 className="text-lg font-bold text-white">
-        Sesiones del entrenamiento
-      </h3>
+                <div className="mt-7 rounded-2xl border border-white/10 bg-[#101d31] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-white">
+                        Sesiones del entrenamiento
+                      </h3>
 
-      <p className="mt-1 text-sm text-slate-400">
-        Filtra las sesiones según su estado.
-      </p>
-    </div>
+                      <p className="mt-1 text-sm text-slate-400">
+                        Filtra las sesiones según su estado.
+                      </p>
+                    </div>
 
-    <span className="self-start rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
-      {sesionesFiltradas.length} de{" "}
-      {estado.sesiones.length} sesiones
-    </span>
-  </div>
+                    <span className="self-start rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+                      {sesionesFiltradas.length} de{" "}
+                      {estado.sesiones.length} sesiones
+                    </span>
+                  </div>
 
-  <div
-    role="group"
-    aria-label="Filtrar sesiones por estado"
-    className="mt-4 flex flex-wrap gap-2"
-  >
-    {(
-      [
-        { valor: "todas", texto: "Todas" },
-        { valor: "programada", texto: "Programadas" },
-        { valor: "en_curso", texto: "En curso" },
-        { valor: "realizada", texto: "Realizadas" },
-        { valor: "ausente", texto: "Ausentes" },
-        { valor: "cancelada", texto: "Canceladas" },
-      ] as const
-    ).map((opcion) => (
-      <button
-        key={opcion.valor}
-        type="button"
-        aria-pressed={filtroSesion === opcion.valor}
-        onClick={() => {
-          setFiltroSesion(opcion.valor);
-          setMostrarTodas(false);
-        }}
-        className={`min-h-11 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-sm ${
-          filtroSesion === opcion.valor
-            ? "border-cyan-400 bg-cyan-400 text-[#07121e] shadow-[0_6px_20px_rgba(6,182,212,0.15)]"
-            : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
-        }`}
-      >
-        {opcion.texto}
-      </button>
-    ))}
-  </div>
-</div>
+                  <div
+                    role="group"
+                    aria-label="Filtrar sesiones por estado"
+                    className="mt-4 flex flex-wrap gap-2"
+                  >
+                    {(
+                      [
+                        { valor: "todas", texto: "Todas" },
+                        { valor: "programada", texto: "Programadas" },
+                        { valor: "en_curso", texto: "En curso" },
+                        { valor: "realizada", texto: "Realizadas" },
+                        { valor: "ausente", texto: "Ausentes" },
+                        { valor: "cancelada", texto: "Canceladas" },
+                      ] as const
+                    ).map((opcion) => (
+                      <button
+                        key={opcion.valor}
+                        type="button"
+                        aria-pressed={filtroSesion === opcion.valor}
+                        onClick={() => {
+                          setFiltroSesion(opcion.valor);
+                          setMostrarTodas(false);
+                        }}
+                        className={`min-h-11 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-sm ${filtroSesion === opcion.valor
+                          ? "border-cyan-400 bg-cyan-400 text-[#07121e] shadow-[0_6px_20px_rgba(6,182,212,0.15)]"
+                          : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+                          }`}
+                      >
+                        {opcion.texto}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-{/* ========================================
+                {/* ========================================
     LISTADO RESPONSIVE DE SESIONES
 ======================================== */}
 
-<ol className="mt-5 grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
-  {sesionesVisibles.map((sesion) => {
-    const ejerciciosAbiertos =
-      sesionAbierta === sesion.id;
+                <ol className="mt-5 grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
+                  {sesionesVisibles.map((sesion) => {
+                    const ejerciciosAbiertos =
+                      sesionAbierta === sesion.id;
 
-    const panelId =
-      `ejercicios-sesion-${sesion.id}`;
+                    const panelId =
+                      `ejercicios-sesion-${sesion.id}`;
 
-    return (
-      <li
-        key={sesion.id}
-        className="group min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#162840] to-[#0e1a2e] p-3 shadow-[0_14px_36px_rgba(0,0,0,0.2)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_22px_46px_rgba(0,0,0,0.28)] sm:p-4"
-      >
-        {/* CONTROL DE ASISTENCIA */}
+                    return (
+                      <li
+                        key={sesion.id}
+                        className="group min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#162840] to-[#0e1a2e] p-3 shadow-[0_14px_36px_rgba(0,0,0,0.2)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_22px_46px_rgba(0,0,0,0.28)] sm:p-4"
+                      >
+                        {/* CONTROL DE ASISTENCIA */}
 
-        <ControlAsistencia
-          sesion={sesion}
-          estadoPlan={plan.estado}
-          onActualizada={(nuevoMensaje) => {
-            setMensaje(nuevoMensaje);
-            actualizar();
-          }}
-        />
+                        <ControlAsistencia
+                          sesion={sesion}
+                          estadoPlan={plan.estado}
+                          onActualizada={(nuevoMensaje) => {
+                            setMensaje(nuevoMensaje);
+                            actualizar();
+                          }}
+                        />
 
-        {/* EJERCICIOS EN LA MISMA TARJETA */}
+                        {/* EJERCICIOS EN LA MISMA TARJETA */}
 
-        <div className="mt-3 rounded-xl border border-white/[0.07] bg-[#091628]/70 p-3 sm:p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-white">
-                Ejercicios y series
-              </p>
+                        <div className="mt-3 rounded-xl border border-white/[0.07] bg-[#091628]/70 p-3 sm:p-4">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-white">
+                                Ejercicios y series
+                              </p>
 
-              <p className="mt-1 text-xs leading-5 text-slate-400">
-                Consulta los objetivos y registra
-                las series realizadas durante esta sesión.
-              </p>
-            </div>
+                              <p className="mt-1 text-xs leading-5 text-slate-400">
+                                Consulta los objetivos y registra
+                                las series realizadas durante esta sesión.
+                              </p>
+                            </div>
 
-            <button
-              type="button"
-              aria-expanded={ejerciciosAbiertos}
-              aria-controls={panelId}
-              onClick={() =>
-                alternarEjercicios(sesion.id)
-              }
-              className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
-                ejerciciosAbiertos
-                  ? "border-emerald-400/35 bg-emerald-400/10 text-emerald-200"
-                  : "border-cyan-400/30 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20"
-              }`}
-            >
-              {ejerciciosAbiertos
-                ? "Ocultar ejercicios"
-                : "Ver ejercicios"}
+                            <button
+                              type="button"
+                              aria-expanded={ejerciciosAbiertos}
+                              aria-controls={panelId}
+                              onClick={() =>
+                                alternarEjercicios(sesion.id)
+                              }
+                              className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${ejerciciosAbiertos
+                                ? "border-emerald-400/35 bg-emerald-400/10 text-emerald-200"
+                                : "border-cyan-400/30 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20"
+                                }`}
+                            >
+                              {ejerciciosAbiertos
+                                ? "Ocultar ejercicios"
+                                : "Ver ejercicios"}
 
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className={`h-4 w-4 transition-transform duration-200 ${
-                  ejerciciosAbiertos
-                    ? "rotate-180"
-                    : ""
-                }`}
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
-          </div>
+                              <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className={`h-4 w-4 transition-transform duration-200 ${ejerciciosAbiertos
+                                  ? "rotate-180"
+                                  : ""
+                                  }`}
+                              >
+                                <path d="m6 9 6 6 6-6" />
+                              </svg>
+                            </button>
+                          </div>
 
-          {/* REGISTRO DE EJERCICIOS Y SERIES */}
+                          {/* REGISTRO DE EJERCICIOS Y SERIES */}
 
-          <div
-            id={panelId}
-            hidden={!ejerciciosAbiertos}
-            className="mt-4 space-y-4 border-t border-white/10 pt-4"
-          >
-            {ejerciciosAbiertos && (
-              <>
-                <RegistroEjercicios
-                  sesionId={sesion.id}
-                />
+                          <div
+                            id={panelId}
+                            hidden={!ejerciciosAbiertos}
+                            className="mt-4 space-y-4 border-t border-white/10 pt-4"
+                          >
+                            {ejerciciosAbiertos && (
+                              <>
+                                <RegistroEjercicios
+                                  sesionId={sesion.id}
+                                />
 
-                <ResumenCumplimiento
-                  key={`${sesion.id}-${consulta}`}
-                  sesionId={sesion.id}
-                />
-              </>
-            )}
-          </div>
-        </div>
-      </li>
-    );
-  })}
-</ol>
+                                <ResumenCumplimiento
+                                  key={`${sesion.id}-${consulta}`}
+                                  sesionId={sesion.id}
+                                />
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
 
-{/* MENSAJE CUANDO NO HAY COINCIDENCIAS */}
+                {/* MENSAJE CUANDO NO HAY COINCIDENCIAS */}
 
-{sesionesFiltradas.length === 0 && (
-  <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-[#111d31] p-7 text-center">
-    <p className="font-semibold text-white">
-      No hay sesiones en este estado
-    </p>
+                {sesionesFiltradas.length === 0 && (
+                  <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-[#111d31] p-7 text-center">
+                    <p className="font-semibold text-white">
+                      No hay sesiones en este estado
+                    </p>
 
-    <p className="mt-2 text-sm text-slate-400">
-      Selecciona otro filtro para consultar
-      las sesiones del plan.
-    </p>
-  </div>
-)}
+                    <p className="mt-2 text-sm text-slate-400">
+                      Selecciona otro filtro para consultar
+                      las sesiones del plan.
+                    </p>
+                  </div>
+                )}
 
 
                 {/* ========================
                     MOSTRAR TODAS
                 ======================== */}
 
-{sesionesFiltradas.length > 8 && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setMostrarTodas(
-                          (valor) => !valor
-                        )
-                      }
-                      className="text-xs font-semibold text-cyan-300 underline"
-                    >
-                      {mostrarTodas
-                        ? "Mostrar menos"
-                        : "Ver todas las sesiones"}
-                    </button>
-                  )}
+                {sesionesFiltradas.length > 8 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setMostrarTodas(
+                        (valor) => !valor
+                      )
+                    }
+                    className="text-xs font-semibold text-cyan-300 underline"
+                  >
+                    {mostrarTodas
+                      ? "Mostrar menos"
+                      : "Ver todas las sesiones"}
+                  </button>
+                )}
 
                 {/* ========================
                     INFORMACION DEL MODULO
@@ -1023,11 +1030,10 @@ const sesionesVisibles = mostrarTodas
                             !planProgramable ||
                             !plan.fechaFin
                           }
-                          className={`min-h-12 rounded-lg border px-1 py-2 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm ${
-                            seleccionado
-                              ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-200"
-                              : "border-white/15 bg-slate-900 text-slate-300 hover:border-cyan-400/40"
-                          }`}
+                          className={`min-h-12 rounded-lg border px-1 py-2 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm ${seleccionado
+                            ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-200"
+                            : "border-white/15 bg-slate-900 text-slate-300 hover:border-cyan-400/40"
+                            }`}
                         >
                           {dia.nombre}
                         </button>
@@ -1036,15 +1042,58 @@ const sesionesVisibles = mostrarTodas
                   </div>
 
                   <p
-                    className={`mt-2 text-xs ${
-                      diasCorrectos
-                        ? "text-emerald-300"
-                        : "text-slate-400"
-                    }`}
+                    className={`mt-2 text-xs ${diasCorrectos
+                      ? "text-emerald-300"
+                      : "text-slate-400"
+                      }`}
                   >
                     {dias.length} de{" "}
                     {plan.frecuenciaSemanal}{" "}
                     días seleccionados
+                  </p>
+                </div>
+
+                {/* ====================================
+    HORARIO DE ENTRENAMIENTO
+==================================== */}
+
+                <div className="rounded-xl border border-cyan-400/20 bg-cyan-950/10 p-4">
+                  <label
+                    htmlFor={`hora-sesion-${asignacionId}`}
+                    className="block text-sm font-semibold text-white"
+                  >
+                    Hora de entrenamiento
+                  </label>
+
+                  <p className="mt-1 text-xs text-slate-400">
+                    Selecciona la hora en que comenzarán
+                    las sesiones (hora de Lima, Perú).
+                  </p>
+
+                  <input
+                    id={`hora-sesion-${asignacionId}`}
+                    type="time"
+                    step={60}
+                    value={horaProgramada}
+                    onChange={(evento) => {
+                      setHoraProgramada(evento.target.value);
+                      setErrorGuardar("");
+                      setMensaje("");
+                    }}
+                    disabled={
+                      guardando ||
+                      yaProgramadas ||
+                      !planProgramable ||
+                      !plan.fechaFin
+                    }
+                    required
+                    className="mt-3 min-h-11 w-full rounded-lg border border-white/15 bg-slate-900 px-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none disabled:opacity-40"
+                  />
+
+                  <p className="mt-2 text-xs text-slate-400">
+                    {horaValida
+                      ? `Horario seleccionado: ${horaProgramada}`
+                      : "Debes seleccionar una hora válida para continuar."}
                   </p>
                 </div>
 
@@ -1054,7 +1103,7 @@ const sesionesVisibles = mostrarTodas
 
                 {diasCorrectos &&
                   fechasPrevistas.length >
-                    0 && (
+                  0 && (
                     <div className="rounded-lg border border-cyan-400/20 bg-cyan-950/15 p-3">
                       <p className="text-sm font-semibold text-cyan-200">
                         Vista previa:{" "}
@@ -1084,13 +1133,13 @@ const sesionesVisibles = mostrarTodas
 
                       {fechasPrevistas.length >
                         8 && (
-                        <p className="mt-2 text-xs text-slate-400">
-                          Y{" "}
-                          {fechasPrevistas.length -
-                            8}{" "}
-                          sesiones más.
-                        </p>
-                      )}
+                          <p className="mt-2 text-xs text-slate-400">
+                            Y{" "}
+                            {fechasPrevistas.length -
+                              8}{" "}
+                            sesiones más.
+                          </p>
+                        )}
                     </div>
                   )}
 
@@ -1123,12 +1172,11 @@ const sesionesVisibles = mostrarTodas
                 >
                   {guardando
                     ? "Programando sesiones..."
-                    : `Confirmar programación${
-                        fechasPrevistas.length >
-                        0
-                          ? ` (${fechasPrevistas.length} sesiones)`
-                          : ""
-                      }`}
+                    : `Confirmar programación${fechasPrevistas.length >
+                      0
+                      ? ` (${fechasPrevistas.length} sesiones)`
+                      : ""
+                    }`}
                 </button>
 
                 <p className="text-xs leading-5 text-slate-500">

@@ -12,6 +12,7 @@ type ResultadoProgramacion = {
   creadas: number;
   total: number;
   yaProgramadas: boolean;
+  horaProgramada?: string;
   mensaje: string;
 };
 
@@ -104,6 +105,7 @@ export async function POST(request: Request) {
     const {
       asignacionId,
       diasSemana,
+      horaProgramada,
     } = body;
 
     if (
@@ -124,6 +126,18 @@ export async function POST(request: Request) {
       );
     }
 
+
+    if (
+      typeof horaProgramada !== "string" ||
+      !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(
+        horaProgramada
+      )
+    ) {
+      return errorJson(
+        "Selecciona una hora válida en formato HH:mm.",
+        400
+      );
+    }
     // =====================================
     // 2. AUTENTICAR AL ENTRENADOR
     // =====================================
@@ -322,11 +336,12 @@ export async function POST(request: Request) {
       data,
       error: errorRpc,
     } = await admin.rpc(
-      "programar_sesiones_rutina",
+      "programar_sesiones_rutina_con_horario",
       {
         p_asignacion_id: asignacionId,
         p_entrenador_id: entrenadorId,
         p_dias_semana: diasSemana,
+        p_hora_programada: `${horaProgramada}:00`,
       }
     );
 
@@ -357,6 +372,13 @@ export async function POST(request: Request) {
         return errorJson(
           "Los días de entrenamiento no son válidos.",
           400
+        );
+      }
+
+      if (errorRpc.code === "23P01") {
+        return errorJson(
+          "Existe un conflicto de horario con otro entrenamiento del cliente o del entrenador.",
+          409
         );
       }
 
@@ -399,7 +421,11 @@ export async function POST(request: Request) {
 
     if (
       !esResultadoProgramacion(data) ||
-      data.asignacionId !== asignacionId
+      data.asignacionId !== asignacionId ||
+      (
+        !data.yaProgramadas &&
+        data.horaProgramada !== horaProgramada
+      )
     ) {
       console.error(
         "Respuesta inesperada de programar_sesiones_rutina"
@@ -640,9 +666,9 @@ export async function GET(request: Request) {
         .from(
           "sesiones_entrenamiento"
         )
-.select(
-  "id,numero_sesion,fecha_programada,hora_programada,estado,duracion_real_min,inicio_real,fin_real"
-)
+        .select(
+          "id,numero_sesion,fecha_programada,hora_programada,estado,duracion_real_min,inicio_real,fin_real"
+        )
         .eq(
           "asignacion_id",
           asignacionId
@@ -705,30 +731,30 @@ export async function GET(request: Request) {
               .nombre,
         },
 
-sesiones: (
-  consultaSesiones.data ??
-  []
-).map(
-  (sesion) => ({
-    id: sesion.id,
-    numeroSesion:
-      sesion.numero_sesion,
-fechaProgramada:
-  sesion.fecha_programada,
+        sesiones: (
+          consultaSesiones.data ??
+          []
+        ).map(
+          (sesion) => ({
+            id: sesion.id,
+            numeroSesion:
+              sesion.numero_sesion,
+            fechaProgramada:
+              sesion.fecha_programada,
 
-horaProgramada:
-  sesion.hora_programada,
+            horaProgramada:
+              sesion.hora_programada,
 
-estado:
-  sesion.estado,
-    duracionRealMin:
-      sesion.duracion_real_min,
-    inicioReal:
-      sesion.inicio_real,
-    finReal:
-      sesion.fin_real,
-  })
-),
+            estado:
+              sesion.estado,
+            duracionRealMin:
+              sesion.duracion_real_min,
+            inicioReal:
+              sesion.inicio_real,
+            finReal:
+              sesion.fin_real,
+          })
+        ),
       },
       {
         status: 200,
