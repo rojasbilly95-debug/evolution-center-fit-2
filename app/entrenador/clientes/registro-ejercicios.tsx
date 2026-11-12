@@ -255,6 +255,20 @@ function FilaSerie({
     useState("");
 
   // ==========================================
+  // FASE 117.6: DETECTAR CAMBIOS SIN GUARDAR
+  // ==========================================
+
+  const cambiosSinGuardar =
+    repeticiones !==
+      (registro?.repeticiones_realizadas?.toString() ?? "") ||
+    duracion !==
+      (registro?.duracion_real_seg?.toString() ?? "") ||
+    peso !==
+      (registro?.peso_kg?.toString() ?? "") ||
+    completada !== (registro?.completada ?? false) ||
+    observaciones !== (registro?.observaciones ?? "");
+
+  // ==========================================
   // 3. GUARDAR UNA SERIE
   // ==========================================
 
@@ -444,6 +458,17 @@ function FilaSerie({
               : "Sin registrar"}
         </span>
       </div>
+
+
+
+{editable && cambiosSinGuardar && (
+  <p
+    role="status"
+    className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200"
+  >
+    Tienes cambios sin guardar en esta serie.
+  </p>
+)}
 
       {/* ====================================
           DATOS DE LA SERIE
