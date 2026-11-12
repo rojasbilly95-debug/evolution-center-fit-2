@@ -641,7 +641,7 @@ export async function GET(request: Request) {
           "sesiones_entrenamiento"
         )
 .select(
-  "id,numero_sesion,fecha_programada,estado,duracion_real_min,inicio_real,fin_real"
+  "id,numero_sesion,fecha_programada,hora_programada,estado,duracion_real_min,inicio_real,fin_real"
 )
         .eq(
           "asignacion_id",
@@ -713,10 +713,14 @@ sesiones: (
     id: sesion.id,
     numeroSesion:
       sesion.numero_sesion,
-    fechaProgramada:
-      sesion.fecha_programada,
-    estado:
-      sesion.estado,
+fechaProgramada:
+  sesion.fecha_programada,
+
+horaProgramada:
+  sesion.hora_programada,
+
+estado:
+  sesion.estado,
     duracionRealMin:
       sesion.duracion_real_min,
     inicioReal:
