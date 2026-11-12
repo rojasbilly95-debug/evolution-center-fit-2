@@ -175,6 +175,115 @@ function nombreEstado(
   }
 }
 
+
+ // ============================================
+ // FASE 118.1: EVOLUCIÓN SEMANAL VERIFICABLE
+ // ============================================
+
+function EvolucionSemanal({
+  semanas,
+}: {
+  semanas: Semana[];
+}) {
+  const ordenadas = [...semanas].sort(
+    (a, b) => a.numero - b.numero
+  );
+
+  return (
+    <div className="rounded-2xl border border-cyan-400/20 bg-slate-900/50 p-4 sm:p-5">
+      <h6 className="text-sm font-bold text-white">
+        Evolución semanal de asistencia
+      </h6>
+
+      <p className="mt-1 text-xs leading-5 text-slate-400">
+        Relación descriptiva entre sesiones realizadas
+        y programadas. Solo se muestra porcentaje
+        cuando la semana está verificada.
+        No sustituye el indicador oficial de asistencia.
+      </p>
+
+      {ordenadas.length === 0 ? (
+        <p className="mt-4 text-sm text-slate-400">
+          Aún no existen semanas para este plan.
+        </p>
+      ) : (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {ordenadas.map((semana) => {
+            const evaluable =
+              semana.estado === "verificada" &&
+              semana.programadas > 0;
+
+            const porcentaje = evaluable
+              ? Math.min(
+                  100,
+                  Math.max(
+                    0,
+                    Math.round(
+                      (semana.realizadas /
+                        semana.programadas) *
+                        100
+                    )
+                  )
+                )
+              : null;
+
+            return (
+              <div
+                key={semana.numero}
+                className="rounded-xl border border-white/10 bg-slate-950/50 p-3"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-slate-200">
+                    Semana {semana.numero}
+                  </span>
+
+                  <span className="text-xs font-bold tabular-nums text-cyan-200">
+                    {porcentaje === null
+                      ? "Sin medición"
+                      : `${porcentaje}%`}
+                  </span>
+                </div>
+
+                <div
+                  role="progressbar"
+                  aria-label={`Sesiones realizadas en semana ${semana.numero}`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={porcentaje ?? undefined}
+                  aria-valuetext={
+                    porcentaje === null
+                      ? "Sin porcentaje verificable"
+                      : `${porcentaje}% de sesiones programadas realizadas`
+                  }
+                  className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-700"
+                >
+                  <div
+                    aria-hidden="true"
+                    className="h-full rounded-full bg-cyan-400 transition-[width] duration-300"
+                    style={{
+                      width: `${porcentaje ?? 0}%`,
+                    }}
+                  />
+                </div>
+
+                <p className="mt-2 text-xs text-slate-400">
+                  {semana.realizadas} realizadas de{" "}
+                  {semana.programadas} programadas
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  {nombreEstado(semana.estado)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 // ============================================
 // 4. COMPONENTE PRINCIPAL
 // ============================================
@@ -441,6 +550,61 @@ export default function ResumenAdherencia({
                 </p>
               </div>
             </div>
+
+
+
+{/* ==========================================
+    FASE 118.2: CALIDAD DEL REGISTRO
+========================================== */}
+
+{(asistencia.pendientesVencidas > 0 ||
+  cumplimiento.sesionesSinEvidencia > 0 ||
+  cumplimiento.sesionesIncompletas > 0) && (
+  <div
+    role="status"
+    className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] p-4"
+  >
+    <p className="text-sm font-bold text-amber-200">
+      Registros pendientes de revisión
+    </p>
+
+    <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-slate-300">
+      {asistencia.pendientesVencidas > 0 && (
+        <li>
+          {asistencia.pendientesVencidas} sesiones
+          vencidas pendientes de resolver.
+        </li>
+      )}
+
+      {cumplimiento.sesionesSinEvidencia > 0 && (
+        <li>
+          {cumplimiento.sesionesSinEvidencia} sesiones
+          finalizadas sin evidencia de series.
+        </li>
+      )}
+
+      {cumplimiento.sesionesIncompletas > 0 && (
+        <li>
+          {cumplimiento.sesionesIncompletas} sesiones
+          con registros incompletos.
+        </li>
+      )}
+    </ul>
+
+    <p className="mt-2 text-xs text-amber-100/80">
+      Los registros pendientes no se convierten
+      automáticamente en ausencias ni incumplimientos.
+    </p>
+  </div>
+)}
+
+{/* ==========================================
+    FASE 118.1: EVOLUCIÓN SEMANAL
+========================================== */}
+
+<EvolucionSemanal
+  semanas={continuidad.semanas}
+/>
 
             {/* CONTINUIDAD SEMANAL */}
 
