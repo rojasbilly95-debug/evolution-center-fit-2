@@ -365,7 +365,7 @@ export async function GET(request: Request) {
     const diasPlan =
       Math.floor(
         (fin.getTime() - inicio.getTime()) /
-          86400000
+        86400000
       ) + 1;
 
     if (diasPlan > 366) {
@@ -419,9 +419,9 @@ export async function GET(request: Request) {
       sesiones.some(
         (sesion) =>
           sesion.fecha_programada <
-            inicioTexto ||
+          inicioTexto ||
           sesion.fecha_programada >
-            finTexto
+          finTexto
       )
     ) {
       return fallo(
@@ -673,10 +673,10 @@ export async function GET(request: Request) {
 
         const semana = fecha
           ? Math.floor(
-              (fecha.getTime() -
-                inicio.getTime()) /
-                (7 * 86400000)
-            ) + 1
+            (fecha.getTime() -
+              inicio.getTime()) /
+            (7 * 86400000)
+          ) + 1
           : 0;
 
         return {
@@ -691,27 +691,27 @@ export async function GET(request: Request) {
           cobertura:
             evaluable && objetivo > 0
               ? porcentaje(
-                  registradas,
-                  objetivo
-                )
+                registradas,
+                objetivo
+              )
               : null,
 
           avance:
             evaluable && objetivo > 0
               ? porcentaje(
-                  completadas,
-                  objetivo
-                )
+                completadas,
+                objetivo
+              )
               : null,
 
           cumplimiento:
             sesion.estado ===
               "realizada" &&
-            completa
+              completa
               ? porcentaje(
-                  completadas,
-                  objetivo
-                )
+                completadas,
+                objetivo
+              )
               : null,
 
           calidad,
@@ -758,16 +758,16 @@ export async function GET(request: Request) {
               ? 0
               : "",
 
-          m.ejercicios || "",
-          m.objetivo || "",
+          m.ejercicios,
+          m.objetivo,
 
           m.sesion.estado === "en_curso" ||
-          m.sesion.estado === "realizada"
+            m.sesion.estado === "realizada"
             ? m.registradas
             : "",
 
           m.sesion.estado === "en_curso" ||
-          m.sesion.estado === "realizada"
+            m.sesion.estado === "realizada"
             ? m.completadas
             : "",
 
@@ -874,7 +874,7 @@ export async function GET(request: Request) {
           estadoSemana = "cancelada";
         } else if (
           realizadas.length +
-            ausentes.length !==
+          ausentes.length !==
           activas.length
         ) {
           estadoSemana = "pendiente";
@@ -912,8 +912,8 @@ export async function GET(request: Request) {
 
       const cumplimiento =
         verificable &&
-        realizadas.length > 0 &&
-        sesionesCompletas
+          realizadas.length > 0 &&
+          sesionesCompletas
           ? porcentaje(hechas, metas)
           : null;
 
@@ -930,10 +930,10 @@ export async function GET(request: Request) {
 
         verificable
           ? porcentaje(
-              realizadas.length,
-              realizadas.length +
-                ausentes.length
-            )
+            realizadas.length,
+            realizadas.length +
+            ausentes.length
+          )
           : null,
 
         verificable
