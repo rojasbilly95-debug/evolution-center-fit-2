@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 // ============================================
 // EVOLUTION CENTER FIT 2.0
-// PASO 65.10 - ADHERENCIA Y EXPORTACION CSV
+// FASE 118.6 - RESUMEN INTEGRAL DE ADHERENCIA
 // ============================================
 
 type Indicador = {
@@ -133,10 +133,7 @@ function Tarjeta({
             width: `${
               Math.min(
                 100,
-                Math.max(
-                  0,
-                  valor ?? 0
-                )
+                Math.max(0, valor ?? 0)
               )
             }%`,
           }}
@@ -175,10 +172,9 @@ function nombreEstado(
   }
 }
 
-
- // ============================================
- // FASE 118.1: EVOLUCIÓN SEMANAL VERIFICABLE
- // ============================================
+// ============================================
+// FASE 118.6: EVOLUCIÓN SEMANAL CORREGIDA
+// ============================================
 
 function EvolucionSemanal({
   semanas,
@@ -197,9 +193,10 @@ function EvolucionSemanal({
 
       <p className="mt-1 text-xs leading-5 text-slate-400">
         Relación descriptiva entre sesiones realizadas
-        y programadas. Solo se muestra porcentaje
-        cuando la semana está verificada.
-        No sustituye el indicador oficial de asistencia.
+        y programadas no canceladas. Solo se muestra
+        el porcentaje cuando la semana está verificada.
+        Este gráfico no sustituye el indicador oficial
+        de asistencia.
       </p>
 
       {ordenadas.length === 0 ? (
@@ -209,9 +206,27 @@ function EvolucionSemanal({
       ) : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ordenadas.map((semana) => {
+
+            // ====================================
+            // EXCLUIR SESIONES CANCELADAS
+            // ====================================
+
+            const sesionesNoCanceladas = Math.max(
+              0,
+              semana.programadas - semana.canceladas
+            );
+
+            // ====================================
+            // VERIFICAR SI LA SEMANA ES EVALUABLE
+            // ====================================
+
             const evaluable =
               semana.estado === "verificada" &&
-              semana.programadas > 0;
+              sesionesNoCanceladas > 0;
+
+            // ====================================
+            // CALCULAR PORCENTAJE VISUAL
+            // ====================================
 
             const porcentaje = evaluable
               ? Math.min(
@@ -219,9 +234,10 @@ function EvolucionSemanal({
                   Math.max(
                     0,
                     Math.round(
-                      (semana.realizadas /
-                        semana.programadas) *
-                        100
+                      (
+                        semana.realizadas /
+                        sesionesNoCanceladas
+                      ) * 100
                     )
                   )
                 )
@@ -244,16 +260,20 @@ function EvolucionSemanal({
                   </span>
                 </div>
 
+                {/* BARRA DE PROGRESO */}
+
                 <div
                   role="progressbar"
                   aria-label={`Sesiones realizadas en semana ${semana.numero}`}
                   aria-valuemin={0}
                   aria-valuemax={100}
-                  aria-valuenow={porcentaje ?? undefined}
+                  aria-valuenow={
+                    porcentaje ?? undefined
+                  }
                   aria-valuetext={
                     porcentaje === null
                       ? "Sin porcentaje verificable"
-                      : `${porcentaje}% de sesiones programadas realizadas`
+                      : `${porcentaje}% de sesiones no canceladas realizadas`
                   }
                   className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-700"
                 >
@@ -266,10 +286,22 @@ function EvolucionSemanal({
                   />
                 </div>
 
+                {/* SESIONES EFECTIVAS */}
+
                 <p className="mt-2 text-xs text-slate-400">
                   {semana.realizadas} realizadas de{" "}
-                  {semana.programadas} programadas
+                  {sesionesNoCanceladas} no canceladas
                 </p>
+
+                {/* SESIONES CANCELADAS */}
+
+                {semana.canceladas > 0 && (
+                  <p className="mt-1 text-xs text-amber-200">
+                    {semana.canceladas} sesiones canceladas
+                  </p>
+                )}
+
+                {/* ESTADO DE LA SEMANA */}
 
                 <p className="mt-1 text-xs text-slate-500">
                   {nombreEstado(semana.estado)}
@@ -283,7 +315,6 @@ function EvolucionSemanal({
   );
 }
 
-
 // ============================================
 // 4. COMPONENTE PRINCIPAL
 // ============================================
@@ -292,15 +323,9 @@ export default function ResumenAdherencia({
   asignacionId,
   revision = 0,
 }: Props) {
-  const [
-    recarga,
-    setRecarga,
-  ] = useState(0);
+  const [recarga, setRecarga] = useState(0);
 
-  const [
-    estado,
-    setEstado,
-  ] = useState<{
+  const [estado, setEstado] = useState<{
     cargando: boolean;
     error: string;
     datos: Respuesta | null;
@@ -315,8 +340,7 @@ export default function ResumenAdherencia({
   // ==========================================
 
   useEffect(() => {
-    const controlador =
-      new AbortController();
+    const controlador = new AbortController();
 
     async function consultar() {
       try {
@@ -330,10 +354,9 @@ export default function ResumenAdherencia({
           }
         );
 
-        const datos: Respuesta =
-          await respuesta
-            .json()
-            .catch(() => ({}));
+        const datos: Respuesta = await respuesta
+          .json()
+          .catch(() => ({}));
 
         if (!respuesta.ok) {
           throw new Error(
@@ -376,27 +399,17 @@ export default function ResumenAdherencia({
 
     void consultar();
 
-    return () =>
-      controlador.abort();
-  }, [
-    asignacionId,
-    revision,
-    recarga,
-  ]);
+    return () => controlador.abort();
+  }, [asignacionId, revision, recarga]);
 
   const datos = estado.datos;
 
-  const asistencia =
-    datos?.asistencia;
-
-  const cumplimiento =
-    datos?.cumplimiento;
-
-  const continuidad =
-    datos?.continuidad;
+  const asistencia = datos?.asistencia;
+  const cumplimiento = datos?.cumplimiento;
+  const continuidad = datos?.continuidad;
 
   // ==========================================
-  // 6. INTERFAZ
+  // 6. INTERFAZ PRINCIPAL
   // ==========================================
 
   return (
@@ -404,6 +417,8 @@ export default function ResumenAdherencia({
       className="ecf-adherence mt-4 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-4"
       aria-label="Adherencia del plan"
     >
+      {/* ENCABEZADO */}
+
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-cyan-300">
@@ -415,8 +430,8 @@ export default function ResumenAdherencia({
           </h6>
 
           <p className="mt-1 text-xs text-slate-400">
-            Asistencia, cumplimiento y
-            continuidad del cliente.
+            Asistencia, cumplimiento y continuidad
+            del cliente.
           </p>
         </div>
 
@@ -440,7 +455,7 @@ export default function ResumenAdherencia({
         </button>
       </div>
 
-      {/* CARGANDO */}
+      {/* ESTADO DE CARGA */}
 
       {estado.cargando && (
         <p
@@ -451,7 +466,7 @@ export default function ResumenAdherencia({
         </p>
       )}
 
-      {/* ERROR */}
+      {/* ERRORES */}
 
       {estado.error && (
         <p
@@ -470,7 +485,9 @@ export default function ResumenAdherencia({
         continuidad && (
           <div className="mt-4 space-y-4">
 
-            {/* TRES DIMENSIONES */}
+            {/* ==================================
+                TRES DIMENSIONES
+            ================================== */}
 
             <div className="ecf-adherence-grid grid gap-3 md:grid-cols-3">
               <Tarjeta
@@ -480,8 +497,7 @@ export default function ResumenAdherencia({
                   asistencia.porcentajeProvisional
                 }
                 definitivo={
-                  asistencia.porcentajeFinal !==
-                  null
+                  asistencia.porcentajeFinal !== null
                 }
                 detalle={`${asistencia.realizadas} realizadas · ${asistencia.ausentes} ausencias · ${asistencia.pendientesVencidas} pendientes vencidas`}
               />
@@ -493,8 +509,7 @@ export default function ResumenAdherencia({
                   cumplimiento.porcentajeProvisional
                 }
                 definitivo={
-                  cumplimiento.porcentajeFinal !==
-                  null
+                  cumplimiento.porcentajeFinal !== null
                 }
                 detalle={`${cumplimiento.seriesCompletadasVerificadas} de ${cumplimiento.seriesObjetivoVerificadas} series en sesiones verificables`}
               />
@@ -506,14 +521,15 @@ export default function ResumenAdherencia({
                   continuidad.porcentajeProvisional
                 }
                 definitivo={
-                  continuidad.porcentajeFinal !==
-                  null
+                  continuidad.porcentajeFinal !== null
                 }
                 detalle={`${continuidad.semanasConAsistencia} de ${continuidad.semanasVerificadas} semanas verificadas con asistencia`}
               />
             </div>
 
-            {/* ESTADO DEL CALENDARIO */}
+            {/* ==================================
+                ESTADO DEL CALENDARIO
+            ================================== */}
 
             <div className="grid gap-3 rounded-lg border border-white/10 bg-slate-900/40 p-3 sm:grid-cols-2">
               <div>
@@ -551,62 +567,62 @@ export default function ResumenAdherencia({
               </div>
             </div>
 
+            {/* ==================================
+                FASE 118.2: ALERTAS DE REGISTROS
+            ================================== */}
 
+            {(asistencia.pendientesVencidas > 0 ||
+              cumplimiento.sesionesSinEvidencia > 0 ||
+              cumplimiento.sesionesIncompletas > 0) && (
+              <div
+                role="status"
+                className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] p-4"
+              >
+                <p className="text-sm font-bold text-amber-200">
+                  Registros pendientes de revisión
+                </p>
 
-{/* ==========================================
-    FASE 118.2: CALIDAD DEL REGISTRO
-========================================== */}
+                <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-slate-300">
+                  {asistencia.pendientesVencidas > 0 && (
+                    <li>
+                      {asistencia.pendientesVencidas} sesiones
+                      vencidas pendientes de resolver.
+                    </li>
+                  )}
 
-{(asistencia.pendientesVencidas > 0 ||
-  cumplimiento.sesionesSinEvidencia > 0 ||
-  cumplimiento.sesionesIncompletas > 0) && (
-  <div
-    role="status"
-    className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] p-4"
-  >
-    <p className="text-sm font-bold text-amber-200">
-      Registros pendientes de revisión
-    </p>
+                  {cumplimiento.sesionesSinEvidencia > 0 && (
+                    <li>
+                      {cumplimiento.sesionesSinEvidencia} sesiones
+                      finalizadas sin evidencia de series.
+                    </li>
+                  )}
 
-    <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-slate-300">
-      {asistencia.pendientesVencidas > 0 && (
-        <li>
-          {asistencia.pendientesVencidas} sesiones
-          vencidas pendientes de resolver.
-        </li>
-      )}
+                  {cumplimiento.sesionesIncompletas > 0 && (
+                    <li>
+                      {cumplimiento.sesionesIncompletas} sesiones
+                      con registros incompletos.
+                    </li>
+                  )}
+                </ul>
 
-      {cumplimiento.sesionesSinEvidencia > 0 && (
-        <li>
-          {cumplimiento.sesionesSinEvidencia} sesiones
-          finalizadas sin evidencia de series.
-        </li>
-      )}
+                <p className="mt-2 text-xs text-amber-100/80">
+                  Los registros pendientes no se convierten
+                  automáticamente en ausencias ni incumplimientos.
+                </p>
+              </div>
+            )}
 
-      {cumplimiento.sesionesIncompletas > 0 && (
-        <li>
-          {cumplimiento.sesionesIncompletas} sesiones
-          con registros incompletos.
-        </li>
-      )}
-    </ul>
+            {/* ==================================
+                FASE 118.6: EVOLUCIÓN SEMANAL
+            ================================== */}
 
-    <p className="mt-2 text-xs text-amber-100/80">
-      Los registros pendientes no se convierten
-      automáticamente en ausencias ni incumplimientos.
-    </p>
-  </div>
-)}
+            <EvolucionSemanal
+              semanas={continuidad.semanas}
+            />
 
-{/* ==========================================
-    FASE 118.1: EVOLUCIÓN SEMANAL
-========================================== */}
-
-<EvolucionSemanal
-  semanas={continuidad.semanas}
-/>
-
-            {/* CONTINUIDAD SEMANAL */}
+            {/* ==================================
+                CONTINUIDAD POR SEMANA
+            ================================== */}
 
             <div>
               <p className="text-sm font-semibold text-white">
@@ -646,7 +662,9 @@ export default function ResumenAdherencia({
               </div>
             </div>
 
-            {/* PASO 65.10: EXPORTACION CSV */}
+            {/* ==================================
+                EXPORTACIÓN CSV
+            ================================== */}
 
             <div className="ecf-export-panel rounded-xl border border-cyan-400/20 bg-slate-900/60 p-4">
               <p className="text-sm font-semibold text-white">
@@ -681,7 +699,9 @@ export default function ResumenAdherencia({
               </div>
             </div>
 
-            {/* NOTA METODOLOGICA */}
+            {/* ==================================
+                NOTA METODOLÓGICA
+            ================================== */}
 
             <p className="text-xs leading-5 text-slate-400">
               {datos?.nota ??
