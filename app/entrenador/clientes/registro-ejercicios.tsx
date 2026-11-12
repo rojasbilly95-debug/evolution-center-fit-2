@@ -108,6 +108,95 @@ function numeroOpcional(
 // 2. FORMULARIO DE UNA SERIE
 // ============================================
 
+
+// ============================================
+// FASE 117: RESUMEN VISUAL DE SERIES
+// ============================================
+
+// Este indicador representa el progreso de registro
+// y no sustituye el cálculo oficial de adherencia.
+
+function progresoDeEjercicio(
+  ejercicio: EjercicioSesion
+) {
+  const objetivo = ejercicio.series_objetivo ?? 1;
+
+  const registros = new Map<number, boolean>();
+
+  for (const serie of ejercicio.series) {
+    if (
+      !Number.isInteger(serie.numero_serie) ||
+      serie.numero_serie < 1 ||
+      serie.numero_serie > objetivo
+    ) {
+      continue;
+    }
+
+    registros.set(
+      serie.numero_serie,
+      (registros.get(serie.numero_serie) ?? false) ||
+      serie.completada
+    );
+  }
+
+  return {
+    objetivo,
+    registradas: registros.size,
+    completadas: [...registros.values()].filter(Boolean).length,
+  };
+}
+
+function ProgresoEjercicio({
+  ejercicio,
+}: {
+  ejercicio: EjercicioSesion;
+}) {
+  const progreso = progresoDeEjercicio(ejercicio);
+
+  const porcentaje =
+    progreso.objetivo > 0
+      ? Math.round(
+        (progreso.completadas / progreso.objetivo) * 100
+      )
+      : 0;
+
+  return (
+    <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/35 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className="font-semibold text-slate-200">
+          Avance del ejercicio
+        </span>
+
+        <span className="font-bold tabular-nums text-emerald-300">
+          {progreso.completadas} / {progreso.objetivo} completadas
+        </span>
+      </div>
+
+      <div
+        role="progressbar"
+        aria-label={`Progreso de ${ejercicio.ejercicio?.nombre ??
+          `ejercicio ${ejercicio.orden}`
+          }`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={porcentaje}
+        className="mt-2 h-2 overflow-hidden rounded-full bg-slate-700"
+      >
+        <div
+          aria-hidden="true"
+          className="h-full rounded-full bg-emerald-400 transition-[width] duration-300"
+          style={{ width: `${porcentaje}%` }}
+        />
+      </div>
+
+      <p className="mt-2 text-xs text-slate-400">
+        {progreso.registradas} guardadas ·{" "}
+        {progreso.completadas} completadas
+      </p>
+    </div>
+  );
+}
+
 // CORRECCION:
 // Los estados se inicializan directamente
 // desde el registro recibido.
@@ -219,7 +308,7 @@ function FilaSerie({
       if (completada) {
         if (
           ejercicio.repeticiones_objetivo !==
-            null &&
+          null &&
           (!reps || reps <= 0)
         ) {
           throw new Error(
@@ -229,7 +318,7 @@ function FilaSerie({
 
         if (
           ejercicio.duracion_objetivo_min !==
-            null &&
+          null &&
           (!segundos || segundos <= 0)
         ) {
           throw new Error(
@@ -308,7 +397,7 @@ function FilaSerie({
       if (!respuesta.ok) {
         throw new Error(
           datos.error ??
-            "No se pudo guardar la serie."
+          "No se pudo guardar la serie."
         );
       }
 
@@ -343,11 +432,10 @@ function FilaSerie({
         </p>
 
         <span
-          className={`text-xs ${
-            registro?.completada
+          className={`text-xs ${registro?.completada
               ? "text-emerald-300"
               : "text-slate-400"
-          }`}
+            }`}
         >
           {registro?.completada
             ? "Completada"
@@ -570,7 +658,7 @@ export default function RegistroEjercicios({
         if (!respuesta.ok) {
           throw new Error(
             resultado.error ??
-              "No se pudieron consultar los ejercicios."
+            "No se pudieron consultar los ejercicios."
           );
         }
 
@@ -664,7 +752,7 @@ export default function RegistroEjercicios({
       if (!respuesta.ok) {
         throw new Error(
           resultado.error ??
-            "No se pudieron preparar los ejercicios."
+          "No se pudieron preparar los ejercicios."
         );
       }
 
@@ -686,7 +774,7 @@ export default function RegistroEjercicios({
 
   const editable =
     datos?.sesion?.estado ===
-      "en_curso" &&
+    "en_curso" &&
     [
       "programada",
       "activa",
@@ -707,6 +795,48 @@ export default function RegistroEjercicios({
     ].includes(
       datos?.asignacion?.estado ?? ""
     );
+
+
+
+  // ==========================================
+  // FASE 117: PROGRESO GENERAL DE LA SESIÓN
+  // ==========================================
+
+  const progresoSesion = (datos?.ejercicios ?? []).reduce(
+    (resumen, ejercicio) => {
+      const progreso = progresoDeEjercicio(ejercicio);
+
+      resumen.seriesObjetivo += progreso.objetivo;
+
+      resumen.seriesRegistradas += progreso.registradas;
+
+      resumen.seriesCompletadas += progreso.completadas;
+
+      if (
+        progreso.objetivo > 0 &&
+        progreso.completadas === progreso.objetivo
+      ) {
+        resumen.ejerciciosCompletados += 1;
+      }
+
+      return resumen;
+    },
+    {
+      seriesObjetivo: 0,
+      seriesRegistradas: 0,
+      seriesCompletadas: 0,
+      ejerciciosCompletados: 0,
+    }
+  );
+
+  const porcentajeSesion =
+    progresoSesion.seriesObjetivo > 0
+      ? Math.round(
+        (progresoSesion.seriesCompletadas /
+          progresoSesion.seriesObjetivo) *
+        100
+      )
+      : 0;
 
   // ==========================================
   // 10. INTERFAZ PRINCIPAL
@@ -816,12 +946,80 @@ export default function RegistroEjercicios({
               // =================================
 
               <div className="mt-3 space-y-3">
-                <p className="text-xs font-semibold text-emerald-300">
-                  {datos.totalEjercicios ??
-                    datos.ejercicios?.length ??
-                    0}{" "}
-                  ejercicios preparados
-                </p>
+
+                <div className="rounded-2xl border border-cyan-400/20 bg-slate-950/45 p-4 sm:p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-bold text-white">
+                        Progreso de la sesión
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-400">
+                        {datos.totalEjercicios ??
+                          datos.ejercicios?.length ??
+                          0}{" "}
+                        ejercicios preparados
+                      </p>
+                    </div>
+
+                    <span className="text-sm font-extrabold tabular-nums text-emerald-300">
+                      {progresoSesion.seriesCompletadas} /{" "}
+                      {progresoSesion.seriesObjetivo} series
+                    </span>
+                  </div>
+
+                  <div
+                    role="progressbar"
+                    aria-label="Series completadas de la sesión"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={porcentajeSesion}
+                    className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-700"
+                  >
+                    <div
+                      aria-hidden="true"
+                      className="h-full rounded-full bg-emerald-400 transition-[width] duration-300"
+                      style={{ width: `${porcentajeSesion}%` }}
+                    />
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-center sm:grid-cols-3">
+                    <div className="rounded-lg bg-white/[0.04] p-3">
+                      <p className="text-lg font-extrabold tabular-nums text-white">
+                        {progresoSesion.seriesObjetivo}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        Series objetivo
+                      </p>
+                    </div>
+
+                    <div className="rounded-lg bg-white/[0.04] p-3">
+                      <p className="text-lg font-extrabold tabular-nums text-cyan-200">
+                        {progresoSesion.seriesRegistradas}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        Registradas
+                      </p>
+                    </div>
+
+                    <div className="col-span-2 rounded-lg bg-white/[0.04] p-3 sm:col-span-1">
+                      <p className="text-lg font-extrabold tabular-nums text-emerald-300">
+                        {progresoSesion.seriesCompletadas}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        Completadas
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="mt-3 text-xs text-slate-400">
+                    {progresoSesion.ejerciciosCompletados} ejercicios
+                    con todas sus series completas.
+                    Este avance es informativo, no el indicador
+                    final de adherencia.
+                  </p>
+                </div>
+
 
                 {!editable && (
                   <p className="rounded-lg border border-amber-400/20 bg-amber-400/10 p-3 text-xs text-amber-200">
@@ -880,21 +1078,24 @@ export default function RegistroEjercicios({
                         serie(s)
 
                         {ejercicio.repeticiones_objetivo !==
-                        null
+                          null
                           ? ` · ${ejercicio.repeticiones_objetivo} repeticiones`
                           : ""}
 
                         {ejercicio.duracion_objetivo_min !==
-                        null
+                          null
                           ? ` · ${ejercicio.duracion_objetivo_min} min`
                           : ""}
 
                         {` · descanso ${ejercicio.descanso_objetivo_seg} s`}
                       </p>
 
+<ProgresoEjercicio ejercicio={ejercicio} />
+
                       {/* ======================
                           SERIES DEL EJERCICIO
                       ====================== */}
+
 
                       <div className="mt-3 space-y-2">
                         {Array.from(
@@ -934,25 +1135,25 @@ export default function RegistroEjercicios({
                                 numeroSerie,
 
                                 registro?.id ??
-                                  null,
+                                null,
 
                                 registro
                                   ?.repeticiones_realizadas ??
-                                  null,
+                                null,
 
                                 registro
                                   ?.duracion_real_seg ??
-                                  null,
+                                null,
 
                                 registro?.peso_kg ??
-                                  null,
+                                null,
 
                                 registro?.completada ??
-                                  null,
+                                null,
 
                                 registro
                                   ?.observaciones ??
-                                  null,
+                                null,
                               ]);
 
                             return (
