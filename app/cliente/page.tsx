@@ -20,6 +20,7 @@ type Sesion = {
   id: number;
   numero_sesion: number;
   fecha_programada: string;
+  hora_programada: string | null;
   estado: string;
 };
 
@@ -409,10 +410,10 @@ async function ContenidoCliente() {
         .maybeSingle(),
 
       supabase
-        .from("sesiones_entrenamiento")
-        .select(
-          "id, numero_sesion, fecha_programada, estado"
-        )
+.from("sesiones_entrenamiento")
+.select(
+  "id, numero_sesion, fecha_programada, hora_programada, estado"
+)
         .eq("asignacion_id", asignacion.id)
         .order("numero_sesion", {
           ascending: true,
