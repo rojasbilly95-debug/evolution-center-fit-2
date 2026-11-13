@@ -95,16 +95,16 @@ function TarjetaIndicador({
   detalle: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1b324d] to-[#101d30] p-5 shadow-lg shadow-black/10">
-      <p className="text-xs font-semibold text-slate-400">
+    <article className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-gradient-to-br dark:from-[#1b324d] dark:to-[#101d30] p-5 shadow-lg shadow-black/10">
+      <p className="text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums text-white">
+      <p className="mt-3 text-3xl font-black tabular-nums text-[var(--ecf-text)] dark:text-white">
         {new Intl.NumberFormat("es-PE").format(valor)}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-slate-400">
+      <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted)] dark:text-slate-400">
         {detalle}
       </p>
     </article>
@@ -118,11 +118,11 @@ function EstadoAsignacion({
 }) {
   const estilos = {
     activa:
-      "border-emerald-400/20 bg-emerald-400/10 text-emerald-200",
+      "border-emerald-200 dark:border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-200",
     inactiva:
-      "border-amber-400/20 bg-amber-400/10 text-amber-200",
+      "border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200",
     sin_asignar:
-      "border-slate-400/20 bg-white/5 text-slate-300",
+      "border-slate-200 dark:border-slate-400/20 bg-[var(--ecf-surface-soft)] dark:bg-white/5 text-slate-600 dark:text-slate-300",
   };
 
   const etiquetas = {
@@ -142,7 +142,7 @@ function EstadoAsignacion({
 
 function PantallaCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] p-6 text-sm text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-sm text-cyan-800 dark:text-cyan-200">
       Cargando entrenadores y asignaciones...
     </main>
   );
@@ -156,19 +156,19 @@ function PantallaError({
   descripcion: string;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] p-6 text-white">
-      <section className="w-full max-w-lg rounded-3xl border border-amber-400/20 bg-[#182337] p-8 text-center">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
+      <section className="w-full max-w-lg rounded-3xl border border-amber-200 dark:border-amber-400/20 bg-[var(--ecf-surface)] dark:bg-[#182337] p-8 text-center">
         <h1 className="text-2xl font-bold">
           {titulo}
         </h1>
 
-        <p className="mt-4 text-sm leading-7 text-slate-300">
+        <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">
           {descripcion}
         </p>
 
         <Link
           href="/administrador"
-          className="mt-6 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-5 py-3 text-sm font-bold text-cyan-200"
+          className="mt-6 inline-flex rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-5 py-3 text-sm font-bold text-cyan-800 dark:text-cyan-200"
         >
           Volver al administrador
         </Link>
@@ -530,10 +530,10 @@ async function ContenidoEntrenadores({
   // ==============================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] text-white">
+    <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] text-[var(--ecf-text)] dark:text-white">
       {/* CABECERA */}
 
-      <header className="border-b border-white/10 bg-[#101d31]">
+      <header className="border-b border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#101d31]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <Link
             href="/administrador"
@@ -546,12 +546,12 @@ async function ContenidoEntrenadores({
             <span>
               <span className="block text-sm font-black">
                 EVOLUTION CENTER FIT{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-700 dark:text-cyan-300">
                   2.0
                 </span>
               </span>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                 Administración de entrenadores
               </span>
             </span>
@@ -559,7 +559,7 @@ async function ContenidoEntrenadores({
 
           <Link
             href="/administrador"
-            className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10"
+            className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
           >
             ← Volver al panel
           </Link>
@@ -569,8 +569,8 @@ async function ContenidoEntrenadores({
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
         {/* PRESENTACION */}
 
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#17344a] via-[#14263d] to-[#201b3d] p-6 shadow-xl shadow-black/20 sm:p-9">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#e9f9fc] via-[#f4f8fc] to-[#eef2ff] dark:from-[#17344a] dark:via-[#14263d] dark:to-[#201b3d] p-6 shadow-xl shadow-black/20 sm:p-9">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Gestión administrativa
           </p>
 
@@ -578,7 +578,7 @@ async function ContenidoEntrenadores({
             Entrenadores y clientes
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Supervisa los clientes asignados a
             cada entrenador, consulta las
             relaciones activas e identifica
@@ -595,14 +595,14 @@ async function ContenidoEntrenadores({
 
             <Link
               href="/administrador/entrenadores/asignar"
-              className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-200 hover:bg-emerald-400/20"
+              className="rounded-xl border border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-200 hover:bg-emerald-400/20"
             >
               + Asignar entrenador
             </Link>
 
             <Link
               href="/administrador/usuarios/nuevo"
-              className="rounded-xl border border-cyan-400/25 bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/20"
+              className="rounded-xl border border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-800 dark:text-cyan-200 hover:bg-cyan-400/20"
             >
               + Invitar usuario
             </Link>
@@ -645,7 +645,7 @@ async function ContenidoEntrenadores({
           {datosParciales && (
             <p
               role="alert"
-              className="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-200"
+              className="mt-4 rounded-xl border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200"
             >
               Hay más registros que los consultados.
               Los indicadores son parciales.
@@ -659,7 +659,7 @@ async function ContenidoEntrenadores({
         <section>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
                 Supervisión
               </p>
 
@@ -667,7 +667,7 @@ async function ContenidoEntrenadores({
                 Entrenadores registrados
               </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
                 Clientes actualmente asociados
                 a cada entrenador.
               </p>
@@ -675,7 +675,7 @@ async function ContenidoEntrenadores({
           </div>
 
           {entrenadores.length === 0 ? (
-            <p className="mt-5 rounded-xl border border-white/10 bg-[#112039] p-6 text-sm text-slate-400">
+            <p className="mt-5 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-6 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
               No hay entrenadores registrados.
             </p>
           ) : (
@@ -683,10 +683,10 @@ async function ContenidoEntrenadores({
               {entrenadores.map((entrenador) => (
                 <article
                   key={entrenador.id}
-                  className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#162d47] to-[#0c192c] p-5 shadow-lg shadow-black/10 transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 sm:p-6"
+                  className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-gradient-to-br dark:from-[#162d47] dark:to-[#0c192c] p-5 shadow-lg shadow-black/10 transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 sm:p-6"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-lg font-black text-cyan-300">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-lg font-black text-cyan-700 dark:text-cyan-300">
                       {entrenador.nombre[0]?.toUpperCase() ??
                         "E"}
                     </span>
@@ -696,35 +696,35 @@ async function ContenidoEntrenadores({
                         {entrenador.nombre}
                       </h3>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Entrenador del gimnasio
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-5 rounded-xl border border-cyan-400/15 bg-[#081a2c] p-4">
-                    <p className="text-xs text-slate-400">
+                  <div className="mt-5 rounded-xl border border-cyan-200 dark:border-cyan-400/15 bg-[var(--ecf-surface-soft)] dark:bg-[#081a2c] p-4">
+                    <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                       Clientes con relación activa
                     </p>
 
-                    <p className="mt-1 text-3xl font-black text-cyan-300">
+                    <p className="mt-1 text-3xl font-black text-cyan-700 dark:text-cyan-300">
                       {entrenador.clientes.length}
                     </p>
                   </div>
 
-                  <details className="group mt-4 rounded-xl border border-white/10 bg-[#0b1b2e]">
-                    <summary className="cursor-pointer list-none p-4 text-sm font-bold text-slate-200">
+                  <details className="group mt-4 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface-soft)] dark:bg-[#0b1b2e]">
+                    <summary className="cursor-pointer list-none p-4 text-sm font-bold text-slate-700 dark:text-slate-200">
                       <span className="flex items-center justify-between">
                         Ver clientes asignados
-                        <span className="text-cyan-300 transition-transform group-open:rotate-180">
+                        <span className="text-cyan-700 dark:text-cyan-300 transition-transform group-open:rotate-180">
                           ↓
                         </span>
                       </span>
                     </summary>
 
-                    <div className="space-y-2 border-t border-white/10 p-4">
+                    <div className="space-y-2 border-t border-[var(--ecf-border)] dark:border-white/10 p-4">
                       {entrenador.clientes.length === 0 ? (
-                        <p className="text-sm text-slate-400">
+                        <p className="text-sm text-[var(--ecf-muted)] dark:text-slate-400">
                           Sin clientes asignados.
                         </p>
                       ) : (
@@ -732,13 +732,13 @@ async function ContenidoEntrenadores({
                           (cliente) => (
                             <div
                               key={cliente.id}
-                              className="rounded-lg bg-[#132a40] p-3"
+                              className="rounded-lg bg-[var(--ecf-surface)] dark:bg-[#132a40] p-3"
                             >
                               <p className="text-sm font-semibold">
                                 {cliente.nombre}
                               </p>
 
-                              <p className="mt-1 text-xs text-slate-400">
+                              <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                                 Desde{" "}
                                 {fechaLima(
                                   cliente.fecha
@@ -758,8 +758,8 @@ async function ContenidoEntrenadores({
 
         {/* DIRECTORIO DE RELACIONES */}
 
-        <section className="rounded-3xl border border-white/10 bg-[#112039] p-5 sm:p-7">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-5 sm:p-7">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Control administrativo
           </p>
 
@@ -767,7 +767,7 @@ async function ContenidoEntrenadores({
             Directorio de asignaciones
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-slate-400">
+          <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
             Consulta el estado de cada cliente
             y su entrenador responsable.
           </p>
@@ -780,7 +780,7 @@ async function ContenidoEntrenadores({
             <div>
               <label
                 htmlFor="buscar-asignacion"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Buscar cliente o entrenador
               </label>
@@ -792,14 +792,14 @@ async function ContenidoEntrenadores({
                 maxLength={60}
                 defaultValue={busqueda}
                 placeholder="Buscar por nombre..."
-                className="min-h-12 w-full rounded-xl border border-white/15 bg-[#081526] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-400"
+                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] px-4 py-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none placeholder:text-slate-500 focus:border-cyan-400"
               />
             </div>
 
             <div>
               <label
                 htmlFor="filtrar-estado"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Estado de asignación
               </label>
@@ -808,7 +808,7 @@ async function ContenidoEntrenadores({
                 id="filtrar-estado"
                 name="estado"
                 defaultValue={filtroEstado}
-                className="min-h-12 w-full rounded-xl border border-white/15 bg-[#081526] px-4 py-3 text-sm text-white outline-none focus:border-cyan-400"
+                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] px-4 py-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-400"
               >
                 <option value="todos">
                   Todas
@@ -837,20 +837,20 @@ async function ContenidoEntrenadores({
 
             <Link
               href="/administrador/entrenadores"
-              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-slate-200 hover:bg-white/10"
+              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
             >
               Limpiar
             </Link>
           </form>
 
-          <p className="mt-5 text-xs text-slate-400">
+          <p className="mt-5 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
             {clientesFiltrados.length} cliente(s)
             encontrados en los registros consultados.
           </p>
 
           <div className="mt-4 space-y-3">
             {clientesFiltrados.length === 0 ? (
-              <p className="rounded-xl border border-white/10 bg-[#081526] p-6 text-sm text-slate-400">
+              <p className="rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#081526] p-6 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
                 No se encontraron relaciones con
                 esos filtros.
               </p>
@@ -858,11 +858,11 @@ async function ContenidoEntrenadores({
               clientesFiltrados.map((cliente) => (
                 <article
                   key={cliente.id}
-                  className="rounded-2xl border border-white/10 bg-[#0b192c] p-4 sm:p-5"
+                  className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface-soft)] dark:bg-[#0b192c] p-4 sm:p-5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Cliente
                       </p>
 
@@ -870,11 +870,11 @@ async function ContenidoEntrenadores({
                         {cliente.nombre}
                       </h3>
 
-                      <p className="mt-3 text-xs text-slate-400">
+                      <p className="mt-3 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Entrenador responsable
                       </p>
 
-                      <p className="mt-1 break-words text-sm font-semibold text-slate-200">
+                      <p className="mt-1 break-words text-sm font-semibold text-slate-700 dark:text-slate-200">
                         {cliente.entrenador ??
                           "No asignado"}
                       </p>
@@ -886,7 +886,7 @@ async function ContenidoEntrenadores({
                   </div>
 
                   {cliente.fecha && (
-                    <p className="mt-4 border-t border-white/10 pt-3 text-xs text-slate-400">
+                    <p className="mt-4 border-t border-[var(--ecf-border)] dark:border-white/10 pt-3 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                       Fecha de asignación:{" "}
                       {fechaLima(cliente.fecha)}
                     </p>
@@ -899,20 +899,20 @@ async function ContenidoEntrenadores({
 
         {/* ALERTAS */}
 
-        <section className="rounded-2xl border border-cyan-400/15 bg-gradient-to-r from-[#0e293b] to-[#1b1c39] p-6">
+        <section className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-r from-[#e8faff] to-[#f1eeff] dark:from-[#0e293b] dark:to-[#1b1c39] p-6">
           <h2 className="text-lg font-bold">
             Verificación de relaciones
           </h2>
 
           {relacionesInvalidas === 0 &&
           !datosParciales ? (
-            <p className="mt-3 text-sm leading-7 text-emerald-200">
+            <p className="mt-3 text-sm leading-7 text-emerald-700 dark:text-emerald-200">
               No se detectaron inconsistencias
               entre los roles y las asignaciones
               consultadas.
             </p>
           ) : (
-            <p className="mt-3 text-sm leading-7 text-amber-200">
+            <p className="mt-3 text-sm leading-7 text-amber-800 dark:text-amber-200">
               {relacionesInvalidas} relación(es)
               requieren revisión.
               {datosParciales
@@ -921,7 +921,7 @@ async function ContenidoEntrenadores({
             </p>
           )}
 
-          <p className="mt-4 text-xs leading-6 text-slate-400">
+          <p className="mt-4 text-xs leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
             Este módulo es de solo lectura.
             Las reasignaciones deben validar los
             planes activos y los participantes
@@ -929,7 +929,7 @@ async function ContenidoEntrenadores({
           </p>
         </section>
 
-        <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border)] dark:border-white/10 py-6 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Administración de entrenadores
         </footer>
       </div>

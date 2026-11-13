@@ -146,26 +146,26 @@ export default function BotonRecomendar({
 
   return (
     <section
-      className="space-y-6 text-slate-100"
+      className="space-y-6 text-[var(--ecf-text,#102238)] dark:text-slate-100"
       aria-busy={cargando}
     >
       {/* ENCABEZADO */}
-      <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 sm:p-6">
+      <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-slate-900/80 p-5 sm:p-6">
         <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/15 bg-cyan-400/10 text-cyan-300">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-cyan-400/10 text-cyan-700 dark:text-cyan-300">
             <IconoAnalisis />
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-400">
+            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-700 dark:text-cyan-400">
               Motor de recomendaciones
             </p>
 
-            <h3 className="mt-1 text-xl font-bold tracking-tight text-white">
+            <h3 className="mt-1 text-xl font-bold tracking-tight text-[var(--ecf-text,#102238)] dark:text-white">
               Análisis de compatibilidad
             </h3>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Descubre qué rutinas se ajustan al perfil,
               la experiencia y la disponibilidad
               del cliente.
@@ -216,7 +216,7 @@ export default function BotonRecomendar({
       {cargando && (
         <div
           role="status"
-          className="ecf-entrada rounded-xl border border-cyan-400/15 bg-cyan-400/5 px-5 py-4 text-sm leading-6 text-cyan-200"
+          className="ecf-entrada rounded-xl border border-cyan-200 dark:border-cyan-400/15 bg-cyan-50 dark:bg-cyan-400/5 px-5 py-4 text-sm leading-6 text-cyan-800 dark:text-cyan-200"
         >
           Consultando el catálogo y calculando
           la compatibilidad de las rutinas...
@@ -227,7 +227,7 @@ export default function BotonRecomendar({
       {error && (
         <div
           role="alert"
-          className="rounded-xl border border-red-400/20 bg-red-500/10 px-5 py-4 text-sm leading-6 text-red-200"
+          className="rounded-xl border border-red-200 dark:border-red-400/20 bg-red-50 dark:bg-red-500/10 px-5 py-4 text-sm leading-6 text-red-800 dark:text-red-200"
         >
           {error}
         </div>
@@ -238,22 +238,22 @@ export default function BotonRecomendar({
         <div className="space-y-5">
           {/* RESUMEN */}
           <div className="ecf-entrada grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-5">
-              <p className="text-sm font-medium text-slate-400">
+            <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-slate-800/70 p-5">
+              <p className="text-sm font-medium text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Rutinas analizadas
               </p>
 
-              <p className="mt-2 text-3xl font-bold tracking-tight text-white">
+              <p className="mt-2 text-3xl font-bold tracking-tight text-[var(--ecf-text,#102238)] dark:text-white">
                 {resultado.total_evaluadas}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-emerald-400/10 bg-slate-800/70 p-5">
-              <p className="text-sm font-medium text-slate-400">
+            <div className="rounded-2xl border border-emerald-200 dark:border-emerald-400/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-slate-800/70 p-5">
+              <p className="text-sm font-medium text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Rutinas elegibles
               </p>
 
-              <p className="mt-2 text-3xl font-bold tracking-tight text-emerald-300">
+              <p className="mt-2 text-3xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300">
                 {resultado.total_elegibles}
               </p>
             </div>
@@ -262,11 +262,11 @@ export default function BotonRecomendar({
           {/* DESCRIPCION DEL RANKING */}
           {resultado.resultados.length > 0 && (
             <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-              <h4 className="text-base font-semibold text-white">
+              <h4 className="text-base font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                 Resultados del análisis
               </h4>
 
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600 dark:text-slate-500">
                 Elegibilidad y mayor afinidad primero
               </p>
             </div>
@@ -274,7 +274,7 @@ export default function BotonRecomendar({
 
           {/* SIN RESULTADOS */}
           {resultado.resultados.length === 0 && (
-            <div className="rounded-2xl border border-white/10 bg-slate-800/50 p-6 text-sm text-slate-300">
+            <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 p-6 text-sm text-slate-700 dark:text-slate-300">
               No hay rutinas completas disponibles
               para evaluar.
             </div>
@@ -299,7 +299,7 @@ export default function BotonRecomendar({
                 return (
                   <li
                     key={rutina.rutina_id}
-                    className="ecf-entrada overflow-hidden rounded-2xl border border-white/10 bg-slate-800/60 p-5 shadow-lg shadow-black/10 transition-all duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-white/20 sm:p-6"
+                    className="ecf-entrada overflow-hidden rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-slate-800/60 p-5 shadow-lg shadow-black/10 transition-all duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-cyan-300 dark:motion-safe:hover:border-white/20 sm:p-6"
                     style={{
                       animationDelay: `${Math.min(indice, 5) * 90}ms`,
                     }}
@@ -307,19 +307,19 @@ export default function BotonRecomendar({
                     {/* TITULO Y ESTADO */}
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                           Opción {String(indice + 1).padStart(2, "0")}
                         </p>
 
-                        <h5 className="mt-2 text-base font-bold leading-6 text-white sm:text-lg">
+                        <h5 className="mt-2 text-base font-bold leading-6 text-[var(--ecf-text,#102238)] dark:text-white sm:text-lg">
                           {rutina.nombre}
                         </h5>
                       </div>
 
                       <span
                         className={`rounded-full px-3 py-1.5 text-xs font-semibold ${rutina.elegible
-                          ? "bg-emerald-400/10 text-emerald-300"
-                          : "bg-amber-400/10 text-amber-300"
+                          ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300"
+                          : "bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-300"
                           }`}
                       >
                         {rutina.elegible
@@ -333,21 +333,21 @@ export default function BotonRecomendar({
                       <div className="mt-6">
                         <div className="flex items-end justify-between gap-3">
                           <div>
-                            <p className="text-sm font-medium text-slate-300">
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                               Afinidad según reglas
                             </p>
 
-                            <p className="mt-1 text-xs text-slate-500">
+                            <p className="mt-1 text-xs text-slate-600 dark:text-slate-500">
                               Puntuación orientativa
                             </p>
                           </div>
 
                           <div className="whitespace-nowrap">
-                            <span className="text-2xl font-bold tabular-nums text-white">
+                            <span className="text-2xl font-bold tabular-nums text-[var(--ecf-text,#102238)] dark:text-white">
                               {numero(puntaje)}
                             </span>
 
-                            <span className="ml-1 text-sm text-slate-400">
+                            <span className="ml-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                               /100
                             </span>
                           </div>
@@ -360,7 +360,7 @@ export default function BotonRecomendar({
                           aria-valuemin={0}
                           aria-valuemax={100}
                           aria-valuenow={puntaje}
-                          className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-700/80"
+                          className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700/80"
                         >
                           <div
                             className={`ecf-barra h-full rounded-full ${rutina.elegible
@@ -377,23 +377,23 @@ export default function BotonRecomendar({
 
                     {/* SIMILITUD SEMANTICA DEL MODELO */}
                     {typeof rutina.similitud_semantica === "number" && (
-                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-400/15 bg-violet-400/5 px-4 py-4">
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-200 dark:border-violet-400/15 bg-violet-50 dark:bg-violet-400/5 px-4 py-4">
                         <div>
-                          <p className="text-sm font-semibold text-violet-200">
+                          <p className="text-sm font-semibold text-violet-800 dark:text-violet-200">
                             Similitud semántica con IA
                           </p>
 
-                          <p className="mt-1 text-xs text-slate-400">
+                          <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Modelo multilingüe de embeddings
                           </p>
                         </div>
 
                         <div className="text-right">
-                          <p className="text-xl font-bold tabular-nums text-violet-200">
+                          <p className="text-xl font-bold tabular-nums text-violet-800 dark:text-violet-200">
                             {rutina.similitud_semantica.toFixed(3)}
                           </p>
 
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-slate-600 dark:text-slate-500">
                             Similitud coseno
                           </p>
                         </div>
@@ -408,26 +408,26 @@ export default function BotonRecomendar({
                       Number.isFinite(
                         rutina.ajuste_difuso.puntaje_difuso
                       ) && (
-                        <div className="mt-4 rounded-xl border border-teal-400/20 bg-teal-400/5 px-4 py-4">
+                        <div className="mt-4 rounded-xl border border-teal-200 dark:border-teal-400/20 bg-teal-50 dark:bg-teal-400/5 px-4 py-4">
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                              <p className="text-sm font-semibold text-teal-200">
+                              <p className="text-sm font-semibold text-teal-800 dark:text-teal-200">
                                 Ajuste con lógica difusa
                               </p>
-                              <p className="mt-1 text-xs leading-5 text-slate-400">
+                              <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                 Valoración orientativa de la adecuación de la rutina
                               </p>
                             </div>
-                            <p className="text-xl font-bold tabular-nums text-teal-200">
+                            <p className="text-xl font-bold tabular-nums text-teal-800 dark:text-teal-200">
                               {numero(rutina.ajuste_difuso.puntaje_difuso)}
-                              <span className="ml-1 text-xs font-normal text-slate-400">
+                              <span className="ml-1 text-xs font-normal text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                 /100
                               </span>
                             </p>
                           </div>
 
                           <div
-                            className="mt-3 h-2 overflow-hidden rounded-full bg-slate-700/80"
+                            className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700/80"
                             role="progressbar"
                             aria-label={`Ajuste difuso de ${rutina.nombre}`}
                             aria-valuemin={0}
@@ -453,14 +453,14 @@ export default function BotonRecomendar({
                             Number.isFinite(
                               rutina.ajuste_difuso.uso_tiempo_pct
                             ) && (
-                              <p className="mt-3 text-xs text-slate-300">
+                              <p className="mt-3 text-xs text-slate-700 dark:text-slate-300">
                                 Aprovechamiento del tiempo disponible: {numero(
                                   rutina.ajuste_difuso.uso_tiempo_pct
                                 )}%
                               </p>
                             )}
 
-                          <p className="mt-2 text-xs leading-5 text-slate-400">
+                          <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Este ajuste complementa el análisis por reglas; no
                             modifica la elegibilidad ni representa una
                             probabilidad de éxito.
@@ -471,8 +471,8 @@ export default function BotonRecomendar({
                     {/* MENSAJE PRINCIPAL */}
                     <div
                       className={`mt-5 flex items-start gap-2 rounded-xl px-4 py-3 text-sm leading-6 ${rutina.elegible
-                        ? "bg-emerald-400/5 text-emerald-200"
-                        : "bg-amber-400/5 text-amber-200"
+                        ? "bg-emerald-50 dark:bg-emerald-400/5 text-emerald-800 dark:text-emerald-200"
+                        : "bg-amber-50 dark:bg-amber-400/5 text-amber-900 dark:text-amber-200"
                         }`}
                     >
                       <span aria-hidden="true">
@@ -488,8 +488,8 @@ export default function BotonRecomendar({
                     </div>
 
                     {/* DETALLES DESPLEGABLES */}
-                    <details className="group mt-5 rounded-xl border border-white/10 bg-slate-950/30">
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-4 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-cyan-400 [&::-webkit-details-marker]:hidden">
+                    <details className="group mt-5 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-950/30">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-4 text-sm font-semibold text-slate-800 dark:text-slate-200 transition-colors hover:bg-slate-100 dark:hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-cyan-400 [&::-webkit-details-marker]:hidden">
                         <span>
                           Ver explicación y criterios
                         </span>
@@ -502,16 +502,16 @@ export default function BotonRecomendar({
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-300 group-open:rotate-180 motion-reduce:transition-none"
+                          className="h-4 w-4 shrink-0 text-[var(--ecf-muted,#64748b)] dark:text-slate-400 transition-transform duration-300 group-open:rotate-180 motion-reduce:transition-none"
                         >
                           <path d="m6 9 6 6 6-6" />
                         </svg>
                       </summary>
 
-                      <div className="space-y-5 border-t border-white/10 px-4 py-5">
+                      <div className="space-y-5 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 px-4 py-5">
                         {/* MOTIVOS */}
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Explicación del motor
                           </p>
 
@@ -520,14 +520,14 @@ export default function BotonRecomendar({
                               (motivo, indiceMotivo) => (
                                 <li
                                   key={indiceMotivo}
-                                  className="flex items-start gap-2 text-sm leading-6 text-slate-300"
+                                  className="flex items-start gap-2 text-sm leading-6 text-slate-700 dark:text-slate-300"
                                 >
                                   <span
                                     aria-hidden="true"
                                     className={
                                       rutina.elegible
-                                        ? "text-emerald-400"
-                                        : "text-amber-400"
+                                        ? "text-emerald-700 dark:text-emerald-400"
+                                        : "text-amber-700 dark:text-amber-400"
                                     }
                                   >
                                     {rutina.elegible
@@ -545,7 +545,7 @@ export default function BotonRecomendar({
                         {/* CRITERIOS */}
                         {rutina.desglose_puntaje && (
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                               Desglose de puntuación
                             </p>
 
@@ -565,13 +565,13 @@ export default function BotonRecomendar({
                                 return (
                                   <div
                                     key={criterio.id}
-                                    className="flex items-center justify-between gap-3 rounded-lg bg-slate-800/80 px-3 py-3"
+                                    className="flex items-center justify-between gap-3 rounded-lg bg-slate-100 dark:bg-slate-800/80 px-3 py-3"
                                   >
-                                    <span className="text-xs text-slate-300">
+                                    <span className="text-xs text-slate-700 dark:text-slate-300">
                                       {criterio.nombre}
                                     </span>
 
-                                    <span className="whitespace-nowrap text-xs font-semibold tabular-nums text-cyan-300">
+                                    <span className="whitespace-nowrap text-xs font-semibold tabular-nums text-cyan-700 dark:text-cyan-300">
                                       {numero(puntos)}/{criterio.max}
                                     </span>
                                   </div>
@@ -600,36 +600,36 @@ export default function BotonRecomendar({
 
           {/* ADVERTENCIAS */}
           {resultado.advertencia && (
-            <div className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-4 text-sm leading-6 text-amber-200">
+            <div className="rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/5 p-4 text-sm leading-6 text-amber-900 dark:text-amber-200">
               {resultado.advertencia}
             </div>
           )}
 
           {(resultado.rutinas_omitidas?.length ?? 0) > 0 && (
-            <div className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-4">
-              <p className="text-sm font-semibold text-amber-200">
+            <div className="rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/5 p-4">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
                 Rutinas omitidas
               </p>
 
-              <p className="mt-2 text-sm leading-6 text-slate-300">
+              <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
                 {resultado.rutinas_omitidas?.join(", ")}
               </p>
             </div>
           )}
 
           {/* NOTA PROFESIONAL */}
-          <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/5 px-5 py-4">
+          <div className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-cyan-50 dark:bg-cyan-400/5 px-5 py-4">
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 text-cyan-300" aria-hidden="true">
+              <span className="mt-0.5 text-cyan-700 dark:text-cyan-300" aria-hidden="true">
                 ⓘ
               </span>
 
               <div>
-                <p className="text-sm font-semibold text-cyan-200">
+                <p className="text-sm font-semibold text-cyan-800 dark:text-cyan-200">
                   Evaluación preliminar
                 </p>
 
-                <p className="mt-2 text-xs leading-6 text-slate-400">
+                <p className="mt-2 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Las puntuaciones reflejan coincidencias
                   entre el perfil y las rutinas del
                   catálogo. No representan una probabilidad
@@ -640,11 +640,11 @@ export default function BotonRecomendar({
                   requieren revisión y aprobación del entrenador.
                 </p>
 
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-500">
                   Método: {resultado.metodo}
                 </p>
 
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-500">
                   Lógica difusa: {resultado.logica_difusa_aplicada
                     ? "aplicada"
                     : "no aplicada en esta evaluación"}

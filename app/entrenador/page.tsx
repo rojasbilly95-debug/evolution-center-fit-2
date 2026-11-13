@@ -148,7 +148,7 @@ const modulos: Modulo[] = [
     etiqueta: "GESTIÓN",
     accion: "Gestionar clientes",
     href: "/entrenador/clientes",
-    color: "bg-cyan-400/10 text-cyan-300",
+    color: "bg-cyan-400/10 text-cyan-800 dark:text-cyan-300",
   },
   {
     titulo: "Recomendaciones inteligentes",
@@ -158,7 +158,7 @@ const modulos: Modulo[] = [
     etiqueta: "MOTOR IA",
     accion: "Ir a recomendaciones",
     href: "/entrenador/clientes",
-    color: "bg-violet-400/10 text-violet-300",
+    color: "bg-violet-400/10 text-violet-700 dark:text-violet-300",
   },
   {
     titulo: "Revisión y aprobación",
@@ -168,7 +168,7 @@ const modulos: Modulo[] = [
     etiqueta: "SUPERVISIÓN",
     accion: "Revisar propuestas",
     href: "/entrenador/clientes",
-    color: "bg-emerald-400/10 text-emerald-300",
+    color: "bg-emerald-400/10 text-emerald-800 dark:text-emerald-300",
   },
   {
     titulo: "Seguimiento y adherencia",
@@ -178,7 +178,7 @@ const modulos: Modulo[] = [
     etiqueta: "SEGUIMIENTO",
     accion: "Abrir seguimiento",
     href: "/entrenador/clientes",
-    color: "bg-amber-400/10 text-amber-300",
+    color: "bg-amber-400/10 text-amber-800 dark:text-amber-300",
   },
 {
   titulo: "Calendario de entrenamiento",
@@ -188,7 +188,7 @@ const modulos: Modulo[] = [
   etiqueta: "PROGRAMACIÓN",
   accion: "Abrir calendario",
   href: "/entrenador/calendario",
-  color: "bg-blue-400/10 text-blue-300",
+  color: "bg-blue-400/10 text-blue-800 dark:text-blue-300",
 },
   {
     titulo: "Participantes GE y GC",
@@ -198,7 +198,7 @@ const modulos: Modulo[] = [
     etiqueta: "INVESTIGACIÓN",
     accion: "Abrir investigación",
     href: "/entrenador/investigacion",
-    color: "bg-teal-400/10 text-teal-300",
+    color: "bg-teal-400/10 text-teal-800 dark:text-teal-300",
   },
   {
     titulo: "Reportes para Jamovi",
@@ -208,26 +208,26 @@ const modulos: Modulo[] = [
     etiqueta: "ANÁLISIS",
     accion: "Ver reportes",
     href: "/entrenador/investigacion/reporte",
-    color: "bg-sky-400/10 text-sky-300",
+    color: "bg-sky-400/10 text-sky-800 dark:text-sky-300",
   },
 ];
 
 // PANTALLA DE CARGA
 function CargandoPanel() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080d1a] px-6 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-6 text-[var(--ecf-text,#102238)] dark:text-white">
       <div className="text-center">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-400 text-2xl font-black text-[#08111d]">
           E
         </div>
 
-        <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-[3px] border-slate-700 border-t-cyan-400" />
+        <div className="mx-auto mb-5 h-9 w-9 animate-spin rounded-full border-[3px] border-slate-300 dark:border-slate-700 border-t-cyan-400" />
 
         <h1 className="text-xl font-bold">
           Evolution Center Fit 2.0
         </h1>
 
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Preparando tu panel...
         </p>
       </div>
@@ -238,7 +238,7 @@ function CargandoPanel() {
 // CABECERA RESPONSIVE
 function CabeceraEntrenador() {
   return (
-    <header className="relative z-40 border-b border-white/10 bg-[#0c1526]/95 backdrop-blur-xl">
+    <header className="relative z-40 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/95 dark:bg-[#0c1526]/95 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link
           href="/entrenador"
@@ -249,12 +249,12 @@ function CabeceraEntrenador() {
           </span>
 
           <span className="min-w-0">
-            <span className="block truncate text-xs font-black tracking-wide text-white sm:text-sm">
+            <span className="block truncate text-xs font-black tracking-wide text-[var(--ecf-text,#102238)] dark:text-white sm:text-sm">
               EVOLUTION CENTER FIT{" "}
-              <span className="text-cyan-300">2.0</span>
+              <span className="text-cyan-800 dark:text-cyan-300">2.0</span>
             </span>
 
-            <span className="block truncate text-[11px] text-slate-400">
+            <span className="block truncate text-[11px] text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Panel del entrenador
             </span>
           </span>
@@ -276,8 +276,8 @@ function CabeceraEntrenador() {
               }
               className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-cyan-400 ${
                 item.href === "/entrenador"
-                  ? "bg-cyan-400/10 text-cyan-300"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-[#102238] dark:hover:text-white"
               }`}
             >
               {item.titulo}
@@ -287,7 +287,7 @@ function CabeceraEntrenador() {
           <form action={cerrarSesion}>
             <button
               type="submit"
-              className="ml-1 rounded-xl border border-red-400/20 px-3 py-2.5 text-sm font-semibold text-red-300 transition hover:bg-red-400/10 focus-visible:outline-2 focus-visible:outline-red-400"
+              className="ml-1 rounded-xl border border-red-400/20 px-3 py-2.5 text-sm font-semibold text-red-700 dark:text-red-300 transition hover:bg-red-400/10 focus-visible:outline-2 focus-visible:outline-red-400"
             >
               Cerrar sesión
             </button>
@@ -296,14 +296,14 @@ function CabeceraEntrenador() {
 
         {/* MENU DE CELULAR Y TABLET */}
         <details className="relative shrink-0 xl:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-cyan-400 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-100 dark:bg-white/5 px-3 py-2 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white focus-visible:outline-2 focus-visible:outline-cyan-400 [&::-webkit-details-marker]:hidden">
             <Icon name="menu" className="h-5 w-5" />
             <span>Menú</span>
           </summary>
 
           <nav
             aria-label="Navegación móvil del entrenador"
-            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d31] p-2 shadow-2xl"
           >
             {navegacion.map((item) => (
               <Link
@@ -314,7 +314,7 @@ function CabeceraEntrenador() {
                     ? "page"
                     : undefined
                 }
-                className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-cyan-400/10 hover:text-cyan-300 focus-visible:outline-2 focus-visible:outline-cyan-400"
+                className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-200 transition hover:bg-cyan-400/10 hover:text-cyan-800 dark:hover:text-cyan-300 focus-visible:outline-2 focus-visible:outline-cyan-400"
               >
                 {item.titulo}
               </Link>
@@ -322,11 +322,11 @@ function CabeceraEntrenador() {
 
             <form
               action={cerrarSesion}
-              className="mt-2 border-t border-white/10 pt-2"
+              className="mt-2 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-2"
             >
               <button
                 type="submit"
-                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-300 hover:bg-red-400/10 focus-visible:outline-2 focus-visible:outline-red-400"
+                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-700 dark:text-red-300 hover:bg-red-400/10 focus-visible:outline-2 focus-visible:outline-red-400"
               >
                 Cerrar sesión
               </button>
@@ -351,24 +351,24 @@ function TarjetaIndicador({
   icono: IconName;
 }) {
   return (
-    <article className="min-w-0 rounded-2xl border border-white/10 bg-[#111d31] p-5 transition hover:border-cyan-400/25 sm:p-6">
+    <article className="min-w-0 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-5 transition hover:border-cyan-400/25 sm:p-6">
       <div className="mb-5 flex items-center justify-between">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-800 dark:text-cyan-300">
           <Icon name={icono} />
         </span>
 
         <span className="h-2 w-2 rounded-full bg-cyan-400/70" />
       </div>
 
-      <p className="text-3xl font-extrabold tabular-nums tracking-tight text-white">
+      <p className="text-3xl font-extrabold tabular-nums tracking-tight text-[var(--ecf-text,#102238)] dark:text-white">
         {valor}
       </p>
 
-      <h3 className="mt-2 text-sm font-semibold text-slate-100">
+      <h3 className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
         {titulo}
       </h3>
 
-      <p className="mt-1 text-xs leading-5 text-slate-400">
+      <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {descripcion}
       </p>
     </article>
@@ -384,7 +384,7 @@ function TarjetaModulo({
   return (
     <Link
       href={modulo.href}
-      className="group flex min-w-0 flex-col rounded-2xl border border-white/10 bg-[#111d31] p-5 transition duration-200 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-[#15253c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 sm:p-6"
+      className="group flex min-w-0 flex-col rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-5 transition duration-200 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-[#eaf4fc] dark:hover:bg-[#15253c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <span
@@ -396,20 +396,20 @@ function TarjetaModulo({
           />
         </span>
 
-        <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-slate-400">
+        <span className="rounded-full border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           {modulo.etiqueta}
         </span>
       </div>
 
-      <h3 className="mt-6 text-lg font-bold text-white">
+      <h3 className="mt-6 text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
         {modulo.titulo}
       </h3>
 
-      <p className="mt-2 flex-1 text-sm leading-6 text-slate-400">
+      <p className="mt-2 flex-1 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {modulo.descripcion}
       </p>
 
-      <span className="mt-6 inline-flex items-center gap-2 border-t border-white/10 pt-4 text-sm font-bold text-cyan-300 group-hover:text-cyan-200">
+      <span className="mt-6 inline-flex items-center gap-2 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-4 text-sm font-bold text-cyan-800 dark:text-cyan-300 group-hover:text-cyan-900 dark:group-hover:text-cyan-200">
         {modulo.accion}
 
         <Icon
@@ -449,8 +449,8 @@ async function ContenidoEntrenador() {
 
   if (accesoError || !acceso) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-[#080d1a] px-5 text-center text-white">
-        <span className="mb-5 rounded-2xl bg-red-400/10 p-4 text-red-300">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-5 text-center text-[var(--ecf-text,#102238)] dark:text-white">
+        <span className="mb-5 rounded-2xl bg-red-400/10 p-4 text-red-700 dark:text-red-300">
           <Icon
             name="shield"
             className="h-8 w-8"
@@ -461,7 +461,7 @@ async function ContenidoEntrenador() {
           Acceso restringido
         </h1>
 
-        <p className="mt-4 max-w-md leading-7 text-slate-400">
+        <p className="mt-4 max-w-md leading-7 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Tu cuenta no tiene autorización para utilizar
           el panel del entrenador.
         </p>
@@ -603,20 +603,20 @@ async function ContenidoEntrenador() {
 
   // 5. INTERFAZ DEL ENTRENADOR
   return (
-    <main className="relative min-h-screen bg-[#080d1a] text-white">
+    <main className="relative min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] text-[var(--ecf-text,#102238)] dark:text-white">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[450px] bg-gradient-to-b from-cyan-500/[0.06] to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[450px] bg-gradient-to-b from-cyan-500/[0.09] dark:from-cyan-500/[0.06] to-transparent"
       />
 
       <CabeceraEntrenador />
 
       <div className="relative mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pt-9 lg:px-8">
         {/* BIENVENIDA */}
-        <section className="overflow-hidden rounded-[26px] border border-cyan-400/15 bg-gradient-to-br from-[#122b40] via-[#111d32] to-[#1a1735] p-5 shadow-xl shadow-black/10 sm:p-8 lg:p-10">
+        <section className="overflow-hidden rounded-[26px] border border-cyan-200/80 dark:border-cyan-400/15 bg-gradient-to-br from-[#e9f8ff] dark:from-[#122b40] via-white dark:via-[#111d32] to-[#eef2ff] dark:to-[#1a1735] p-5 shadow-xl shadow-black/10 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-center">
             <div className="min-w-0">
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-200">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-200">
                 <Icon
                   name="sparkles"
                   className="h-4 w-4"
@@ -627,12 +627,12 @@ async function ContenidoEntrenador() {
 
               <h1 className="mt-5 break-words text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
                 ¡Bienvenido,
-                <span className="mt-1 block text-cyan-300">
+                <span className="mt-1 block text-cyan-800 dark:text-cyan-300">
                   {nombre}!
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base">
                 Gestiona clientes, revisa rutinas y
                 supervisa sesiones e indicadores de
                 adherencia desde un mismo espacio.
@@ -641,7 +641,7 @@ async function ContenidoEntrenador() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/entrenador/clientes"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-[#07121e] transition hover:bg-cyan-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-[#07121e] transition hover:bg-cyan-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800 dark:focus-visible:outline-white"
                 >
                   Gestionar clientes
 
@@ -653,7 +653,7 @@ async function ContenidoEntrenador() {
 
                 <Link
                   href="/entrenador/investigacion"
-                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-400"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-100 dark:bg-white/5 px-5 py-3 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-400"
                 >
                   Ver investigación
                 </Link>
@@ -661,9 +661,9 @@ async function ContenidoEntrenador() {
             </div>
 
             {/* MOTOR INTELIGENTE */}
-            <aside className="rounded-2xl border border-white/10 bg-[#071423]/70 p-5">
+            <aside className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/80 dark:bg-[#071423]/70 p-5">
               <div className="flex items-center gap-3">
-                <span className="rounded-xl bg-violet-400/10 p-3 text-violet-300">
+                <span className="rounded-xl bg-violet-400/10 p-3 text-violet-700 dark:text-violet-300">
                   <Icon
                     name="brain"
                     className="h-6 w-6"
@@ -675,7 +675,7 @@ async function ContenidoEntrenador() {
                     Motor inteligente
                   </p>
 
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Recomendación supervisada
                   </p>
                 </div>
@@ -689,9 +689,9 @@ async function ContenidoEntrenador() {
                 ].map((paso, i) => (
                   <li
                     key={paso}
-                    className="flex items-start gap-3 text-xs leading-5 text-slate-300"
+                    className="flex items-start gap-3 text-xs leading-5 text-slate-700 dark:text-slate-300"
                   >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white/10 font-bold text-cyan-300">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-slate-200 dark:bg-white/10 font-bold text-cyan-800 dark:text-cyan-300">
                       {i + 1}
                     </span>
 
@@ -700,7 +700,7 @@ async function ContenidoEntrenador() {
                 ))}
               </ol>
 
-              <p className="mt-5 rounded-lg bg-emerald-400/10 px-3 py-2 text-xs text-emerald-300">
+              <p className="mt-5 rounded-lg bg-emerald-400/10 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">
                 <Icon
                   name="shield"
                   className="mr-1 inline-block h-4 w-4 align-middle"
@@ -719,7 +719,7 @@ async function ContenidoEntrenador() {
         >
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Resumen general
               </p>
 
@@ -730,12 +730,12 @@ async function ContenidoEntrenador() {
                 Indicadores de entrenamiento
               </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Información consultada desde Supabase.
               </p>
             </div>
 
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-400">
+            <span className="rounded-full border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Datos del sistema
             </span>
           </div>
@@ -749,7 +749,7 @@ async function ContenidoEntrenador() {
             ))}
           </div>
 
-          <p className="mt-3 text-xs leading-5 text-slate-500">
+          <p className="mt-3 text-xs leading-5 text-slate-600 dark:text-slate-500">
             El símbolo «—» indica que un indicador
             no pudo consultarse. Las sesiones
             pendientes corresponden al estado
@@ -762,7 +762,7 @@ async function ContenidoEntrenador() {
           className="mt-12"
           aria-labelledby="titulo-modulos"
         >
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
             Espacio de trabajo
           </p>
 
@@ -773,7 +773,7 @@ async function ContenidoEntrenador() {
             Herramientas del entrenador
           </h2>
 
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Accede a las operaciones existentes sin
             perder el contexto de tus clientes.
             Las recomendaciones, aprobaciones y el
@@ -792,8 +792,8 @@ async function ContenidoEntrenador() {
         </section>
 
         {/* INFORMACION FINAL */}
-        <section className="mt-10 flex flex-col gap-5 rounded-2xl border border-cyan-400/15 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 p-5 sm:flex-row sm:items-center sm:p-7">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+        <section className="mt-10 flex flex-col gap-5 rounded-2xl border border-cyan-200/80 dark:border-cyan-400/15 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 p-5 sm:flex-row sm:items-center sm:p-7">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-800 dark:text-cyan-300">
             <Icon
               name="dumbbell"
               className="h-7 w-7"
@@ -805,7 +805,7 @@ async function ContenidoEntrenador() {
               Entrenamiento con supervisión humana
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
               Las recomendaciones inteligentes
               apoyan al entrenador; no sustituyen
               su revisión ni las reglas de los
@@ -815,7 +815,7 @@ async function ContenidoEntrenador() {
 
           <Link
             href="/catalogo"
-            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-bold text-cyan-300 hover:bg-cyan-400/20"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-bold text-cyan-800 dark:text-cyan-300 hover:bg-cyan-400/20"
           >
             Ver catálogo
 
@@ -828,7 +828,7 @@ async function ContenidoEntrenador() {
       </div>
 
       {/* PIE DE PAGINA */}
-      <footer className="relative border-t border-white/10 px-4 py-7 text-center text-xs text-slate-500">
+      <footer className="relative border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 px-4 py-7 text-center text-xs text-slate-600 dark:text-slate-500">
         Evolution Center Fit 2.0 ·
         Panel del entrenador
       </footer>

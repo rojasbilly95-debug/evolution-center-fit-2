@@ -135,16 +135,16 @@ function Indicador({
   detalle: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-[#14253d] p-5">
-      <p className="text-xs text-slate-400">
+    <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#14253d] p-5">
+      <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums text-white">
+      <p className="mt-3 text-3xl font-black tabular-nums text-[var(--ecf-text,#102238)] dark:text-white">
         {valor}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-slate-400">
+      <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {detalle}
       </p>
     </article>
@@ -153,7 +153,7 @@ function Indicador({
 
 function Cargando() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
       Cargando supervisión de entrenamientos...
     </main>
   );
@@ -204,7 +204,7 @@ async function Contenido({
 
   if (!url || !clave) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-amber-200">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-amber-800 dark:text-amber-200">
         Falta configurar Supabase en el servidor.
       </main>
     );
@@ -339,17 +339,17 @@ async function Contenido({
     respuestaEntrenadores.error
   ) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <Link
           href="/administrador"
-          className="text-cyan-300"
+          className="text-cyan-800 dark:text-cyan-300"
         >
           ← Volver
         </Link>
 
         <p
           role="alert"
-          className="mt-6 text-amber-200"
+          className="mt-6 text-amber-800 dark:text-amber-200"
         >
           No se pudieron consultar los planes
           o las sesiones. Revisa las tablas
@@ -457,7 +457,7 @@ async function Contenido({
     respuestaRutinas.error
   ) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-amber-200">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-amber-800 dark:text-amber-200">
         No se pudieron consultar los nombres
         de usuarios y rutinas.
       </main>
@@ -736,22 +736,22 @@ async function Contenido({
   // ==========================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] text-white">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-[var(--ecf-text,#102238)] dark:text-white">
 
       {/* CABECERA */}
 
-      <header className="border-b border-white/10 bg-[#101d30]">
+      <header className="border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d30]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 p-5">
           <strong>
             EVOLUTION CENTER FIT{" "}
-            <span className="text-cyan-300">
+            <span className="text-cyan-800 dark:text-cyan-300">
               2.0
             </span>
           </strong>
 
           <Link
             href="/administrador"
-            className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+            className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
           >
             ← Volver al administrador
           </Link>
@@ -762,8 +762,8 @@ async function Contenido({
 
         {/* PRESENTACION */}
 
-        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#17364c] to-[#1a1b36] p-7 sm:p-9">
-          <p className="text-xs font-black uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/20 bg-gradient-to-br from-[#e8f9ff] to-[#ecf1ff] dark:from-[#17364c] dark:to-[#1a1b36] p-7 sm:p-9">
+          <p className="text-xs font-black uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
             FASE 111.16 · ADMINISTRACIÓN
           </p>
 
@@ -771,7 +771,7 @@ async function Contenido({
             Supervisión de entrenamientos
           </h1>
 
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700 dark:text-slate-300">
             Supervisa planes asignados, sesiones,
             asistencia, cumplimiento de series
             y continuidad.
@@ -812,7 +812,7 @@ async function Contenido({
 
         {/* FILTROS */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
           <h2 className="text-xl font-bold">
             Buscar planes
           </h2>
@@ -822,13 +822,13 @@ async function Contenido({
             method="get"
             className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_auto]"
           >
-            <label className="text-xs text-slate-300">
+            <label className="text-xs text-slate-700 dark:text-slate-300">
               Estado del plan
 
               <select
                 name="estado"
                 defaultValue={estado}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081525] p-3 text-sm"
+                className="mt-2 min-h-12 w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081525] p-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/30"
               >
                 {ESTADOS.map((item) => (
                   <option
@@ -843,13 +843,13 @@ async function Contenido({
               </select>
             </label>
 
-            <label className="text-xs text-slate-300">
+            <label className="text-xs text-slate-700 dark:text-slate-300">
               Entrenador
 
               <select
                 name="entrenador"
                 defaultValue={entrenador}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081525] p-3 text-sm"
+                className="mt-2 min-h-12 w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081525] p-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/30"
               >
                 <option value="todos">
                   Todos los entrenadores
@@ -885,7 +885,7 @@ async function Contenido({
           </form>
 
           {entrenadoresParciales && (
-            <p className="mt-3 text-xs text-amber-200">
+            <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
               La lista de entrenadores es parcial.
               Hay más registros que los mostrados.
             </p>
@@ -894,13 +894,13 @@ async function Contenido({
 
         {/* LISTADO DE PLANES */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-bold">
               Planes de entrenamiento
             </h2>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {totalFiltrado} resultado(s) ·
               Página {pagina} de {paginas}
             </p>
@@ -908,7 +908,7 @@ async function Contenido({
 
           <div className="mt-5 space-y-3">
             {planes.length === 0 && (
-              <p className="rounded-xl bg-[#081525] p-5 text-sm text-slate-400">
+              <p className="rounded-xl bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081525] p-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 No hay planes en esta página
                 o con los filtros seleccionados.
               </p>
@@ -917,7 +917,7 @@ async function Contenido({
             {planes.map((plan) => (
               <article
                 key={plan.id}
-                className="rounded-xl border border-white/10 bg-[#081525] p-4 sm:p-5"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081525] p-4 sm:p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 space-y-1">
@@ -927,34 +927,34 @@ async function Contenido({
                         `Rutina #${plan.rutina_id}`}
                     </p>
 
-                    <p className="text-sm text-slate-300">
+                    <p className="text-sm text-slate-700 dark:text-slate-300">
                       Cliente:{" "}
                       {nombres.get(plan.cliente_id) ??
                         "Sin perfil"}
                     </p>
 
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Entrenador:{" "}
                       {nombres.get(
                         plan.entrenador_id
                       ) ?? "Sin perfil"}
                     </p>
 
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       {fechaLima(plan.fecha_inicio)}
                       {" — "}
                       {fechaLima(plan.fecha_fin)}
                     </p>
                   </div>
 
-                  <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-200">
+                  <span className="rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-800 dark:text-cyan-200">
                     {plan.estado}
                   </span>
                 </div>
 
                 <Link
                   href={enlacePlan(plan.id)}
-                  className="mt-4 inline-flex rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-white/5"
+                  className="mt-4 inline-flex rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm font-semibold text-cyan-800 dark:text-cyan-300 hover:bg-slate-100 dark:hover:bg-white/5"
                 >
                   Ver seguimiento
                 </Link>
@@ -968,7 +968,7 @@ async function Contenido({
             {pagina > 1 ? (
               <Link
                 href={enlacePagina(pagina - 1)}
-                className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
               >
                 ← Anterior
               </Link>
@@ -979,7 +979,7 @@ async function Contenido({
             {pagina < paginas ? (
               <Link
                 href={enlacePagina(pagina + 1)}
-                className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
               >
                 Siguiente →
               </Link>
@@ -994,12 +994,12 @@ async function Contenido({
         {planId && (
           <section
             id="detalle"
-            className="scroll-mt-6 rounded-2xl border border-cyan-400/20 bg-[#12243a] p-5 sm:p-7"
+            className="scroll-mt-6 rounded-2xl border border-cyan-200 dark:border-cyan-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#12243a] p-5 sm:p-7"
           >
             {errorDetalle || !planSeleccionado ? (
               <p
                 role="alert"
-                className="text-amber-200"
+                className="text-amber-800 dark:text-amber-200"
               >
                 No se encontró el plan seleccionado
                 o no se pudo consultar.
@@ -1008,7 +1008,7 @@ async function Contenido({
               <>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold uppercase text-cyan-300">
+                    <p className="text-xs font-bold uppercase text-cyan-800 dark:text-cyan-300">
                       Seguimiento de un plan
                     </p>
 
@@ -1019,7 +1019,7 @@ async function Contenido({
                       ) ?? "Rutina"}
                     </h2>
 
-                    <p className="mt-2 text-sm text-slate-300">
+                    <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
                       {nombres.get(
                         planSeleccionado.cliente_id
                       ) ?? "Cliente"}
@@ -1032,7 +1032,7 @@ async function Contenido({
 
                   <Link
                     href={enlacePagina(pagina)}
-                    className="rounded-lg border border-white/20 px-4 py-2 text-sm"
+                    className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
                   >
                     Cerrar detalle
                   </Link>
@@ -1041,7 +1041,7 @@ async function Contenido({
                 {!sesionesCompletas && (
                   <p
                     role="alert"
-                    className="mt-5 text-sm text-amber-200"
+                    className="mt-5 text-sm text-amber-800 dark:text-amber-200"
                   >
                     No se pudo leer todo el calendario
                     del plan. Las métricas están
@@ -1092,7 +1092,7 @@ async function Contenido({
 
                     {cumplimiento === null &&
                       objetivoSeries > 0 && (
-                        <p className="mt-4 text-xs text-amber-200">
+                        <p className="mt-4 text-xs text-amber-800 dark:text-amber-200">
                           Evidencias:{" "}
                           {seriesConEvidencia} de{" "}
                           {objetivoSeries} series previstas.
@@ -1102,7 +1102,7 @@ async function Contenido({
                       )}
 
                     {errorMetricas && (
-                      <p className="mt-4 text-sm text-amber-200">
+                      <p className="mt-4 text-sm text-amber-800 dark:text-amber-200">
                         No se pudo verificar toda la
                         información del cumplimiento.
                         No se muestran porcentajes
@@ -1119,7 +1119,7 @@ async function Contenido({
 
                     <div className="mt-3 grid gap-2 sm:grid-cols-2">
                       {sesiones.length === 0 && (
-                        <p className="text-sm text-slate-400">
+                        <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                           Aún no hay sesiones
                           para este plan.
                         </p>
@@ -1128,14 +1128,14 @@ async function Contenido({
                       {sesiones.map((item) => (
                         <article
                           key={item.id}
-                          className="rounded-xl border border-white/10 bg-[#081525] p-4"
+                          className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081525] p-4"
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <strong className="text-sm">
                               Sesión {item.numero_sesion}
                             </strong>
 
-                            <span className="text-xs text-cyan-300">
+                            <span className="text-xs text-cyan-800 dark:text-cyan-300">
                               {item.estado.replaceAll(
                                 "_",
                                 " "
@@ -1143,13 +1143,13 @@ async function Contenido({
                             </span>
                           </div>
 
-                          <p className="mt-2 text-xs text-slate-400">
+                          <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             {fechaLima(
                               item.fecha_programada
                             )}
                           </p>
 
-                          <p className="mt-1 text-xs text-slate-400">
+                          <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Duración real:{" "}
                             {item.duracion_real_min ??
                               "Sin registrar"}
@@ -1169,8 +1169,8 @@ async function Contenido({
 
         {/* NOTAS DE CONTROL */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-6 text-sm leading-7 text-slate-300">
-          <h2 className="font-bold text-white">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6 text-sm leading-7 text-slate-700 dark:text-slate-300">
+          <h2 className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
             Criterios de supervisión
           </h2>
 
@@ -1182,7 +1182,7 @@ async function Contenido({
             de las sesiones realizadas.
           </p>
 
-          <p className="mt-2 text-xs text-amber-200">
+          <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
             Estos datos operativos no sustituyen
             los indicadores pretest y postest ni
             el análisis estadístico GE/GC

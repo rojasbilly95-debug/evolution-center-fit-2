@@ -548,7 +548,7 @@ body: JSON.stringify({
   return (
     <section
       aria-label="Programación de sesiones de entrenamiento"
-      className="mt-4 rounded-xl border border-cyan-400/20 bg-slate-950/60 p-4"
+      className="mt-4 rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-slate-950/60 p-4"
     >
       {/* ====================================
           ENCABEZADO
@@ -556,15 +556,15 @@ body: JSON.stringify({
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-semibold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Calendario de entrenamiento
           </p>
 
-          <h6 className="mt-1 text-base font-bold text-white">
+          <h6 className="mt-1 text-base font-bold text-[var(--ecf-text,#102238)] dark:text-white">
             Programación, asistencia y ejercicios
           </h6>
 
-          <p className="mt-1 text-xs leading-5 text-slate-400">
+          <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Programa los días de entrenamiento,
             registra la asistencia y supervisa
             el cumplimiento de cada ejercicio.
@@ -578,7 +578,7 @@ body: JSON.stringify({
             guardando ||
             estado.cargando
           }
-          className="text-xs font-semibold text-cyan-300 hover:text-cyan-200 disabled:opacity-40"
+          className="text-xs font-semibold text-cyan-700 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200 disabled:opacity-40"
         >
           Actualizar
         </button>
@@ -591,7 +591,7 @@ body: JSON.stringify({
       {estado.cargando && (
         <p
           role="status"
-          className="mt-4 text-sm text-slate-400"
+          className="mt-4 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
         >
           Consultando el calendario del plan...
         </p>
@@ -602,10 +602,10 @@ body: JSON.stringify({
       ==================================== */}
 
       {estado.error && (
-        <div className="mt-4 rounded-lg border border-rose-400/25 bg-rose-400/10 p-3">
+        <div className="mt-4 rounded-lg border border-rose-200 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-3">
           <p
             role="alert"
-            className="text-sm text-rose-200"
+            className="text-sm text-rose-800 dark:text-rose-200"
           >
             {estado.error}
           </p>
@@ -613,7 +613,7 @@ body: JSON.stringify({
           <button
             type="button"
             onClick={actualizar}
-            className="mt-2 text-xs font-semibold text-cyan-300 underline"
+            className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300 underline"
           >
             Reintentar
           </button>
@@ -628,13 +628,13 @@ body: JSON.stringify({
                 DATOS DEL PLAN
             ============================ */}
 
-            <div className="mt-4 grid gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 sm:grid-cols-3">
+            <div className="mt-4 grid gap-2 rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-3 sm:grid-cols-3">
               <div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Inicio
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-white">
+                <p className="mt-1 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                   {mostrarFecha(
                     plan.fechaInicio
                   )}
@@ -642,11 +642,11 @@ body: JSON.stringify({
               </div>
 
               <div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Fin
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-white">
+                <p className="mt-1 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                   {mostrarFecha(
                     plan.fechaFin
                   )}
@@ -654,11 +654,11 @@ body: JSON.stringify({
               </div>
 
               <div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Frecuencia
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-cyan-200">
+                <p className="mt-1 text-sm font-semibold text-cyan-800 dark:text-cyan-200">
                   {plan.frecuenciaSemanal}{" "}
                   días/semana
                 </p>
@@ -672,7 +672,7 @@ body: JSON.stringify({
             {mensaje && (
               <p
                 role="status"
-                className="mt-3 rounded-lg border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm text-emerald-200"
+                className="mt-3 rounded-lg border border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 p-3 text-sm text-emerald-800 dark:text-emerald-200"
               >
                 {mensaje}
               </p>
@@ -685,12 +685,12 @@ body: JSON.stringify({
             {yaProgramadas ? (
               <div className="mt-4 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-emerald-200">
+                  <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
                     {estado.sesiones.length}{" "}
                     sesiones registradas
                   </p>
 
-                  <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-200">
+                  <span className="rounded-full border border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 px-3 py-1 text-xs text-emerald-800 dark:text-emerald-200">
                     Calendario creado
                   </span>
                 </div>
@@ -700,32 +700,32 @@ body: JSON.stringify({
                 ======================== */}
 
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-lg border border-white/10 bg-slate-900 p-3 text-center">
-                    <p className="text-xl font-bold text-emerald-300">
+                  <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900 p-3 text-center">
+                    <p className="text-xl font-bold text-emerald-700 dark:text-emerald-300">
                       {realizadas}
                     </p>
 
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Realizadas
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-white/10 bg-slate-900 p-3 text-center">
-                    <p className="text-xl font-bold text-rose-300">
+                  <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900 p-3 text-center">
+                    <p className="text-xl font-bold text-rose-700 dark:text-rose-300">
                       {ausentes}
                     </p>
 
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Ausencias
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-white/10 bg-slate-900 p-3 text-center">
-                    <p className="text-xl font-bold text-amber-300">
+                  <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900 p-3 text-center">
+                    <p className="text-xl font-bold text-amber-800 dark:text-amber-300">
                       {enCurso}
                     </p>
 
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       En curso
                     </p>
                   </div>
@@ -750,19 +750,19 @@ body: JSON.stringify({
     FILTROS DE SESIONES
 ======================================== */}
 
-                <div className="mt-7 rounded-2xl border border-white/10 bg-[#101d31] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
+                <div className="mt-7 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#101d31] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-white">
+                      <h3 className="text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                         Sesiones del entrenamiento
                       </h3>
 
-                      <p className="mt-1 text-sm text-slate-400">
+                      <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Filtra las sesiones según su estado.
                       </p>
                     </div>
 
-                    <span className="self-start rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+                    <span className="self-start rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-800 dark:text-cyan-200">
                       {sesionesFiltradas.length} de{" "}
                       {estado.sesiones.length} sesiones
                     </span>
@@ -793,7 +793,7 @@ body: JSON.stringify({
                         }}
                         className={`min-h-11 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:text-sm ${filtroSesion === opcion.valor
                           ? "border-cyan-400 bg-cyan-400 text-[#07121e] shadow-[0_6px_20px_rgba(6,182,212,0.15)]"
-                          : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-white"
+                          : "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 hover:border-cyan-400/30 hover:bg-cyan-400/10 hover:text-slate-900 dark:hover:text-white"
                           }`}
                       >
                         {opcion.texto}
@@ -817,7 +817,7 @@ body: JSON.stringify({
                     return (
                       <li
                         key={sesion.id}
-                        className="group min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#162840] to-[#0e1a2e] p-3 shadow-[0_14px_36px_rgba(0,0,0,0.2)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_22px_46px_rgba(0,0,0,0.28)] sm:p-4"
+                        className="group min-w-0 overflow-hidden rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#162840] to-slate-50 dark:to-[#0e1a2e] p-3 shadow-[0_10px_28px_rgba(15,23,42,0.07)] dark:shadow-[0_14px_36px_rgba(0,0,0,0.2)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_14px_32px_rgba(15,23,42,0.12)] dark:hover:shadow-[0_22px_46px_rgba(0,0,0,0.28)] sm:p-4"
                       >
                         {/* CONTROL DE ASISTENCIA */}
 
@@ -832,14 +832,14 @@ body: JSON.stringify({
 
                         {/* EJERCICIOS EN LA MISMA TARJETA */}
 
-                        <div className="mt-3 rounded-xl border border-white/[0.07] bg-[#091628]/70 p-3 sm:p-4">
+                        <div className="mt-3 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-[#091628]/70 p-3 sm:p-4">
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div className="min-w-0">
-                              <p className="text-sm font-bold text-white">
+                              <p className="text-sm font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                                 Ejercicios y series
                               </p>
 
-                              <p className="mt-1 text-xs leading-5 text-slate-400">
+                              <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                 Consulta los objetivos y registra
                                 las series realizadas durante esta sesión.
                               </p>
@@ -853,8 +853,8 @@ body: JSON.stringify({
                                 alternarEjercicios(sesion.id)
                               }
                               className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition-[background-color,border-color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${ejerciciosAbiertos
-                                ? "border-emerald-400/35 bg-emerald-400/10 text-emerald-200"
-                                : "border-cyan-400/30 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20"
+                                ? "border-emerald-300 dark:border-emerald-400/35 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                                : "border-cyan-300 dark:border-cyan-400/30 bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-200 hover:bg-cyan-400/20"
                                 }`}
                             >
                               {ejerciciosAbiertos
@@ -882,7 +882,7 @@ body: JSON.stringify({
                           <div
                             id={panelId}
                             hidden={!ejerciciosAbiertos}
-                            className="mt-4 space-y-4 border-t border-white/10 pt-4"
+                            className="mt-4 space-y-4 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-4"
                           >
                             {ejerciciosAbiertos && (
                               <>
@@ -906,12 +906,12 @@ body: JSON.stringify({
                 {/* MENSAJE CUANDO NO HAY COINCIDENCIAS */}
 
                 {sesionesFiltradas.length === 0 && (
-                  <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-[#111d31] p-7 text-center">
-                    <p className="font-semibold text-white">
+                  <div className="mt-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-[#111d31] p-7 text-center">
+                    <p className="font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                       No hay sesiones en este estado
                     </p>
 
-                    <p className="mt-2 text-sm text-slate-400">
+                    <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Selecciona otro filtro para consultar
                       las sesiones del plan.
                     </p>
@@ -931,7 +931,7 @@ body: JSON.stringify({
                         (valor) => !valor
                       )
                     }
-                    className="text-xs font-semibold text-cyan-300 underline"
+                    className="text-xs font-semibold text-cyan-700 dark:text-cyan-300 underline"
                   >
                     {mostrarTodas
                       ? "Mostrar menos"
@@ -943,8 +943,8 @@ body: JSON.stringify({
                     INFORMACION DEL MODULO
                 ======================== */}
 
-                <div className="rounded-lg border border-white/10 bg-slate-900/50 p-3">
-                  <p className="text-xs leading-5 text-slate-400">
+                <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-900/50 p-3">
+                  <p className="text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     La asistencia se registra
                     por sesión. Los ejercicios
                     pueden consultarse desde el
@@ -954,7 +954,7 @@ body: JSON.stringify({
                     está en curso.
                   </p>
 
-                  <p className="mt-2 text-xs leading-5 text-slate-400">
+                  <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     El resumen de adherencia
                     permite consultar asistencia,
                     cumplimiento y continuidad,
@@ -973,7 +973,7 @@ body: JSON.stringify({
                 {!plan.fechaFin && (
                   <p
                     role="alert"
-                    className="rounded-lg border border-amber-400/25 bg-amber-400/10 p-3 text-sm text-amber-200"
+                    className="rounded-lg border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 p-3 text-sm text-amber-900 dark:text-amber-200"
                   >
                     Este plan no tiene fecha de
                     finalización. Define primero
@@ -984,7 +984,7 @@ body: JSON.stringify({
                 {!planProgramable && (
                   <p
                     role="alert"
-                    className="rounded-lg border border-amber-400/25 bg-amber-400/10 p-3 text-sm text-amber-200"
+                    className="rounded-lg border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 p-3 text-sm text-amber-900 dark:text-amber-200"
                   >
                     El plan está en estado
                     «{plan.estado}» y no admite
@@ -997,7 +997,7 @@ body: JSON.stringify({
                 ======================== */}
 
                 <div>
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                     Selecciona{" "}
                     {plan.frecuenciaSemanal}{" "}
                     días de la semana
@@ -1031,8 +1031,8 @@ body: JSON.stringify({
                             !plan.fechaFin
                           }
                           className={`min-h-12 rounded-lg border px-1 py-2 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm ${seleccionado
-                            ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-200"
-                            : "border-white/15 bg-slate-900 text-slate-300 hover:border-cyan-400/40"
+                            ? "border-emerald-400 dark:border-emerald-400/60 bg-emerald-100 dark:bg-emerald-400/15 text-emerald-800 dark:text-emerald-200"
+                            : "border-slate-300 dark:border-white/15 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-cyan-400/40"
                             }`}
                         >
                           {dia.nombre}
@@ -1043,8 +1043,8 @@ body: JSON.stringify({
 
                   <p
                     className={`mt-2 text-xs ${diasCorrectos
-                      ? "text-emerald-300"
-                      : "text-slate-400"
+                      ? "text-emerald-700 dark:text-emerald-300"
+                      : "text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
                       }`}
                   >
                     {dias.length} de{" "}
@@ -1057,15 +1057,15 @@ body: JSON.stringify({
     HORARIO DE ENTRENAMIENTO
 ==================================== */}
 
-                <div className="rounded-xl border border-cyan-400/20 bg-cyan-950/10 p-4">
+                <div className="rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-950/10 p-4">
                   <label
                     htmlFor={`hora-sesion-${asignacionId}`}
-                    className="block text-sm font-semibold text-white"
+                    className="block text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white"
                   >
                     Hora de entrenamiento
                   </label>
 
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Selecciona la hora en que comenzarán
                     las sesiones (hora de Lima, Perú).
                   </p>
@@ -1087,10 +1087,10 @@ body: JSON.stringify({
                       !plan.fechaFin
                     }
                     required
-                    className="mt-3 min-h-11 w-full rounded-lg border border-white/15 bg-slate-900 px-3 py-2 text-sm text-white focus:border-cyan-400 focus:outline-none disabled:opacity-40"
+                    className="mt-3 min-h-11 w-full rounded-lg border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-900 dark:[color-scheme:dark] px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus:border-cyan-400 focus:outline-none disabled:opacity-40"
                   />
 
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {horaValida
                       ? `Horario seleccionado: ${horaProgramada}`
                       : "Debes seleccionar una hora válida para continuar."}
@@ -1104,14 +1104,14 @@ body: JSON.stringify({
                 {diasCorrectos &&
                   fechasPrevistas.length >
                   0 && (
-                    <div className="rounded-lg border border-cyan-400/20 bg-cyan-950/15 p-3">
-                      <p className="text-sm font-semibold text-cyan-200">
+                    <div className="rounded-lg border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-950/15 p-3">
+                      <p className="text-sm font-semibold text-cyan-800 dark:text-cyan-200">
                         Vista previa:{" "}
                         {fechasPrevistas.length}{" "}
                         sesiones
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Fechas previstas según
                         los días seleccionados:
                       </p>
@@ -1122,7 +1122,7 @@ body: JSON.stringify({
                           .map((fecha) => (
                             <span
                               key={fecha}
-                              className="rounded-md border border-white/10 bg-slate-900 px-2.5 py-1.5 text-xs text-slate-200"
+                              className="rounded-md border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-xs text-slate-800 dark:text-slate-200"
                             >
                               {mostrarFecha(
                                 fecha
@@ -1133,7 +1133,7 @@ body: JSON.stringify({
 
                       {fechasPrevistas.length >
                         8 && (
-                          <p className="mt-2 text-xs text-slate-400">
+                          <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Y{" "}
                             {fechasPrevistas.length -
                               8}{" "}
@@ -1150,7 +1150,7 @@ body: JSON.stringify({
                 {errorGuardar && (
                   <p
                     role="alert"
-                    className="rounded-lg border border-rose-400/25 bg-rose-400/10 p-3 text-sm text-rose-200"
+                    className="rounded-lg border border-rose-200 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-3 text-sm text-rose-800 dark:text-rose-200"
                   >
                     {errorGuardar}
                   </p>
@@ -1179,7 +1179,7 @@ body: JSON.stringify({
                     }`}
                 </button>
 
-                <p className="text-xs leading-5 text-slate-500">
+                <p className="text-xs leading-5 text-slate-600 dark:text-slate-500">
                   La programación se guarda
                   una sola vez. Aún no se ha
                   implementado la

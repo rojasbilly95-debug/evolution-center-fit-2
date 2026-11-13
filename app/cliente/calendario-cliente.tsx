@@ -89,12 +89,12 @@ function nombreEstado(estado: string) {
 
 function claseEstado(estado: string) {
   if (estado === "realizada")
-    return "border-emerald-400/25 bg-emerald-400/10 text-emerald-200";
+    return "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200";
   if (estado === "en_curso")
-    return "border-amber-400/25 bg-amber-400/10 text-amber-200";
+    return "border-amber-400/25 bg-amber-400/10 text-amber-800 dark:text-amber-200";
   if (["ausente", "cancelada", "anulada"].includes(estado))
-    return "border-rose-400/25 bg-rose-400/10 text-rose-200";
-  return "border-cyan-400/25 bg-cyan-400/10 text-cyan-200";
+    return "border-rose-400/25 bg-rose-400/10 text-rose-800 dark:text-rose-200";
+  return "border-cyan-400/25 bg-cyan-400/10 text-cyan-800 dark:text-cyan-200";
 }
 
 function clasePunto(estado: string) {
@@ -130,12 +130,12 @@ function EtiquetaHorario({ hora }: { hora: string | null }) {
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-4 w-4 shrink-0 text-cyan-300"
+        className="h-4 w-4 shrink-0 text-cyan-700 dark:text-cyan-300"
       >
         <circle cx="12" cy="12" r="9" />
         <path d="M12 7v5l3 2" />
       </svg>
-      <span className="text-sm font-semibold text-cyan-100">
+      <span className="text-sm font-semibold text-cyan-900 dark:text-cyan-100">
         {horaBonita(hora)}
       </span>
     </div>
@@ -224,7 +224,7 @@ export default function CalendarioCliente({
   }
 
   return (
-    <div className="space-y-5 text-white">
+    <div className="space-y-5 text-[var(--ecf-text,#102238)] dark:text-white">
       {/* RESUMEN DEL PLAN */}
       <div className="grid gap-3 sm:grid-cols-3">
         {[
@@ -234,10 +234,10 @@ export default function CalendarioCliente({
         ].map((dato) => (
           <div
             key={dato.titulo}
-            className="rounded-2xl border border-white/10 bg-[#0b1729] p-4 shadow-[0_10px_25px_rgba(0,0,0,0.15)]"
+            className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1729] p-4 shadow-[0_10px_25px_rgba(0,0,0,0.15)]"
           >
-            <p className="text-xs text-slate-400">{dato.titulo}</p>
-            <p className="mt-2 text-2xl font-black tabular-nums text-cyan-200">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">{dato.titulo}</p>
+            <p className="mt-2 text-2xl font-black tabular-nums text-cyan-800 dark:text-cyan-200">
               {dato.valor}
             </p>
           </div>
@@ -245,12 +245,12 @@ export default function CalendarioCliente({
       </div>
 
       {/* CONTROLES Y FILTROS */}
-      <div className="rounded-2xl border border-white/10 bg-[#0b1729] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.14)]">
+      <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1729] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.14)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-200">
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
             Explora tus entrenamientos
           </p>
-          <div className="flex rounded-xl border border-white/15 bg-[#091221] p-1">
+          <div className="flex rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-[#091221] p-1">
             {(
               [
                 { id: "calendario", nombre: "Calendario" },
@@ -265,7 +265,7 @@ export default function CalendarioCliente({
                 className={`min-h-10 rounded-lg px-3 py-2 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 sm:text-sm ${
                   vista === opcion.id
                     ? "bg-cyan-400 text-[#07121e]"
-                    : "text-slate-300 hover:bg-white/10"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-white/10"
                 }`}
               >
                 {opcion.nombre}
@@ -289,8 +289,8 @@ export default function CalendarioCliente({
               }}
               className={`min-h-10 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                 filtro === opcion.valor
-                  ? "border-cyan-400 bg-cyan-400/15 text-cyan-200"
-                  : "border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/25 hover:text-white"
+                  ? "border-cyan-400 bg-cyan-400/15 text-cyan-800 dark:text-cyan-200"
+                  : "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-white/25 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {opcion.texto}
@@ -301,13 +301,13 @@ export default function CalendarioCliente({
 
       {vista === "calendario" ? (
         /* CALENDARIO MENSUAL */
-        <div className="rounded-2xl border border-white/10 bg-[#0b1729] p-3 shadow-[0_16px_38px_rgba(0,0,0,0.17)] sm:p-5">
+        <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1729] p-3 shadow-[0_16px_38px_rgba(0,0,0,0.17)] sm:p-5">
           <div className="mb-5 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => cambiarMes(-1)}
               aria-label="Mes anterior"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-xl text-slate-200 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-xl text-slate-800 dark:text-slate-200 transition hover:bg-slate-200/80 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
             >
               ‹
             </button>
@@ -315,7 +315,7 @@ export default function CalendarioCliente({
               <h3 className="text-base font-bold capitalize sm:text-lg">
                 {etiquetaMes}
               </h3>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 {sesionesMes.length} sesión(es) visibles este mes
               </p>
             </div>
@@ -323,7 +323,7 @@ export default function CalendarioCliente({
               type="button"
               onClick={() => cambiarMes(1)}
               aria-label="Mes siguiente"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-xl text-slate-200 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-xl text-slate-800 dark:text-slate-200 transition hover:bg-slate-200/80 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
             >
               ›
             </button>
@@ -334,7 +334,7 @@ export default function CalendarioCliente({
               <div
                 key={indice}
                 title={dia.completo}
-                className="py-2 text-center text-xs font-bold text-slate-400"
+                className="py-2 text-center text-xs font-bold text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
               >
                 {dia.corto}
               </div>
@@ -361,12 +361,12 @@ export default function CalendarioCliente({
                   aria-label={`${dia} de ${etiquetaMes}: ${delDia.length} sesión(es)`}
                   className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border px-1 py-2 text-sm transition-[border-color,background-color,transform] focus-visible:outline-2 focus-visible:outline-cyan-300 sm:min-h-20 ${
                     seleccionado
-                      ? "border-cyan-300 bg-cyan-400/20 text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
+                      ? "border-cyan-300 bg-cyan-400/20 text-cyan-900 dark:text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
                       : disponible
-                        ? "border-cyan-400/25 bg-cyan-400/[0.07] text-white hover:border-cyan-300/60 hover:bg-cyan-400/15"
+                        ? "border-cyan-400/25 bg-cyan-400/[0.07] text-[var(--ecf-text,#102238)] dark:text-white hover:border-cyan-300/60 hover:bg-cyan-400/15"
                         : fecha === hoy
-                          ? "border-white/20 bg-white/[0.07] text-slate-200"
-                          : "border-white/[0.04] bg-white/[0.02] text-slate-500"
+                          ? "border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-white/[0.07] text-slate-800 dark:text-slate-200"
+                          : "border-slate-200 dark:border-white/[0.04] bg-white dark:bg-white/[0.02] text-slate-500 dark:text-slate-500"
                   } ${!disponible ? "cursor-default" : ""}`}
                 >
                   <span className="font-bold tabular-nums">{dia}</span>
@@ -383,7 +383,7 @@ export default function CalendarioCliente({
                     </span>
                   )}
                   {disponible && (
-                    <span className="hidden text-[10px] text-cyan-200 sm:block">
+                    <span className="hidden text-[10px] text-cyan-800 dark:text-cyan-200 sm:block">
                       {delDia.length} ses.
                     </span>
                   )}
@@ -393,7 +393,7 @@ export default function CalendarioCliente({
           </div>
 
           {/* LEYENDA */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-xs text-slate-400">
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-4 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             {[
               { estado: "programada", texto: "Programada" },
               { estado: "realizada", texto: "Realizada" },
@@ -412,18 +412,18 @@ export default function CalendarioCliente({
           {/* DETALLE DEL DÍA */}
           <div
             aria-live="polite"
-            className="mt-5 rounded-xl border border-white/10 bg-[#101e33] p-4"
+            className="mt-5 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101e33] p-4"
           >
             {elegidas.length > 0 ? (
               <>
-                <h4 className="text-sm font-bold text-white">
+                <h4 className="text-sm font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                   {fechaCorta(fechaSeleccionada)} · {elegidas.length} sesión(es)
                 </h4>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {elegidas.map((sesion) => (
                     <div
                       key={sesion.id}
-                      className="rounded-xl border border-white/10 bg-[#0a1526] p-4"
+                      className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-[#0a1526] p-4"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="font-bold">
@@ -440,7 +440,7 @@ export default function CalendarioCliente({
                       <EtiquetaHorario hora={sesion.hora_programada} />
                       {sesion.estado === "programada" &&
                         sesion.fecha_programada.slice(0, 10) < hoy && (
-                          <p className="mt-3 text-xs text-amber-200">
+                          <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
                             Fecha pasada; pendiente de confirmación del entrenador.
                           </p>
                         )}
@@ -449,7 +449,7 @@ export default function CalendarioCliente({
                 </div>
               </>
             ) : (
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Selecciona un día resaltado para consultar sus sesiones.
               </p>
             )}
@@ -458,11 +458,11 @@ export default function CalendarioCliente({
       ) : (
         /* VISTA LISTA */
         <div className="space-y-3">
-          <p role="status" className="text-sm text-slate-400">
+          <p role="status" className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             {filtradas.length} de {sesiones.length} sesiones visibles en el plan
           </p>
           {filtradas.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1729] p-8 text-center text-sm text-slate-400">
+            <div className="rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1729] p-8 text-center text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               No hay sesiones que coincidan con el filtro seleccionado.
             </div>
           ) : (
@@ -470,14 +470,14 @@ export default function CalendarioCliente({
               {filtradas.map((sesion) => (
                 <article
                   key={sesion.id}
-                  className="rounded-2xl border border-white/10 bg-[#0b1729] p-4 shadow-[0_10px_28px_rgba(0,0,0,0.14)] transition-[border-color,transform] motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30"
+                  className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1729] p-4 shadow-[0_10px_28px_rgba(0,0,0,0.14)] transition-[border-color,transform] motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-bold text-white">
+                      <h3 className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                         Sesión #{sesion.numero_sesion}
                       </h3>
-                      <p className="mt-1 text-sm text-slate-400">
+                      <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {fechaCorta(sesion.fecha_programada)}
                       </p>
                     </div>
@@ -492,7 +492,7 @@ export default function CalendarioCliente({
                   <EtiquetaHorario hora={sesion.hora_programada} />
                   {sesion.estado === "programada" &&
                     sesion.fecha_programada.slice(0, 10) < hoy && (
-                      <p className="mt-3 border-t border-white/10 pt-3 text-xs text-amber-200">
+                      <p className="mt-3 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-3 text-xs text-amber-800 dark:text-amber-200">
                         Fecha pasada, pendiente de confirmación.
                       </p>
                     )}

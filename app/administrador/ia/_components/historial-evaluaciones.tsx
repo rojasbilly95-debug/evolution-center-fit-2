@@ -104,16 +104,16 @@ function Indicador({
   nota: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-[#0a192b] p-5">
-      <p className="text-sm text-slate-300">
+    <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#0a192b] p-5">
+      <p className="text-sm text-slate-700 dark:text-slate-300">
         {titulo}
       </p>
 
-      <p className="mt-2 text-3xl font-black text-white">
+      <p className="mt-2 text-3xl font-black text-[var(--ecf-text,#102238)] dark:text-white">
         {valor}
       </p>
 
-      <p className="mt-2 text-xs text-slate-400">
+      <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {nota}
       </p>
     </article>
@@ -130,7 +130,7 @@ export default async function HistorialEvaluaciones() {
 
   if (errorAuth || !auth.user) {
     return (
-      <p className="text-amber-200">
+      <p className="text-amber-800 dark:text-amber-200">
         Sesión no disponible.
       </p>
     );
@@ -150,7 +150,7 @@ export default async function HistorialEvaluaciones() {
     rol?.rol !== "administrador"
   ) {
     return (
-      <p className="text-amber-200">
+      <p className="text-amber-800 dark:text-amber-200">
         Acceso restringido.
       </p>
     );
@@ -164,7 +164,7 @@ export default async function HistorialEvaluaciones() {
 
   if (!url || !clave) {
     return (
-      <p className="text-amber-200">
+      <p className="text-amber-800 dark:text-amber-200">
         Falta la configuración privada.
       </p>
     );
@@ -237,7 +237,7 @@ export default async function HistorialEvaluaciones() {
     return (
       <p
         role="alert"
-        className="rounded-xl border border-amber-400/20 p-5 text-amber-200"
+        className="rounded-xl border border-amber-200 dark:border-amber-400/20 p-5 text-amber-800 dark:text-amber-200"
       >
         No se pudo consultar el historial.
         Comprueba Supabase y los logs de Vercel.
@@ -351,19 +351,19 @@ export default async function HistorialEvaluaciones() {
 
       {/* HISTORIAL */}
 
-      <div className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+      <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
         <h2 className="text-xl font-bold">
           Historial de evaluaciones GE
         </h2>
 
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Últimos 25 eventos. Los detalles de
           compatibilidad se guardan desde
           esta fase.
         </p>
 
         {eventos.length === 0 ? (
-          <p className="mt-5 rounded-xl bg-[#081525] p-5 text-sm text-slate-300">
+          <p className="mt-5 rounded-xl bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#081525] p-5 text-sm text-slate-700 dark:text-slate-300">
             Todavía no hay evaluaciones registradas.
           </p>
         ) : (
@@ -380,24 +380,24 @@ export default async function HistorialEvaluaciones() {
               return (
                 <article
                   key={evento.id}
-                  className="rounded-2xl border border-white/10 bg-[#081525] p-5"
+                  className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#081525] p-5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-bold text-white">
+                      <h3 className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                         {nombres.get(
                           evento.cliente_id
                         ) ?? "Cliente sin nombre"}
                       </h3>
 
-                      <p className="mt-1 text-sm text-slate-400">
+                      <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Entrenador:{" "}
                         {nombres.get(
                           evento.entrenador_id
                         ) ?? "No disponible"}
                       </p>
 
-                      <p className="mt-2 text-xs text-slate-400">
+                      <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {fechaLima(evento.creado_en)}
                         {" · "}
                         HTTP {evento.codigo_http}
@@ -409,8 +409,8 @@ export default async function HistorialEvaluaciones() {
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-bold ${
                         evento.resultado === "exitosa"
-                          ? "bg-emerald-400/10 text-emerald-200"
-                          : "bg-amber-400/10 text-amber-200"
+                          ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                          : "bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
                       }`}
                     >
                       {evento.resultado === "exitosa"
@@ -422,8 +422,8 @@ export default async function HistorialEvaluaciones() {
                   {tieneResumen ? (
                     <>
                       <div className="mt-4 grid grid-cols-2 gap-3">
-                        <div className="rounded-xl bg-[#13263e] p-4">
-                          <p className="text-xs text-slate-400">
+                        <div className="rounded-xl bg-slate-100 dark:bg-[#13263e] p-4">
+                          <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Rutinas evaluadas
                           </p>
 
@@ -432,8 +432,8 @@ export default async function HistorialEvaluaciones() {
                           </p>
                         </div>
 
-                        <div className="rounded-xl bg-[#13263e] p-4">
-                          <p className="text-xs text-slate-400">
+                        <div className="rounded-xl bg-slate-100 dark:bg-[#13263e] p-4">
+                          <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Rutinas elegibles
                           </p>
 
@@ -443,7 +443,7 @@ export default async function HistorialEvaluaciones() {
                         </div>
                       </div>
 
-                      <p className="mt-3 break-words text-xs leading-6 text-slate-400">
+                      <p className="mt-3 break-words text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Método:{" "}
                         {evento.metodo ||
                           "No registrado"}
@@ -464,15 +464,15 @@ export default async function HistorialEvaluaciones() {
                             : "No"}
                       </p>
 
-                      <details className="mt-4 rounded-xl border border-white/10 p-4">
-                        <summary className="cursor-pointer text-sm font-semibold text-cyan-200">
+                      <details className="mt-4 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 p-4">
+                        <summary className="cursor-pointer text-sm font-semibold text-cyan-800 dark:text-cyan-200">
                           Ver compatibilidad por rutina
                           {" "}({detalles.length})
                         </summary>
 
                         <div className="mt-4 space-y-2">
                           {detalles.length === 0 && (
-                            <p className="text-sm text-slate-400">
+                            <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                               No hay detalles disponibles.
                             </p>
                           )}
@@ -480,7 +480,7 @@ export default async function HistorialEvaluaciones() {
                           {detalles.map((rutina) => (
                             <div
                               key={`${rutina.posicion}-${rutina.rutina_id}`}
-                              className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#13263e] p-3 text-sm"
+                              className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-100 dark:bg-[#13263e] p-3 text-sm"
                             >
                               <div>
                                 <p className="font-semibold">
@@ -491,14 +491,14 @@ export default async function HistorialEvaluaciones() {
                                     `Rutina #${rutina.rutina_id}`}
                                 </p>
 
-                                <p className="mt-1 text-xs text-slate-400">
+                                <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                   {rutina.elegible
                                     ? "Elegible"
                                     : "No elegible"}
                                 </p>
                               </div>
 
-                              <span className="font-bold text-cyan-200">
+                              <span className="font-bold text-cyan-800 dark:text-cyan-200">
                                 {rutina.puntaje_compatibilidad ===
                                 null
                                   ? "Sin puntaje"
@@ -508,7 +508,7 @@ export default async function HistorialEvaluaciones() {
                           ))}
 
                           {evento.detalle_truncado && (
-                            <p className="text-xs text-amber-200">
+                            <p className="text-xs text-amber-800 dark:text-amber-200">
                               Se guardaron solamente
                               las primeras 50 rutinas.
                             </p>
@@ -517,7 +517,7 @@ export default async function HistorialEvaluaciones() {
                       </details>
                     </>
                   ) : (
-                    <p className="mt-4 text-xs text-slate-400">
+                    <p className="mt-4 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Evento anterior o sin detalle.
                       No se reconstruye información
                       que no fue almacenada.
@@ -530,7 +530,7 @@ export default async function HistorialEvaluaciones() {
         )}
       </div>
 
-      <p className="text-xs leading-6 text-slate-400">
+      <p className="text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         Los puntajes representan compatibilidad
         del motor, no adherencia. El registro
         almacena información resumida y no

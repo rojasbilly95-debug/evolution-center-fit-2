@@ -241,7 +241,7 @@ export default function LoginPage() {
   // ========================================
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-5 py-12 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] px-5 py-12 text-[var(--ecf-text,#102238)] dark:bg-[#080d1a] dark:text-white">
       <div className="w-full max-w-md">
 
         {/* ENCABEZADO */}
@@ -253,27 +253,27 @@ export default function LoginPage() {
 
           <h1 className="text-2xl font-black">
             EVOLUTION CENTER FIT
-            <span className="ml-2 text-cyan-400">
+            <span className="ml-2 text-cyan-700 dark:text-cyan-400">
               2.0
             </span>
           </h1>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Sistema inteligente de entrenamiento
           </p>
 
         </div>
 
         {/* CONTENEDOR PRINCIPAL */}
-        <section className="rounded-3xl border border-white/10 bg-slate-900 p-8 shadow-2xl">
+        <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-8 shadow-2xl dark:border-white/10 dark:bg-[#111d31]">
 
           {verificando ? (
 
             // VERIFICANDO SESIÓN
             <div className="text-center">
-              <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-slate-700 border-t-cyan-400" />
+              <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600 dark:border-slate-700 dark:border-t-cyan-400" />
 
-              <p className="text-slate-300">
+              <p className="text-slate-700 dark:text-slate-300">
                 Comprobando sesión...
               </p>
             </div>
@@ -283,13 +283,13 @@ export default function LoginPage() {
             // USUARIO AUTENTICADO
             <div className="space-y-5">
 
-              <div className="rounded-2xl bg-emerald-500/10 p-5 text-center">
+              <div className="rounded-2xl bg-emerald-50 p-5 text-center dark:bg-emerald-500/10">
 
                 <div className="mb-2 text-3xl">
                   ✓
                 </div>
 
-                <h2 className="text-xl font-bold text-emerald-300">
+                <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-300">
                   Autenticación correcta
                 </h2>
 
@@ -300,24 +300,24 @@ export default function LoginPage() {
               </div>
 
               {/* INFORMACIÓN DEL USUARIO */}
-              <div className="space-y-3 rounded-xl bg-slate-800 p-5 text-sm">
+              <div className="space-y-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] p-5 text-sm dark:border-white/10 dark:bg-[#0b1729]">
 
                 <p>
-                  <span className="text-slate-400">
+                  <span className="text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Nombre:
                   </span>{" "}
                   {usuario.nombre}
                 </p>
 
                 <p>
-                  <span className="text-slate-400">
+                  <span className="text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Correo:
                   </span>{" "}
                   {usuario.email}
                 </p>
 
                 <p>
-                  <span className="text-slate-400">
+                  <span className="text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Rol registrado:
                   </span>{" "}
                   {usuario.rol}
@@ -329,7 +329,7 @@ export default function LoginPage() {
               {error && (
                 <p
                   role="alert"
-                  className="rounded-xl bg-red-500/10 p-4 text-sm text-red-300"
+                  className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-300"
                 >
                   {error}
                 </p>
@@ -338,7 +338,7 @@ export default function LoginPage() {
               {/* PANEL NO IMPLEMENTADO */}
               {!error &&
                 !obtenerRutaPorRol(usuario.rol) && (
-                  <p className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200">
+                  <p className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">
                     Tu cuenta está autenticada, pero el
                     panel correspondiente a este rol
                     todavía no está disponible.
@@ -367,7 +367,7 @@ export default function LoginPage() {
                 ¡Bienvenido!
               </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Ingresa tus credenciales para continuar.
               </p>
 
@@ -396,7 +396,7 @@ export default function LoginPage() {
                     placeholder="correo@ejemplo.com"
                     autoComplete="username"
                     required
-                    className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                    className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] px-4 py-3 text-[var(--ecf-text,#102238)] outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15 dark:border-white/10 dark:bg-[#0b1729] dark:text-white dark:placeholder:text-slate-500 dark:focus:border-cyan-400"
                   />
 
                 </div>
@@ -421,7 +421,7 @@ export default function LoginPage() {
                     placeholder="Ingresa tu contraseña"
                     autoComplete="current-password"
                     required
-                    className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                    className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] px-4 py-3 text-[var(--ecf-text,#102238)] outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15 dark:border-white/10 dark:bg-[#0b1729] dark:text-white dark:placeholder:text-slate-500 dark:focus:border-cyan-400"
                   />
 
                 </div>
@@ -430,7 +430,7 @@ export default function LoginPage() {
                 {error && (
                   <p
                     role="alert"
-                    className="rounded-xl bg-red-500/10 p-4 text-sm text-red-300"
+                    className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-300"
                   >
                     {error}
                   </p>
@@ -454,7 +454,7 @@ export default function LoginPage() {
         </section>
 
         {/* PIE DE PÁGINA */}
-        <p className="mt-6 text-center text-xs text-slate-500">
+        <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-500">
           Evolution Center Fit 2.0 · Lima, Perú · 2026
         </p>
 

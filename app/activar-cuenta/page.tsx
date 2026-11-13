@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -129,9 +128,9 @@ export default async function ActivarCuentaPage({
       : undefined;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] px-4 py-10 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] px-4 py-10 text-[var(--ecf-text,#102238)] dark:bg-[#080e1b] dark:text-white">
 
-      <section className="w-full max-w-lg rounded-3xl border border-cyan-400/20 bg-[#112039] p-7 shadow-2xl sm:p-10">
+      <section className="w-full max-w-lg rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-7 shadow-2xl shadow-slate-200/60 dark:border-cyan-400/20 dark:bg-[#112039] dark:shadow-black/30 sm:p-10">
 
         <div className="mb-5 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400 text-xl font-black text-[#07121e]">
@@ -143,7 +142,7 @@ export default async function ActivarCuentaPage({
               Evolution Center Fit 2.0
             </p>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Seguridad de la cuenta
             </p>
           </div>
@@ -153,7 +152,7 @@ export default async function ActivarCuentaPage({
           Crear mi contraseña
         </h1>
 
-        <p className="mt-3 text-sm leading-7 text-slate-300">
+        <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
           Tu invitación fue verificada.
 
           Ahora establece una contraseña
@@ -161,14 +160,14 @@ export default async function ActivarCuentaPage({
           en el sistema.
         </p>
 
-        <p className="mt-4 rounded-xl bg-[#081525] p-3 text-sm text-cyan-200">
+        <p className="mt-4 break-words rounded-xl bg-cyan-50 p-3 text-sm text-cyan-900 dark:bg-[#081525] dark:text-cyan-200">
           {identidad.user.email ?? "Usuario invitado"}
         </p>
 
         {mensaje && (
           <div
             role="alert"
-            className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100"
+            className="mt-5 rounded-xl border border-amber-400/30 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-100"
           >
             {mensaje}
           </div>
@@ -196,7 +195,7 @@ export default async function ActivarCuentaPage({
                 maxLength={128}
                 autoComplete="new-password"
                 placeholder="Mínimo 12 caracteres"
-                className="w-full rounded-xl border border-white/15 bg-[#071627] px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] px-4 py-3 text-[var(--ecf-text,#102238)] outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 dark:border-white/15 dark:bg-[#071627] dark:text-white dark:placeholder:text-slate-400 dark:focus:border-cyan-400"
               />
             </div>
 
@@ -217,7 +216,7 @@ export default async function ActivarCuentaPage({
                 maxLength={128}
                 autoComplete="new-password"
                 placeholder="Repite tu contraseña"
-                className="w-full rounded-xl border border-white/15 bg-[#071627] px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] px-4 py-3 text-[var(--ecf-text,#102238)] outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 dark:border-white/15 dark:bg-[#071627] dark:text-white dark:placeholder:text-slate-400 dark:focus:border-cyan-400"
               />
             </div>
 
@@ -231,13 +230,13 @@ export default async function ActivarCuentaPage({
         ) : (
           <Link
             href="/login"
-            className="mt-6 inline-block rounded-xl border border-white/15 px-4 py-3 text-sm font-semibold text-cyan-200"
+            className="mt-6 inline-block rounded-xl border border-[var(--ecf-border,#dce5ee)] px-4 py-3 text-sm font-semibold text-cyan-800 hover:bg-cyan-50 dark:border-white/15 dark:text-cyan-200 dark:hover:bg-white/5"
           >
             Ir al inicio de sesión
           </Link>
         )}
 
-        <p className="mt-6 text-xs leading-6 text-slate-400">
+        <p className="mt-6 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Tu contraseña se administra
           mediante Supabase Auth.
 

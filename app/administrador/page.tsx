@@ -138,20 +138,20 @@ function Indicador({
   tipo: IconoTipo;
 }) {
   return (
-    <article className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-br from-[#192d46] to-[#101b30] p-5 shadow-[0_15px_38px_rgba(0,0,0,0.2)] transition-[transform,border-color] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+    <article className="min-w-0 rounded-2xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 shadow-sm transition-[transform,border-color] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 dark:bg-cyan-400/10 text-cyan-700 dark:text-cyan-300">
         <Icono tipo={tipo} />
       </span>
 
-      <p className="mt-5 text-3xl font-black tabular-nums text-white">
+      <p className="mt-5 text-3xl font-black tabular-nums text-[var(--ecf-text)]">
         {numero(valor)}
       </p>
 
-      <h3 className="mt-2 text-sm font-bold text-slate-200">
+      <h3 className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-200">
         {titulo}
       </h3>
 
-      <p className="mt-2 text-xs leading-5 text-slate-400">
+      <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
         {valor === null
           ? "Información no disponible"
           : detalle}
@@ -180,30 +180,30 @@ function Modulo({
   const contenido = (
     <>
       <div className="flex items-start justify-between gap-3">
-        <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+        <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-cyan-700 dark:text-cyan-300">
           <Icono tipo={tipo} />
         </span>
 
         <span
           className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
             estado === "Disponible"
-              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
-              : "border-amber-400/20 bg-amber-400/10 text-amber-200"
+              ? "border-emerald-200 dark:border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-200"
+              : "border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
           }`}
         >
           {estado}
         </span>
       </div>
 
-      <h3 className="mt-5 text-lg font-bold text-white">
+      <h3 className="mt-5 text-lg font-bold text-[var(--ecf-text)]">
         {titulo}
       </h3>
 
-      <p className="mt-2 min-h-12 text-sm leading-6 text-slate-400">
+      <p className="mt-2 min-h-12 text-sm leading-6 text-slate-500 dark:text-slate-400">
         {descripcion}
       </p>
 
-      <p className="mt-auto border-t border-white/10 pt-4 text-xs font-bold text-cyan-300">
+      <p className="mt-auto border-t border-[var(--ecf-border)] pt-4 text-xs font-bold text-cyan-700 dark:text-cyan-300">
         {href
           ? "Abrir herramienta →"
           : "Pendiente de implementación segura"}
@@ -212,7 +212,7 @@ function Modulo({
   );
 
   const clases =
-    "flex min-w-0 flex-col gap-3 rounded-2xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#0d192c] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.16)] transition-[transform,border-color,box-shadow] hover:border-cyan-400/30 hover:shadow-[0_20px_48px_rgba(0,0,0,0.24)] sm:p-6";
+    "flex min-w-0 flex-col gap-3 rounded-2xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 shadow-sm transition-[transform,border-color,box-shadow] hover:border-cyan-400/30 hover:shadow-md sm:p-6";
 
   return href ? (
     <Link
@@ -234,7 +234,7 @@ function Modulo({
 
 function EstadoCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-sm text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] text-sm text-cyan-700 dark:text-cyan-200">
       Cargando centro de administración...
     </main>
   );
@@ -290,20 +290,20 @@ async function ContenidoAdministrador({
 
   if (errorAcceso || acceso?.rol !== "administrador") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080e1b] p-6 text-white">
-        <section className="max-w-lg rounded-2xl border border-rose-400/20 bg-rose-400/10 p-8 text-center">
+      <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] p-6 text-[var(--ecf-text)]">
+        <section className="max-w-lg rounded-2xl border border-rose-200 dark:border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-8 text-center">
           <h1 className="text-2xl font-bold">
             Acceso restringido
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-slate-300">
+          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
             Tu cuenta no tiene permisos para acceder
             al administrador.
           </p>
 
           <Link
             href="/login"
-            className="mt-5 inline-block text-sm font-bold text-cyan-300 hover:underline"
+            className="mt-5 inline-block text-sm font-bold text-cyan-700 dark:text-cyan-300 hover:underline"
           >
             Volver al inicio
           </Link>
@@ -772,25 +772,25 @@ async function ContenidoAdministrador({
       nombre: "Programadas",
       valor: programadas,
       color: "bg-cyan-400",
-      texto: "text-cyan-300",
+      texto: "text-cyan-700 dark:text-cyan-300",
     },
     {
       nombre: "En curso",
       valor: enCurso,
       color: "bg-amber-400",
-      texto: "text-amber-300",
+      texto: "text-amber-700 dark:text-amber-300",
     },
     {
       nombre: "Realizadas",
       valor: realizadas,
       color: "bg-emerald-400",
-      texto: "text-emerald-300",
+      texto: "text-emerald-700 dark:text-emerald-300",
     },
     {
       nombre: "Ausentes",
       valor: ausentes,
       color: "bg-rose-400",
-      texto: "text-rose-300",
+      texto: "text-rose-700 dark:text-rose-300",
     },
   ];
 
@@ -799,12 +799,12 @@ async function ContenidoAdministrador({
   // ===================================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] text-white">
+    <main className="ecf-admin-page min-h-screen bg-[var(--ecf-bg)] text-[var(--ecf-text)]">
       {/* ============================================
           CABECERA
       ============================================ */}
 
-      <header className="relative z-30 border-b border-white/10 bg-[#0e192b] shadow-xl shadow-black/20">
+      <header className="relative z-30 border-b border-[var(--ecf-border)] bg-[var(--ecf-surface)] shadow-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <Link
             href="/administrador"
@@ -817,12 +817,12 @@ async function ContenidoAdministrador({
             <span>
               <span className="block text-sm font-black">
                 EVOLUTION CENTER FIT{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-700 dark:text-cyan-300">
                   2.0
                 </span>
               </span>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 Administración del sistema
               </span>
             </span>
@@ -834,28 +834,28 @@ async function ContenidoAdministrador({
           >
             <a
               href="#usuarios"
-              className="rounded-xl px-3 py-2.5 text-slate-300 hover:bg-white/10 hover:text-white"
+              className="rounded-xl px-3 py-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
             >
               Usuarios
             </a>
 
             <a
               href="#asignaciones"
-              className="rounded-xl px-3 py-2.5 text-slate-300 hover:bg-white/10 hover:text-white"
+              className="rounded-xl px-3 py-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
             >
               Asignaciones
             </a>
 
             <a
               href="#sesiones"
-              className="rounded-xl px-3 py-2.5 text-slate-300 hover:bg-white/10 hover:text-white"
+              className="rounded-xl px-3 py-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
             >
               Sesiones
             </a>
 
             <Link
               href="/catalogo"
-              className="rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-3 py-2.5 text-cyan-200 hover:bg-cyan-400/20"
+              className="rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2.5 text-cyan-700 dark:text-cyan-200 hover:bg-cyan-400/20"
             >
               Catálogo
             </Link>
@@ -863,14 +863,14 @@ async function ContenidoAdministrador({
             <form action={cerrarSesion}>
               <button
                 type="submit"
-                className="min-h-11 rounded-xl border border-rose-400/20 px-4 py-2 font-bold text-rose-300 hover:bg-rose-400/10"
+                className="min-h-11 rounded-xl border border-rose-200 dark:border-rose-400/20 px-4 py-2 font-bold text-rose-700 dark:text-rose-300 hover:bg-rose-400/10"
               >
                 Cerrar sesión
               </button>
             </form>
                       <Link
               href="/administrador/ia"
-              className="rounded-xl px-3 py-2.5 text-slate-300 hover:bg-white/10 hover:text-white"
+              className="rounded-xl px-3 py-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
             >
               Supervisión IA
             </Link>
@@ -883,8 +883,8 @@ async function ContenidoAdministrador({
             BIENVENIDA
         ============================================ */}
 
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#17344a] via-[#14263d] to-[#201b3d] p-6 shadow-[0_24px_65px_rgba(0,0,0,0.25)] sm:p-9">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-100 dark:border-cyan-400/15 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 dark:from-[#17344a] dark:via-[#14263d] dark:to-[#201b3d] p-6 shadow-sm sm:p-9">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Centro de administración
           </p>
 
@@ -892,13 +892,13 @@ async function ContenidoAdministrador({
             ¡Bienvenido, {nombre}!
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Supervisa las cuentas, el catálogo,
             las asignaciones y el estado de los
             entrenamientos con información real.
           </p>
 
-          <span className="mt-5 inline-flex rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-xs font-bold text-emerald-200">
+          <span className="mt-5 inline-flex rounded-full border border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 px-4 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-200">
             ✓ Identidad y rol verificados
           </span>
         </section>
@@ -910,7 +910,7 @@ async function ContenidoAdministrador({
         {!habilitado && (
           <div
             role="alert"
-            className="rounded-2xl border border-amber-400/25 bg-amber-400/10 p-5 text-sm leading-6 text-amber-200"
+            className="rounded-2xl border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 p-5 text-sm leading-6 text-amber-800 dark:text-amber-200"
           >
             Estadísticas no disponibles.
             Falta configurar la credencial privada
@@ -924,7 +924,7 @@ async function ContenidoAdministrador({
         ============================================ */}
 
         <section aria-labelledby="titulo-indicadores">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Panorama general
           </p>
 
@@ -935,7 +935,7 @@ async function ContenidoAdministrador({
             Indicadores del gimnasio
           </h2>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Totales consultados desde Supabase.
           </p>
 
@@ -954,7 +954,7 @@ async function ContenidoAdministrador({
         ============================================ */}
 
         <section>
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Herramientas de control
           </p>
 
@@ -962,7 +962,7 @@ async function ContenidoAdministrador({
             Módulos de administración
           </h2>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             Los módulos disponibles son de consulta.
             Las operaciones de escritura requieren
             permisos auditados.
@@ -984,11 +984,11 @@ async function ContenidoAdministrador({
 
         <section
           id="usuarios"
-          className="scroll-mt-6 rounded-3xl border border-white/10 bg-gradient-to-br from-[#16283f] to-[#101b2f] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.2)] sm:p-7"
+          className="scroll-mt-6 rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 shadow-sm sm:p-7"
         >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
                 Administración de cuentas
               </p>
 
@@ -996,13 +996,13 @@ async function ContenidoAdministrador({
                 Directorio de usuarios
               </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Consulta y búsqueda de hasta 25
                 registros por solicitud.
               </p>
             </div>
 
-            <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-200">
+            <span className="rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-700 dark:text-cyan-200">
               Solo lectura
             </span>
           </div>
@@ -1026,7 +1026,7 @@ async function ContenidoAdministrador({
               maxLength={60}
               defaultValue={busqueda}
               placeholder="Buscar usuario por nombre..."
-              className="min-h-12 min-w-0 flex-1 rounded-xl border border-white/15 bg-[#081526] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15"
+              className="min-h-12 min-w-0 flex-1 rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] px-4 py-3 text-sm text-[var(--ecf-text)] outline-none placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15"
             />
 
             <button
@@ -1038,7 +1038,7 @@ async function ContenidoAdministrador({
 
             <Link
               href="/administrador#usuarios"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-slate-200 hover:bg-white/5"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[var(--ecf-border)] px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
             >
               Limpiar
             </Link>
@@ -1048,23 +1048,23 @@ async function ContenidoAdministrador({
             {!habilitado || errorUsuarios ? (
               <p
                 role="alert"
-                className="rounded-xl border border-amber-400/15 bg-amber-400/10 p-5 text-sm text-amber-200"
+                className="rounded-xl border border-amber-200 dark:border-amber-400/15 bg-amber-50 dark:bg-amber-400/10 p-5 text-sm text-amber-800 dark:text-amber-200"
               >
                 No se pudo consultar el directorio.
                 Revisa la configuración y los permisos.
               </p>
             ) : usuarios.length === 0 ? (
-              <p className="rounded-xl border border-white/10 bg-[#081526] p-6 text-sm text-slate-400">
+              <p className="rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-6 text-sm text-slate-500 dark:text-slate-400">
                 No se encontraron usuarios.
               </p>
             ) : (
               usuarios.map((usuario) => (
                 <article
                   key={usuario.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#0b192c] p-4"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-4"
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-sm font-black text-cyan-200">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-sm font-black text-cyan-700 dark:text-cyan-200">
                       {(
                         usuario.nombre_completo?.trim()[0] ??
                         "U"
@@ -1077,13 +1077,13 @@ async function ContenidoAdministrador({
                           "Usuario sin nombre"}
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         Cuenta registrada
                       </p>
                     </div>
                   </div>
 
-                  <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200">
+                  <span className="rounded-full border border-[var(--ecf-border)] bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
                     {roles.has(usuario.id)
                       ? nombreRol(
                           roles.get(usuario.id)!
@@ -1102,11 +1102,11 @@ async function ContenidoAdministrador({
 
         <section
           id="asignaciones"
-          className="scroll-mt-6 rounded-3xl border border-white/10 bg-gradient-to-br from-[#16283f] to-[#101b2f] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.2)] sm:p-7"
+          className="scroll-mt-6 rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 shadow-sm sm:p-7"
         >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
                 Organización del gimnasio
               </p>
 
@@ -1114,14 +1114,14 @@ async function ContenidoAdministrador({
                 Clientes y entrenadores asignados
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-slate-400">
+              <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                 Consulta quién supervisa a cada
                 cliente, la fecha y el estado de
                 la relación.
               </p>
             </div>
 
-            <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-200">
+            <span className="rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-700 dark:text-cyan-200">
               {totalAsignaciones === null
                 ? "Sin datos"
                 : `${totalAsignaciones} relaciones`}
@@ -1131,14 +1131,14 @@ async function ContenidoAdministrador({
           {!habilitado || errorAsignaciones ? (
             <p
               role="alert"
-              className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-5 text-sm text-amber-200"
+              className="mt-6 rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-5 text-sm text-amber-800 dark:text-amber-200"
             >
               No se pudieron consultar las
               asignaciones. Revisa los permisos
               y la conexión.
             </p>
           ) : asignacionesVista.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-white/10 bg-[#081526] p-6 text-sm text-slate-400">
+            <p className="mt-6 rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-6 text-sm text-slate-500 dark:text-slate-400">
               No existen asignaciones registradas.
             </p>
           ) : (
@@ -1146,18 +1146,18 @@ async function ContenidoAdministrador({
               {asignacionesVista.map((relacion) => (
                 <article
                   key={relacion.clienteId}
-                  className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-br from-[#142840] to-[#0a1729] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.17)] transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30"
+                  className="min-w-0 rounded-2xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-5 shadow-sm transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-cyan-300">
+                    <span className="text-xs font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
                       Relación cliente-entrenador
                     </span>
 
                     <span
                       className={`rounded-full border px-3 py-1.5 text-xs font-bold ${
                         relacion.activa
-                          ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
-                          : "border-slate-400/20 bg-white/5 text-slate-300"
+                          ? "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-200"
+                          : "border-slate-400/20 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300"
                       }`}
                     >
                       {relacion.activa
@@ -1166,39 +1166,39 @@ async function ContenidoAdministrador({
                     </span>
                   </div>
 
-                  <div className="mt-5 rounded-xl border border-white/10 bg-[#081526] p-4">
-                    <p className="text-xs text-slate-400">
+                  <div className="mt-5 rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-4">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Cliente
                     </p>
 
-                    <p className="mt-1 break-words font-bold text-white">
+                    <p className="mt-1 break-words font-bold text-[var(--ecf-text)]">
                       {relacion.cliente}
                     </p>
                   </div>
 
                   <div
-                    className="my-3 text-center text-cyan-300"
+                    className="my-3 text-center text-cyan-700 dark:text-cyan-300"
                     aria-hidden="true"
                   >
                     ↓
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-[#081526] p-4">
-                    <p className="text-xs text-slate-400">
+                  <div className="rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-4">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Entrenador responsable
                     </p>
 
-                    <p className="mt-1 break-words font-bold text-white">
+                    <p className="mt-1 break-words font-bold text-[var(--ecf-text)]">
                       {relacion.entrenador}
                     </p>
                   </div>
 
-                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ecf-border)] pt-4">
                     <span
                       className={`text-xs font-bold ${
                         relacion.valida
-                          ? "text-emerald-300"
-                          : "text-amber-300"
+                          ? "text-emerald-700 dark:text-emerald-300"
+                          : "text-amber-700 dark:text-amber-300"
                       }`}
                     >
                       {relacion.valida
@@ -1206,7 +1206,7 @@ async function ContenidoAdministrador({
                         : "⚠ Revisar relación"}
                     </span>
 
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       {relacion.fecha
                         ? new Date(
                             relacion.fecha
@@ -1227,13 +1227,13 @@ async function ContenidoAdministrador({
 
           {totalAsignaciones !== null &&
             totalAsignaciones > 100 && (
-              <p className="mt-4 text-xs text-amber-200">
+              <p className="mt-4 text-xs text-amber-800 dark:text-amber-200">
                 Se muestran las primeras 100 relaciones.
                 La paginación está pendiente.
               </p>
             )}
 
-          <p className="mt-5 text-xs leading-6 text-slate-400">
+          <p className="mt-5 text-xs leading-6 text-slate-500 dark:text-slate-400">
             Consulta de solo lectura.
             Las reasignaciones y bajas requieren
             una función segura con auditoría.
@@ -1246,9 +1246,9 @@ async function ContenidoAdministrador({
 
         <section
           id="sesiones"
-          className="scroll-mt-6 rounded-3xl border border-white/10 bg-gradient-to-br from-[#16283f] to-[#101b2f] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.2)] sm:p-7"
+          className="scroll-mt-6 rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 shadow-sm sm:p-7"
         >
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Seguimiento operativo
           </p>
 
@@ -1256,7 +1256,7 @@ async function ContenidoAdministrador({
             Estado de las sesiones
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-slate-400">
+          <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Distribución de estados registrados,
             no resultados científicos de adherencia.
           </p>
@@ -1281,10 +1281,10 @@ async function ContenidoAdministrador({
               return (
                 <article
                   key={item.nombre}
-                  className="rounded-2xl border border-white/10 bg-[#0a1728] p-5"
+                  className="rounded-2xl border border-[var(--ecf-border)] bg-[var(--ecf-surface-soft)] p-5"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-sm font-semibold text-slate-200">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                       {item.nombre}
                     </h3>
 
@@ -1295,7 +1295,7 @@ async function ContenidoAdministrador({
                     </span>
                   </div>
 
-                  <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/10">
+                  <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
                     {porcentaje !== null && (
                       <div
                         className={`h-full rounded-full ${item.color}`}
@@ -1310,7 +1310,7 @@ async function ContenidoAdministrador({
             })}
           </div>
 
-          <p className="mt-5 text-xs leading-6 text-slate-400">
+          <p className="mt-5 text-xs leading-6 text-slate-500 dark:text-slate-400">
             Las sesiones canceladas forman parte
             del total general. Una sesión pendiente
             no es automáticamente una ausencia.
@@ -1321,9 +1321,9 @@ async function ContenidoAdministrador({
             SEGURIDAD
         ============================================ */}
 
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-r from-[#0d283b] to-[#1a1836] p-6 shadow-[0_14px_36px_rgba(0,0,0,0.17)]">
+        <section className="rounded-3xl border border-cyan-100 dark:border-cyan-400/15 bg-gradient-to-r from-cyan-50 to-indigo-50 dark:from-[#0d283b] dark:to-[#1a1836] p-6 shadow-sm">
           <div className="flex items-start gap-4">
-            <span className="rounded-xl bg-cyan-400/10 p-3 text-cyan-300">
+            <span className="rounded-xl bg-cyan-50 dark:bg-cyan-400/10 p-3 text-cyan-700 dark:text-cyan-300">
               <Icono tipo="seguridad" />
             </span>
 
@@ -1332,7 +1332,7 @@ async function ContenidoAdministrador({
                 Seguridad y control de acceso
               </h2>
 
-              <p className="mt-2 text-sm leading-7 text-slate-300">
+              <p className="mt-2 text-sm leading-7 text-slate-600 dark:text-slate-300">
                 El panel comprueba la identidad
                 y el rol antes de efectuar
                 consultas globales. Crear usuarios,
@@ -1341,7 +1341,7 @@ async function ContenidoAdministrador({
                 registro de auditoría.
               </p>
 
-              <p className="mt-3 text-xs text-amber-200">
+              <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
                 La verificación del rol no sustituye
                 una auditoría integral de seguridad.
               </p>
@@ -1353,7 +1353,7 @@ async function ContenidoAdministrador({
             PIE DE PAGINA
         ============================================ */}
 
-        <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border)] py-6 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Centro administrativo
         </footer>
       </div>

@@ -202,8 +202,8 @@ const vencido = Boolean(
   }
 
   return (
-    <section className="mt-8 rounded-2xl border border-amber-400/20 bg-slate-900 p-6 text-white">
-      <p className="text-xs font-bold uppercase tracking-widest text-amber-300">
+    <section className="mt-8 rounded-2xl border border-amber-300/60 bg-[var(--ecf-surface,#ffffff)] p-6 text-[var(--ecf-text,#102238)] dark:border-amber-400/20 dark:bg-slate-900 dark:text-white">
+      <p className="text-xs font-bold uppercase tracking-widest text-amber-800 dark:text-amber-300">
         Investigación · Cierre supervisado
       </p>
 
@@ -211,21 +211,21 @@ const vencido = Boolean(
         Revisión y cierre del plan
       </h2>
 
-      <p className="mt-2 text-sm leading-6 text-slate-400">
+      <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         Revisa el estado de las sesiones antes de finalizar
         un plan vencido. Los registros faltantes no se
         convertirán automáticamente en ausencias.
       </p>
 
       {cargando ? (
-        <p className="mt-5 text-sm text-slate-400">
+        <p className="mt-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Consultando sesiones...
         </p>
       ) : plan ? (
         <div className="mt-5 space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg bg-slate-950 p-4">
-              <p className="text-xs text-slate-400">
+            <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950">
+              <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Sesiones totales
               </p>
               <p className="mt-1 text-2xl font-bold">
@@ -233,17 +233,17 @@ const vencido = Boolean(
               </p>
             </div>
 
-            <div className="rounded-lg bg-slate-950 p-4">
-              <p className="text-xs text-slate-400">
+            <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950">
+              <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Sin resolver
               </p>
-              <p className="mt-1 text-2xl font-bold text-amber-300">
+              <p className="mt-1 text-2xl font-bold text-amber-800 dark:text-amber-300">
                 {sinResolver}
               </p>
             </div>
 
-            <div className="rounded-lg bg-slate-950 p-4">
-              <p className="text-xs text-slate-400">
+            <div className="rounded-lg border border-[var(--ecf-border,#dce5ee)] bg-slate-50 p-4 dark:border-white/10 dark:bg-slate-950">
+              <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 En curso
               </p>
               <p className="mt-1 text-2xl font-bold">
@@ -253,19 +253,19 @@ const vencido = Boolean(
           </div>
 
           {!vencido ? (
-            <p className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-4 text-sm text-cyan-200">
+            <p className="rounded-lg border border-cyan-300/60 bg-cyan-50 p-4 text-sm text-cyan-800 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
               Este plan todavía no ha vencido.
               El cierre se habilitará después del{" "}
               {plan.fechaFin ?? "fin del periodo"}.
             </p>
           ) : !estadoPermitido ? (
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-700 dark:text-slate-300">
               Este plan ya está cerrado.
             </p>
           ) : (
             <>
               {enCurso > 0 && (
-                <p className="text-sm text-amber-200">
+                <p className="text-sm text-amber-900 dark:text-amber-200">
                   Hay sesiones iniciadas que deben resolverse
                   antes de cerrar este plan.
                 </p>
@@ -280,20 +280,20 @@ const vencido = Boolean(
                   onChange={(e) => setMotivo(e.target.value)}
                   maxLength={1000}
                   rows={4}
-                  className="w-full rounded-lg border border-white/20 bg-slate-950 p-3 text-sm text-white"
+                  className="w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] bg-white p-3 text-sm text-[var(--ecf-text,#102238)] placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 dark:border-white/20 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500"
                   placeholder="Describe las evidencias revisadas y el motivo del cierre (mínimo 20 caracteres)."
                 />
               </label>
 
               {sinResolver > 0 && (
-                <label className="flex items-start gap-3 text-sm text-slate-300">
+                <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={confirmarFaltantes}
                     onChange={(e) =>
                       setConfirmarFaltantes(e.target.checked)
                     }
-                    className="mt-1"
+                    className="mt-1 accent-amber-500"
                   />
                   Confirmo que revisé las sesiones pendientes
                   y acepto que permanecerán como datos
@@ -305,7 +305,7 @@ const vencido = Boolean(
                 type="button"
                 disabled={!puedeCerrar}
                 onClick={() => void cerrarPlan()}
-                className="w-full rounded-lg bg-amber-400 px-4 py-3 font-bold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full rounded-lg bg-amber-400 px-4 py-3 font-bold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {guardando
                   ? "Cerrando plan..."
@@ -317,13 +317,13 @@ const vencido = Boolean(
       ) : null}
 
       {error && (
-        <p role="alert" className="mt-4 text-sm text-red-300">
+        <p role="alert" className="mt-4 text-sm text-red-700 dark:text-red-300">
           {error}
         </p>
       )}
 
       {mensaje && (
-        <p role="status" className="mt-4 text-sm text-emerald-300">
+        <p role="status" className="mt-4 text-sm text-emerald-700 dark:text-emerald-300">
           {mensaje}
         </p>
       )}

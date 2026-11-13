@@ -1,4 +1,3 @@
-
 import "server-only";
 
 import Link from "next/link";
@@ -64,13 +63,13 @@ function nombreRol(rol: string) {
 function estiloRol(rol: string) {
     switch (rol) {
         case "administrador":
-            return "border-violet-400/30 bg-violet-400/10 text-violet-200";
+            return "border-violet-500/30 bg-violet-50 text-violet-800 dark:border-violet-400/30 dark:bg-violet-400/10 dark:text-violet-200";
         case "entrenador":
-            return "border-cyan-400/30 bg-cyan-400/10 text-cyan-200";
+            return "border-cyan-500/30 bg-cyan-50 text-cyan-800 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200";
         case "cliente":
-            return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+            return "border-emerald-500/30 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200";
         default:
-            return "border-white/20 bg-white/5 text-slate-300";
+            return "border-slate-300 bg-slate-100 text-slate-700 dark:border-white/20 dark:bg-white/5 dark:text-slate-300";
     }
 }
 
@@ -82,8 +81,8 @@ function Tarjeta({
     valor: number;
 }) {
     return (
-        <article className="rounded-2xl border border-white/10 bg-[#14243b] p-5">
-            <p className="text-sm text-slate-400">
+        <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#14243b] p-5 shadow-sm dark:shadow-none">
+            <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 {titulo}
             </p>
 
@@ -102,19 +101,19 @@ function Mensaje({
     descripcion: string;
 }) {
     return (
-        <main className="min-h-screen bg-[#080e1b] p-6 text-white">
-            <section className="mx-auto max-w-xl rounded-2xl border border-amber-400/20 bg-[#14243b] p-8">
+        <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text,#102238)] dark:text-white">
+            <section className="mx-auto max-w-xl rounded-2xl border border-amber-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#14243b] p-8">
                 <h1 className="text-xl font-bold">
                     {titulo}
                 </h1>
 
-                <p className="mt-3 text-sm leading-7 text-slate-300">
+                <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
                     {descripcion}
                 </p>
 
                 <Link
                     href="/administrador"
-                    className="mt-6 inline-block font-semibold text-cyan-300"
+                    className="mt-6 inline-block font-semibold text-cyan-800 dark:text-cyan-300"
                 >
                     Volver al administrador
                 </Link>
@@ -335,19 +334,19 @@ async function ContenidoRoles({
 
 
     return (
-        <main className="min-h-screen bg-[#080e1b] px-4 py-10 text-white sm:px-6">
+        <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] px-4 py-10 text-[var(--ecf-text,#102238)] dark:text-white sm:px-6">
             <div className="mx-auto max-w-7xl">
 
                 <Link
                     href="/administrador"
-                    className="text-sm font-semibold text-cyan-300 hover:underline"
+                    className="text-sm font-semibold text-cyan-800 dark:text-cyan-300 hover:underline"
                 >
                     ← Volver al administrador
                 </Link>
 
-                <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+                <div className="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-3xl border border-cyan-200/70 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 p-6 shadow-sm dark:border-cyan-400/20 dark:from-[#173a50] dark:via-[#14263d] dark:to-[#211d3d] dark:shadow-black/10 sm:p-8">
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-800 dark:text-cyan-300">
                             Administración · Seguridad
                         </p>
 
@@ -358,12 +357,12 @@ async function ContenidoRoles({
 
                         <Link
                             href="/administrador/roles/historial"
-                            className="mt-4 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-2.5 text-sm font-bold text-cyan-300 transition hover:bg-cyan-400/15"
+                            className="mt-4 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-2.5 text-sm font-bold text-cyan-800 dark:text-cyan-300 transition hover:bg-cyan-400/15"
                         >
                             Ver historial de auditoría →
                         </Link>
 
-                        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+                        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             Consulta los roles de los usuarios, sus relaciones
                             activas y su participación en la investigación.
                             Los cambios autorizados se verifican en el servidor
@@ -372,7 +371,7 @@ async function ContenidoRoles({
 
                     </div>
 
-                    <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-4 py-2 text-xs font-bold text-amber-200">
+                    <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-4 py-2 text-xs font-bold text-amber-900 dark:text-amber-200">
                         Cambios de roles auditados
                     </span>
                 </div>
@@ -399,7 +398,7 @@ async function ContenidoRoles({
                     />
                 </div>
 
-                <section className="mt-8 rounded-2xl border border-white/10 bg-[#101d31] p-5 sm:p-6">
+                <section className="mt-8 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d31] p-5 sm:p-6 shadow-sm dark:shadow-none">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <h2 className="text-lg font-bold">
                             Usuarios y permisos actuales
@@ -411,7 +410,7 @@ async function ContenidoRoles({
                                 type="search"
                                 defaultValue={busqueda}
                                 placeholder="Buscar por nombre"
-                                className="min-w-0 rounded-xl border border-white/15 bg-[#080e1b] px-4 py-3 text-sm text-white outline-none focus:border-cyan-400"
+                                className="min-w-0 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#080e1b] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white outline-none focus:border-cyan-400"
                             />
 
                             <button
@@ -425,7 +424,7 @@ async function ContenidoRoles({
 
                     <div className="mt-6 overflow-x-auto">
                         <table className="w-full min-w-[780px] text-left text-sm">
-                            <thead className="border-b border-white/10 text-xs uppercase tracking-wide text-slate-400">
+                            <thead className="border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 text-xs uppercase tracking-wide text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                 <tr>
                                     <th className="px-3 py-4">
                                         Usuario
@@ -468,7 +467,7 @@ async function ContenidoRoles({
                                     return (
                                         <tr
                                             key={usuario.id}
-                                            className="border-b border-white/5"
+                                            className="border-b border-slate-200/80 dark:border-white/5 transition-colors hover:bg-cyan-50/60 dark:hover:bg-white/[0.03]"
                                         >
                                             <td className="px-3 py-4 font-semibold">
                                                 {usuario.nombre_completo}
@@ -482,18 +481,18 @@ async function ContenidoRoles({
                                                 </span>
                                             </td>
 
-                                            <td className="px-3 py-4 text-slate-300">
+                                            <td className="px-3 py-4 text-slate-700 dark:text-slate-300">
                                                 {relacion}
                                             </td>
 
-                                            <td className="px-3 py-4 text-slate-300">
+                                            <td className="px-3 py-4 text-slate-700 dark:text-slate-300">
                                                 {grupo
                                                     ? `Grupo ${grupo}`
                                                     : "No inscrito"}
                                             </td>
 
                                             <td className="px-3 py-4">
-                                                <span className="text-xs text-slate-500">
+                                                <span className="text-xs text-slate-600 dark:text-slate-500">
                                                     Cambio bloqueado
                                                 </span>
                                             </td>
@@ -504,7 +503,7 @@ async function ContenidoRoles({
                         </table>
 
                         {usuariosFiltrados.length === 0 && (
-                            <p className="py-8 text-center text-sm text-slate-400">
+                            <p className="py-8 text-center text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                 No se encontraron usuarios.
                             </p>
                         )}
@@ -516,21 +515,21 @@ async function ContenidoRoles({
             CAMBIO AUTORIZADO DE ROLES
         ===================================== */}
 
-                <section className="mt-6 rounded-2xl border border-white/10 bg-[#101d31] p-5 sm:p-6">
+                <section className="mt-6 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d31] p-5 sm:p-6 shadow-sm dark:shadow-none">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 className="text-xl font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                                 Modificar rol de usuario
                             </h2>
 
-                            <p className="mt-2 text-sm leading-6 text-slate-400">
+                            <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                 Solo se permiten cambios autorizados.
                                 Todas las operaciones se registran
                                 en la auditoría administrativa.
                             </p>
                         </div>
 
-                        <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-bold text-emerald-200">
+                        <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-200">
                             Auditoría habilitada
                         </span>
                     </div>
@@ -538,7 +537,7 @@ async function ContenidoRoles({
                     {resultadoOperacion === "correcto" && (
                         <p
                             role="status"
-                            className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-200"
+                            className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-800 dark:text-emerald-200"
                         >
                             El rol se actualizó y el cambio quedó
                             registrado en la auditoría.
@@ -548,7 +547,7 @@ async function ContenidoRoles({
                     {resultadoOperacion === "bloqueado" && (
                         <p
                             role="alert"
-                            className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200"
+                            className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-900 dark:text-amber-200"
                         >
                             El cambio no se realizó. Verifica el rol
                             solicitado y las restricciones de seguridad.
@@ -558,7 +557,7 @@ async function ContenidoRoles({
                     {resultadoOperacion === "validacion" && (
                         <p
                             role="alert"
-                            className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200"
+                            className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-900 dark:text-amber-200"
                         >
                             Completa los datos, indica un motivo válido
                             y confirma la operación.
@@ -568,7 +567,7 @@ async function ContenidoRoles({
                     {resultadoOperacion === "error" && (
                         <p
                             role="alert"
-                            className="mt-5 rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200"
+                            className="mt-5 rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-800 dark:text-rose-200"
                         >
                             No se pudo completar la operación.
                             Revisa la configuración del servidor.
@@ -583,7 +582,7 @@ async function ContenidoRoles({
                             <div>
                                 <label
                                     htmlFor="usuarioId"
-                                    className="mb-2 block text-sm font-semibold text-slate-200"
+                                    className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200"
                                 >
                                     Usuario
                                 </label>
@@ -594,7 +593,7 @@ async function ContenidoRoles({
                                     defaultValue=""
                                     required
                                     disabled={usuariosElegibles.length === 0}
-                                    className="w-full rounded-xl border border-white/15 bg-[#080e1b] px-4 py-3 text-sm text-white"
+                                    className="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#080e1b] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                                 >
                                     <option value="" disabled>
                                         Seleccionar usuario
@@ -610,7 +609,7 @@ async function ContenidoRoles({
                                     ))}
                                 </select>
 
-                                <p className="mt-2 text-xs text-slate-400">
+                                <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                     Los usuarios protegidos no aparecen
                                     en esta lista.
                                 </p>
@@ -619,7 +618,7 @@ async function ContenidoRoles({
                             <div>
                                 <label
                                     htmlFor="rolNuevo"
-                                    className="mb-2 block text-sm font-semibold text-slate-200"
+                                    className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200"
                                 >
                                     Nuevo rol
                                 </label>
@@ -629,7 +628,7 @@ async function ContenidoRoles({
                                     name="rolNuevo"
                                     defaultValue=""
                                     required
-                                    className="w-full rounded-xl border border-white/15 bg-[#080e1b] px-4 py-3 text-sm text-white"
+                                    className="w-full rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#080e1b] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                                 >
                                     <option value="" disabled>
                                         Seleccionar nuevo rol
@@ -653,7 +652,7 @@ async function ContenidoRoles({
                         <div>
                             <label
                                 htmlFor="motivo"
-                                className="mb-2 block text-sm font-semibold text-slate-200"
+                                className="mb-2 block text-sm font-semibold text-slate-800 dark:text-slate-200"
                             >
                                 Motivo del cambio
                             </label>
@@ -666,17 +665,17 @@ async function ContenidoRoles({
                                 maxLength={500}
                                 required
                                 placeholder="Explica por qué se autoriza este cambio de rol..."
-                                className="w-full resize-y rounded-xl border border-white/15 bg-[#080e1b] px-4 py-3 text-sm text-white placeholder:text-slate-500"
+                                className="w-full resize-y rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#080e1b] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white placeholder:text-slate-500"
                             />
                         </div>
 
-                        <label className="flex items-start gap-3 text-sm text-slate-300">
+                        <label className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300">
                             <input
                                 type="checkbox"
                                 name="confirmar"
                                 value="si"
                                 required
-                                className="mt-1 h-4 w-4"
+                                className="mt-1 h-4 w-4 accent-cyan-600"
                             />
 
                             <span>
@@ -697,8 +696,8 @@ async function ContenidoRoles({
                 </section>
 
 
-                <section className="mt-6 rounded-2xl border border-cyan-400/15 bg-cyan-400/5 p-5 text-sm leading-7 text-slate-300">
-                    <h2 className="font-bold text-cyan-200">
+                <section className="mt-6 rounded-2xl border border-cyan-400/15 bg-cyan-400/5 p-5 text-sm leading-7 text-slate-700 dark:text-slate-300">
+                    <h2 className="font-bold text-cyan-800 dark:text-cyan-200">
                         Controles de seguridad activos
                     </h2>
 
@@ -710,7 +709,7 @@ async function ContenidoRoles({
                         participantes de la investigación GE/GC.
                     </p>
 
-                    <p className="mt-3 text-xs text-slate-400">
+                    <p className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Esta pantalla consulta hasta 500 registros por tabla.
                         Los cambios de rol requieren autorización y se
                         registran en la auditoría administrativa.
@@ -724,7 +723,7 @@ async function ContenidoRoles({
 
 function CargandoRoles() {
     return (
-        <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+        <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
             Consultando roles y permisos...
         </main>
     );

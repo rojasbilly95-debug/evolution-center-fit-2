@@ -222,19 +222,19 @@ function colorEstado(
 ): string {
   switch (estado) {
     case "programada":
-      return "border-blue-500/30 bg-blue-500/15 text-blue-300";
+      return "border-blue-500/30 bg-blue-50 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300";
 
     case "realizada":
-      return "border-emerald-500/30 bg-emerald-500/15 text-emerald-300";
+      return "border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300";
 
     case "ausente":
-      return "border-red-500/30 bg-red-500/15 text-red-300";
+      return "border-red-500/30 bg-red-50 dark:bg-red-500/15 text-red-800 dark:text-red-300";
 
     case "cancelada":
-      return "border-slate-600 bg-slate-700 text-slate-300";
+      return "border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300";
 
     default:
-      return "border-amber-500/30 bg-amber-500/15 text-amber-300";
+      return "border-amber-500/30 bg-amber-50 dark:bg-amber-500/15 text-amber-900 dark:text-amber-300";
   }
 }
 
@@ -822,10 +822,10 @@ function CalendarioEntrenadorContenido() {
         onClick={() =>
           abrirDetalleSesion(sesion)
         }
-        className="w-full rounded-xl border border-cyan-500/20 bg-[#172b40] p-3 text-left transition hover:border-cyan-400 hover:bg-[#1b3650]"
+        className="w-full rounded-xl border border-cyan-500/20 bg-slate-50 dark:bg-[#172b40] p-3 text-left transition hover:border-cyan-400 hover:bg-cyan-50 dark:hover:bg-[#1b3650]"
       >
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-bold text-cyan-300">
+          <span className="text-xs font-bold text-cyan-800 dark:text-cyan-300">
             Sesión{" "}
             {sesion.numero_sesion}
           </span>
@@ -839,24 +839,24 @@ function CalendarioEntrenadorContenido() {
           </span>
         </div>
 
-        <p className="mt-2 break-words text-sm font-semibold text-white">
+        <p className="mt-2 break-words text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
           {sesion.cliente_nombre ||
             "Cliente"}
         </p>
 
-        <p className="mt-2 text-xs font-semibold text-cyan-300">
+        <p className="mt-2 text-xs font-semibold text-cyan-800 dark:text-cyan-300">
           ◷{" "}
           {mostrarHora(
             sesion.hora_programada
           )}
         </p>
 
-        <p className="mt-2 break-words text-xs text-slate-300">
+        <p className="mt-2 break-words text-xs text-slate-700 dark:text-slate-300">
           {sesion.rutina_nombre ||
             "Rutina asignada"}
         </p>
 
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           {sesion.duracion_programada_min !=
           null
             ? `${sesion.duracion_programada_min} minutos previstos`
@@ -871,21 +871,21 @@ function CalendarioEntrenadorContenido() {
   // =================================================
 
   return (
-    <main className="min-h-screen bg-[#080d1a] px-4 py-7 text-white sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-4 py-7 text-[var(--ecf-text,#102238)] dark:text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* ENCABEZADO */}
 
         <header>
           <Link
             href="/entrenador"
-            className="text-sm font-medium text-cyan-300 hover:text-cyan-200"
+            className="text-sm font-medium text-cyan-800 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-200"
           >
             ← Volver al panel del entrenador
           </Link>
 
           <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Gestión de entrenamientos
               </p>
 
@@ -893,7 +893,7 @@ function CalendarioEntrenadorContenido() {
                 Calendario de entrenamiento
               </h1>
 
-              <p className="mt-3 text-sm text-slate-400">
+              <p className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Sesiones programadas,
                 clientes, rutinas y horarios
                 del gimnasio.
@@ -909,7 +909,7 @@ function CalendarioEntrenadorContenido() {
                 )
               }
               disabled={cargando}
-              className="rounded-xl border border-white/15 bg-[#14233a] px-5 py-3 text-sm font-semibold hover:bg-[#1d304c] disabled:opacity-50"
+              className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#14233a] px-5 py-3 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-[#1d304c] disabled:opacity-50"
             >
               {cargando
                 ? "Cargando..."
@@ -923,14 +923,14 @@ function CalendarioEntrenadorContenido() {
         {avisoHorario && (
           <div
             role="status"
-            className="flex items-center justify-between gap-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4"
+            className="flex items-center justify-between gap-4 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-4"
           >
             <div>
-              <p className="text-sm font-bold text-emerald-300">
+              <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
                 Horario actualizado correctamente
               </p>
 
-              <p className="mt-1 text-sm text-emerald-200">
+              <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">
                 {avisoHorario}
               </p>
             </div>
@@ -940,7 +940,7 @@ function CalendarioEntrenadorContenido() {
               onClick={() =>
                 setAvisoHorario("")
               }
-              className="rounded-lg px-3 py-2 text-emerald-300 hover:bg-white/10"
+              className="rounded-lg px-3 py-2 text-emerald-800 dark:text-emerald-300 hover:bg-slate-100 dark:hover:bg-white/10"
               aria-label="Cerrar confirmación"
             >
               ✕
@@ -972,9 +972,9 @@ function CalendarioEntrenadorContenido() {
             ([titulo, valor]) => (
               <article
                 key={titulo}
-                className="rounded-2xl border border-white/10 bg-[#111d31] p-5"
+                className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-5"
               >
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   {titulo}
                 </p>
 
@@ -988,7 +988,7 @@ function CalendarioEntrenadorContenido() {
 
         {/* CONTROLES DEL CALENDARIO */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#111d31] p-5">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-5">
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
               <div className="flex flex-wrap items-center gap-2">
@@ -997,7 +997,7 @@ function CalendarioEntrenadorContenido() {
                   onClick={() =>
                     mover(-1)
                   }
-                  className="rounded-lg bg-white/10 px-3 py-2 hover:bg-white/20"
+                  className="rounded-lg bg-slate-100 dark:bg-white/10 px-3 py-2 hover:bg-slate-200 dark:hover:bg-white/20"
                   aria-label="Periodo anterior"
                 >
                   ←
@@ -1014,7 +1014,7 @@ function CalendarioEntrenadorContenido() {
                       "todos"
                     );
                   }}
-                  className="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
+                  className="rounded-lg bg-slate-100 dark:bg-white/10 px-4 py-2 text-sm hover:bg-slate-200 dark:hover:bg-white/20"
                 >
                   Hoy
                 </button>
@@ -1024,7 +1024,7 @@ function CalendarioEntrenadorContenido() {
                   onClick={() =>
                     mover(1)
                   }
-                  className="rounded-lg bg-white/10 px-3 py-2 hover:bg-white/20"
+                  className="rounded-lg bg-slate-100 dark:bg-white/10 px-3 py-2 hover:bg-slate-200 dark:hover:bg-white/20"
                   aria-label="Periodo siguiente"
                 >
                   →
@@ -1056,7 +1056,7 @@ function CalendarioEntrenadorContenido() {
                     className={`rounded-lg px-4 py-2 text-sm font-semibold ${
                       vista === opcion
                         ? "bg-cyan-400 text-[#07121e]"
-                        : "bg-white/10 text-slate-300 hover:bg-white/20"
+                        : "bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/20"
                     }`}
                   >
                     {opcion === "dia"
@@ -1073,11 +1073,11 @@ function CalendarioEntrenadorContenido() {
 
           {/* FILTROS */}
 
-          <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-2">
+          <div className="mt-6 grid gap-4 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-5 sm:grid-cols-2">
             <div>
               <label
                 htmlFor="cliente-calendario"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-300"
               >
                 Filtrar por cliente
               </label>
@@ -1092,7 +1092,7 @@ function CalendarioEntrenadorContenido() {
                     evento.target.value
                   )
                 }
-                className="w-full rounded-xl border border-white/15 bg-[#0b1526] px-4 py-3 text-sm"
+                className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#0b1526] px-4 py-3 text-sm"
               >
                 <option value="todos">
                   Todos los clientes
@@ -1114,7 +1114,7 @@ function CalendarioEntrenadorContenido() {
             <div>
               <label
                 htmlFor="fecha-calendario"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-700 dark:text-slate-300"
               >
                 Ir a una fecha
               </label>
@@ -1142,7 +1142,7 @@ function CalendarioEntrenadorContenido() {
                     );
                   }
                 }}
-                className="w-full rounded-xl border border-white/15 bg-[#0b1526] px-4 py-3 text-sm"
+                className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#0b1526] px-4 py-3 text-sm"
               />
             </div>
           </div>
@@ -1150,13 +1150,13 @@ function CalendarioEntrenadorContenido() {
 
         {/* AGENDA DE SESIONES */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#111d31] p-4 sm:p-6">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-4 sm:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-xl font-bold">
               Agenda de sesiones
             </h2>
 
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {filtradas.length}{" "}
               sesiones en la vista
             </span>
@@ -1165,25 +1165,25 @@ function CalendarioEntrenadorContenido() {
           {error ? (
             <div
               role="alert"
-              className="rounded-xl border border-red-500/30 bg-red-500/10 p-5"
+              className="rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-500/10 p-5"
             >
-              <p className="font-bold text-red-300">
+              <p className="font-bold text-red-800 dark:text-red-300">
                 No se pudo cargar el calendario.
               </p>
 
-              <p className="mt-2 text-sm text-red-200">
+              <p className="mt-2 text-sm text-red-800 dark:text-red-200">
                 {error}
               </p>
 
               <Link
                 href="/login"
-                className="mt-3 inline-block text-sm text-cyan-300 underline"
+                className="mt-3 inline-block text-sm text-cyan-800 dark:text-cyan-300 underline"
               >
                 Ir al inicio de sesión
               </Link>
             </div>
           ) : cargando ? (
-            <div className="py-20 text-center text-slate-400">
+            <div className="py-20 text-center text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Consultando sesiones reales...
             </div>
           ) : vista === "dia" ? (
@@ -1195,7 +1195,7 @@ function CalendarioEntrenadorContenido() {
                   fechaISO(fecha)
                 ) ?? []
               ).length === 0 ? (
-                <p className="py-14 text-center text-slate-400">
+                <p className="py-14 text-center text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   No hay sesiones registradas
                   para esta fecha.
                 </p>
@@ -1225,7 +1225,7 @@ function CalendarioEntrenadorContenido() {
                   (dia) => (
                     <div
                       key={dia}
-                      className="py-2 text-center text-xs font-bold text-slate-400"
+                      className="py-2 text-center text-xs font-bold text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
                     >
                       {dia}
                     </div>
@@ -1262,8 +1262,8 @@ function CalendarioEntrenadorContenido() {
                             : "min-h-[135px]"
                         } ${
                           otroMes
-                            ? "border-white/5 bg-[#0b1422] opacity-50"
-                            : "border-white/10 bg-[#0c1728]"
+                            ? "border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-[#0b1422] opacity-50"
+                            : "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#0c1728]"
                         }`}
                       >
                         {/* NÚMERO DEL DÍA */}
@@ -1283,7 +1283,7 @@ function CalendarioEntrenadorContenido() {
                               "todos"
                             );
                           }}
-                          className="mb-3 rounded-lg px-2 py-1 text-sm font-bold hover:bg-white/10"
+                          className="mb-3 rounded-lg px-2 py-1 text-sm font-bold hover:bg-slate-100 dark:hover:bg-white/10"
                         >
                           {dia.getDate()}
                         </button>
@@ -1295,7 +1295,7 @@ function CalendarioEntrenadorContenido() {
                           <div className="space-y-2">
                             {lista.length ===
                             0 ? (
-                              <p className="text-xs text-slate-600">
+                              <p className="text-xs text-slate-500 dark:text-slate-600">
                                 Sin sesiones
                               </p>
                             ) : (
@@ -1327,14 +1327,14 @@ function CalendarioEntrenadorContenido() {
                                         sesion
                                       )
                                     }
-                                    className="block w-full rounded-md bg-cyan-500/15 p-2 text-left text-[11px] text-cyan-200 transition hover:bg-cyan-500/25"
+                                    className="block w-full rounded-md bg-cyan-100 dark:bg-cyan-500/15 p-2 text-left text-[11px] text-cyan-800 dark:text-cyan-200 transition hover:bg-cyan-200 dark:hover:bg-cyan-500/25"
                                   >
                                     <span className="block truncate font-semibold">
                                       {sesion.cliente_nombre ||
                                         "Cliente"}
                                     </span>
 
-                                    <span className="mt-1 block truncate text-[10px] text-cyan-300/80">
+                                    <span className="mt-1 block truncate text-[10px] text-cyan-800/80 dark:text-cyan-300/80">
                                       {sesion.hora_programada
                                         ? mostrarHora(
                                             sesion.hora_programada
@@ -1364,7 +1364,7 @@ function CalendarioEntrenadorContenido() {
                                     "todos"
                                   );
                                 }}
-                                className="text-left text-[11px] text-cyan-300 hover:underline"
+                                className="text-left text-[11px] text-cyan-800 dark:text-cyan-300 hover:underline"
                               >
                                 +
                                 {lista.length -
@@ -1386,7 +1386,7 @@ function CalendarioEntrenadorContenido() {
 
         {/* INFORMACIÓN DEL CALENDARIO */}
 
-        <footer className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-sm text-slate-300">
+        <footer className="rounded-xl border border-cyan-500/20 bg-cyan-50 dark:bg-cyan-500/5 p-4 text-sm text-slate-700 dark:text-slate-300">
           Este calendario permite consultar
           y administrar los horarios de las
           sesiones reales del gimnasio.
@@ -1415,13 +1415,13 @@ function CalendarioEntrenadorContenido() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="titulo-detalle-sesion"
-            className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/15 bg-[#111d31] p-6 shadow-2xl"
+            className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-6 shadow-2xl"
           >
             {/* ENCABEZADO DEL MODAL */}
 
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase text-cyan-300">
+                <p className="text-xs font-bold uppercase text-cyan-800 dark:text-cyan-300">
                   Detalle del entrenamiento
                 </p>
 
@@ -1444,7 +1444,7 @@ function CalendarioEntrenadorContenido() {
                 disabled={
                   guardandoHorario
                 }
-                className="rounded-lg bg-white/10 px-3 py-2 hover:bg-white/20 disabled:opacity-50"
+                className="rounded-lg bg-slate-100 dark:bg-white/10 px-3 py-2 hover:bg-slate-200 dark:hover:bg-white/20 disabled:opacity-50"
                 aria-label="Cerrar detalle"
               >
                 ✕
@@ -1505,9 +1505,9 @@ function CalendarioEntrenadorContenido() {
                 ([titulo, valor]) => (
                   <div
                     key={titulo}
-                    className="flex justify-between gap-5 border-b border-white/10 pb-3"
+                    className="flex justify-between gap-5 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pb-3"
                   >
-                    <dt className="text-slate-400">
+                    <dt className="text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       {titulo}
                     </dt>
 
@@ -1524,12 +1524,12 @@ function CalendarioEntrenadorContenido() {
                 FORMULARIO DE HORARIOS REALES
             ===================================== */}
 
-            <section className="mt-6 rounded-xl border border-cyan-500/20 bg-[#0b1728] p-5">
-              <h3 className="text-base font-bold text-white">
+            <section className="mt-6 rounded-xl border border-cyan-500/20 bg-slate-50 dark:bg-[#0b1728] p-5">
+              <h3 className="text-base font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                 Programación del horario
               </h3>
 
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Selecciona la hora de
                 inicio del entrenamiento.
                 Zona horaria: Lima, Perú.
@@ -1540,7 +1540,7 @@ function CalendarioEntrenadorContenido() {
               <div className="mt-5">
                 <label
                   htmlFor="hora-entrenamiento"
-                  className="mb-2 block text-sm font-semibold text-slate-300"
+                  className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300"
                 >
                   Hora de inicio
                 </label>
@@ -1566,13 +1566,13 @@ function CalendarioEntrenadorContenido() {
                     !puedeEditarHorario ||
                     guardandoHorario
                   }
-                  className="w-full rounded-xl border border-white/15 bg-[#101f34] px-4 py-3 text-white outline-none focus:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#101f34] px-4 py-3 text-[var(--ecf-text,#102238)] dark:text-white outline-none focus:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
               {/* DURACIÓN PROGRAMADA */}
 
-              <p className="mt-3 text-xs text-slate-400">
+              <p className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Duración prevista:{" "}
                 {seleccionada.duracion_programada_min !=
                 null
@@ -1583,7 +1583,7 @@ function CalendarioEntrenadorContenido() {
               {/* ESTADO NO PERMITIDO */}
 
               {!puedeEditarHorario && (
-                <p className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-200">
+                <p className="mt-4 rounded-lg border border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
                   Esta sesión no permite
                   modificar su horario.
                   Revisa el estado del plan
@@ -1596,7 +1596,7 @@ function CalendarioEntrenadorContenido() {
               {errorHorario && (
                 <div
                   role="alert"
-                  className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300"
+                  className="mt-4 rounded-lg border border-red-500/30 bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-800 dark:text-red-300"
                 >
                   {errorHorario}
                 </div>
@@ -1623,7 +1623,7 @@ function CalendarioEntrenadorContenido() {
                     : "Asignar horario"}
               </button>
 
-              <p className="mt-3 text-center text-xs text-slate-500">
+              <p className="mt-3 text-center text-xs text-slate-600 dark:text-slate-500">
                 El servidor verificará
                 los permisos, las fechas
                 y los conflictos antes
@@ -1656,7 +1656,7 @@ export default function CalendarioEntrenadorPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-[#080d1a] px-6 text-white">
+        <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-6 text-[var(--ecf-text,#102238)] dark:text-white">
           <div className="text-center">
             <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-slate-700 border-t-cyan-400" />
 
@@ -1664,7 +1664,7 @@ export default function CalendarioEntrenadorPage() {
               Evolution Center Fit 2.0
             </h1>
 
-            <p className="mt-3 text-sm text-slate-400">
+            <p className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Preparando calendario
               de entrenamiento...
             </p>

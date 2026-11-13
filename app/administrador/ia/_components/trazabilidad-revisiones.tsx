@@ -55,16 +55,16 @@ function Indicador({
   detalle: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-[#091728] p-4">
-      <p className="text-xs text-slate-400">
+    <div className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#091728] p-4">
+      <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-2 text-2xl font-black text-white">
+      <p className="mt-2 text-2xl font-black text-[var(--ecf-text,#102238)] dark:text-white">
         {valor}
       </p>
 
-      <p className="mt-2 text-xs text-slate-400">
+      <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {detalle}
       </p>
     </div>
@@ -107,7 +107,7 @@ export default async function TrazabilidadRevisiones() {
 
   if (!url || !clave) {
     return (
-      <p className="text-sm text-amber-200">
+      <p className="text-sm text-amber-800 dark:text-amber-200">
         Trazabilidad no disponible:
         configuración privada incompleta.
       </p>
@@ -161,7 +161,7 @@ export default async function TrazabilidadRevisiones() {
     return (
       <section
         role="alert"
-        className="rounded-2xl border border-amber-400/20 bg-[#112039] p-5 text-amber-200"
+        className="rounded-2xl border border-amber-200 dark:border-amber-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 text-amber-800 dark:text-amber-200"
       >
         No se pudo verificar la trazabilidad
         de revisiones en Supabase.
@@ -237,8 +237,8 @@ export default async function TrazabilidadRevisiones() {
 
   return (
     <section className="space-y-5">
-      <div className="rounded-2xl border border-cyan-400/20 bg-[#112039] p-5 sm:p-7">
-        <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+      <div className="rounded-2xl border border-cyan-200 dark:border-cyan-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
+        <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
           Fase 111.17.4
         </p>
 
@@ -246,7 +246,7 @@ export default async function TrazabilidadRevisiones() {
           Trazabilidad de decisiones IA
         </h2>
 
-        <p className="mt-3 text-sm leading-7 text-slate-300">
+        <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
           Revisiones que cuentan con un registro
           explícito de la reevaluación realizada
           por el entrenador.
@@ -276,13 +276,13 @@ export default async function TrazabilidadRevisiones() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+      <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
         <h3 className="text-lg font-bold">
           Últimas revisiones vinculadas
         </h3>
 
         {registros.length === 0 ? (
-          <p className="mt-4 rounded-xl bg-[#081525] p-5 text-sm leading-7 text-slate-400">
+          <p className="mt-4 rounded-xl bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#081525] p-5 text-sm leading-7 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Todavía no se ha registrado una
             nueva reevaluación vinculada.
 
@@ -296,24 +296,24 @@ export default async function TrazabilidadRevisiones() {
             {registros.map((item) => (
               <article
                 key={item.revision_id}
-                className="rounded-xl border border-white/10 bg-[#081525] p-5"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#081525] p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="font-bold text-white">
+                    <p className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                       {nombresRutinas.get(
                         item.rutina_id
                       ) ??
                         `Rutina #${item.rutina_id}`}
                     </p>
 
-                    <p className="mt-2 text-sm text-slate-300">
+                    <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
                       Cliente:{" "}
                       {nombres.get(item.cliente_id) ??
                         "No disponible"}
                     </p>
 
-                    <p className="mt-1 text-sm text-slate-400">
+                    <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Entrenador:{" "}
                       {nombres.get(
                         item.entrenador_id
@@ -321,14 +321,14 @@ export default async function TrazabilidadRevisiones() {
                     </p>
                   </div>
 
-                  <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-200">
+                  <span className="rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-1 text-xs font-bold text-cyan-800 dark:text-cyan-200">
                     GE · Revisión #{item.revision_id}
                   </span>
                 </div>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-lg bg-[#14263e] p-3">
-                    <p className="text-xs text-slate-400">
+                  <div className="rounded-lg bg-slate-100 dark:bg-[#14263e] p-3">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Elegibilidad
                     </p>
 
@@ -339,8 +339,8 @@ export default async function TrazabilidadRevisiones() {
                     </p>
                   </div>
 
-                  <div className="rounded-lg bg-[#14263e] p-3">
-                    <p className="text-xs text-slate-400">
+                  <div className="rounded-lg bg-slate-100 dark:bg-[#14263e] p-3">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Compatibilidad
                     </p>
 
@@ -352,8 +352,8 @@ export default async function TrazabilidadRevisiones() {
                     </p>
                   </div>
 
-                  <div className="rounded-lg bg-[#14263e] p-3">
-                    <p className="text-xs text-slate-400">
+                  <div className="rounded-lg bg-slate-100 dark:bg-[#14263e] p-3">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Decisión
                     </p>
 
@@ -366,7 +366,7 @@ export default async function TrazabilidadRevisiones() {
                   </div>
                 </div>
 
-                <p className="mt-3 break-words text-xs leading-6 text-slate-400">
+                <p className="mt-3 break-words text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Método:{" "}
                   {item.metodo_motor ||
                     "No registrado"}

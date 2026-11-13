@@ -5,13 +5,15 @@ type Props = {
   clienteId: string;
 };
 
+
 function Aviso({ mensaje }: { mensaje: string }) {
   return (
-    <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200">
+    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">
       {mensaje}
     </div>
   );
 }
+
 
 export default async function BotonRecomendarProtegido({
   clienteId,

@@ -335,16 +335,16 @@ function Indicador({
   descripcion: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1a304a] to-[#101b2d] p-5 shadow-lg shadow-black/10">
-      <p className="text-xs font-semibold text-slate-400">
+    <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-gradient-to-br dark:from-[#1a304a] dark:to-[#101b2d] p-5 shadow-lg shadow-slate-200/80 dark:shadow-black/10">
+      <p className="text-xs font-semibold text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {nombre}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums text-white">
+      <p className="mt-3 text-3xl font-black tabular-nums text-[var(--ecf-text,#102238)] dark:text-white">
         {formatoNumero(valor)}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-slate-400">
+      <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {descripcion}
       </p>
     </article>
@@ -364,7 +364,7 @@ function CampoSeleccion({
     <div>
       <label
         htmlFor={nombre}
-        className="mb-2 block text-sm font-semibold text-slate-200"
+        className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200"
       >
         {titulo}
       </label>
@@ -374,7 +374,7 @@ function CampoSeleccion({
         name={nombre}
         required
         defaultValue=""
-        className="min-h-12 w-full rounded-xl border border-white/15 bg-[#081525] px-3 py-3 text-sm text-white outline-none focus:border-cyan-400"
+        className="min-h-12 w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] px-3 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white outline-none focus:border-cyan-400"
       >
         <option value="" disabled>
           Selecciona una opción
@@ -402,7 +402,7 @@ function opciones(valores: string[]) {
 
 function PantallaCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#08101e] p-6 text-sm text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] p-6 text-sm text-cyan-800 dark:text-cyan-200">
       Cargando catálogo administrativo...
     </main>
   );
@@ -428,15 +428,15 @@ async function Contenido({
 
   if (!admin) {
     return (
-      <main className="min-h-screen bg-[#08101e] p-6 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] p-6 text-[var(--ecf-text,#102238)] dark:text-white">
         <Link
           href="/administrador"
-          className="text-cyan-300"
+          className="text-cyan-700 dark:text-cyan-300"
         >
           ← Volver al administrador
         </Link>
 
-        <p className="mt-8 rounded-xl border border-amber-400/25 bg-amber-400/10 p-5">
+        <p className="mt-8 rounded-xl border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 p-5">
           No están configuradas las credenciales
           privadas del servidor.
         </p>
@@ -484,11 +484,11 @@ async function Contenido({
 
   if (errorConsulta) {
     return (
-      <main className="min-h-screen bg-[#08101e] p-6 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] p-6 text-[var(--ecf-text,#102238)] dark:text-white">
         <div className="mx-auto max-w-3xl">
           <Link
             href="/administrador"
-            className="text-cyan-300"
+            className="text-cyan-700 dark:text-cyan-300"
           >
             ← Volver al administrador
           </Link>
@@ -498,7 +498,7 @@ async function Contenido({
               Error al consultar el catálogo
             </h1>
 
-            <p className="mt-3 text-sm text-slate-300">
+            <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
               Revisa la conexión, los permisos
               y la estructura de las tablas
               en Supabase.
@@ -609,10 +609,10 @@ async function Contenido({
       : undefined;
 
   return (
-    <main className="min-h-screen bg-[#08101e] text-white">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] text-[var(--ecf-text,#102238)] dark:text-white">
       {/* CABECERA */}
 
-      <header className="border-b border-white/10 bg-[#101d30]">
+      <header className="border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d30]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <Link
             href="/administrador"
@@ -625,12 +625,12 @@ async function Contenido({
             <span>
               <span className="block text-sm font-black">
                 EVOLUTION CENTER FIT{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-700 dark:text-cyan-300">
                   2.0
                 </span>
               </span>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Administración del catálogo
               </span>
             </span>
@@ -638,7 +638,7 @@ async function Contenido({
 
           <Link
             href="/administrador"
-            className="rounded-xl border border-white/15 px-4 py-3 text-sm font-semibold hover:bg-white/10"
+            className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 px-4 py-3 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-white/10"
           >
             ← Volver al panel
           </Link>
@@ -648,8 +648,8 @@ async function Contenido({
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
         {/* PRESENTACION */}
 
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#16374c] via-[#14263c] to-[#201c3b] p-6 shadow-xl shadow-black/20 sm:p-9">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#e6f7fc] via-[#f8fbff] to-[#f0efff] dark:from-[#16374c] dark:via-[#14263c] dark:to-[#201c3b] p-6 shadow-xl shadow-slate-200/80 dark:shadow-black/20 sm:p-9">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Gestión administrativa
           </p>
 
@@ -657,7 +657,7 @@ async function Contenido({
             Catálogo de entrenamiento
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Organiza ejercicios y rutinas,
             consulta su disponibilidad y prepara
             nuevos contenidos de entrenamiento.
@@ -673,7 +673,7 @@ async function Contenido({
 
             <Link
               href="/catalogo"
-              className="rounded-xl border border-cyan-400/25 bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/20"
+              className="rounded-xl border border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-800 dark:text-cyan-200 hover:bg-cyan-100 dark:hover:bg-cyan-400/20"
             >
               Ver catálogo actual
             </Link>
@@ -731,7 +731,7 @@ async function Contenido({
             (totalRutinas ?? 0) > 100 ||
             !relacionesCompletas
           ) && (
-            <p className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-xs text-amber-200">
+            <p className="mt-4 rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-xs text-amber-800 dark:text-amber-200">
               La consulta está limitada a 100 registros
               de cada catálogo y 1000 relaciones.
               Algunos recuentos son parciales.
@@ -742,7 +742,7 @@ async function Contenido({
         {/* FORMULARIOS */}
 
         <section id="crear-contenido" className="scroll-mt-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Creación de contenido
           </p>
 
@@ -750,7 +750,7 @@ async function Contenido({
             Nuevos ejercicios y rutinas
           </h2>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Los ejercicios se crean inactivos
             y las rutinas se crean en borrador.
           </p>
@@ -758,12 +758,12 @@ async function Contenido({
           <div className="mt-6 grid items-start gap-5 xl:grid-cols-2">
             {/* EJERCICIOS */}
 
-            <section className="rounded-3xl border border-white/10 bg-[#15263d] p-5 shadow-lg shadow-black/10 sm:p-7">
+            <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#15263d] p-5 shadow-lg shadow-slate-200/80 dark:shadow-black/10 sm:p-7">
               <h3 className="text-xl font-bold">
                 Crear ejercicio
               </h3>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Define un ejercicio antes de
                 habilitarlo para el catálogo.
               </p>
@@ -784,7 +784,7 @@ async function Contenido({
                     minLength={3}
                     maxLength={120}
                     placeholder="Ejemplo: Sentadilla con mancuernas"
-                    className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                    className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                   />
                 </div>
 
@@ -804,7 +804,7 @@ async function Contenido({
                       minLength={2}
                       maxLength={80}
                       placeholder="Ejemplo: Piernas"
-                      className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                      className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                     />
                   </div>
 
@@ -823,7 +823,7 @@ async function Contenido({
                       minLength={2}
                       maxLength={60}
                       placeholder="Ejemplo: Fuerza"
-                      className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                      className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
@@ -860,7 +860,7 @@ async function Contenido({
                     rows={3}
                     maxLength={700}
                     placeholder="Describe la ejecución del ejercicio..."
-                    className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                    className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                   />
                 </div>
 
@@ -875,12 +875,12 @@ async function Contenido({
 
             {/* RUTINAS */}
 
-            <section className="rounded-3xl border border-white/10 bg-[#15263d] p-5 shadow-lg shadow-black/10 sm:p-7">
+            <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#15263d] p-5 shadow-lg shadow-slate-200/80 dark:shadow-black/10 sm:p-7">
               <h3 className="text-xl font-bold">
                 Crear rutina
               </h3>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Prepara una nueva rutina sin
                 publicarla todavía.
               </p>
@@ -901,7 +901,7 @@ async function Contenido({
                     minLength={3}
                     maxLength={120}
                     placeholder="Ejemplo: Fuerza inicial 3 días"
-                    className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                    className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                   />
                 </div>
 
@@ -940,7 +940,7 @@ async function Contenido({
                       max={7}
                       step={1}
                       required
-                      className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                      className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                     />
                   </div>
 
@@ -960,7 +960,7 @@ async function Contenido({
                       max={240}
                       step={1}
                       required
-                      className="w-full rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+                      className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
@@ -978,7 +978,7 @@ async function Contenido({
 
         {/* BUSCADOR */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
           <h2 className="text-xl font-bold">
             Buscar en el catálogo
           </h2>
@@ -998,7 +998,7 @@ async function Contenido({
               defaultValue={busqueda}
               maxLength={80}
               placeholder="Buscar por nombre..."
-              className="min-h-12 min-w-0 flex-1 rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm outline-none focus:border-cyan-400"
+              className="min-h-12 min-w-0 flex-1 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-4 py-3 text-sm outline-none focus:border-cyan-400"
             />
 
             <button
@@ -1010,7 +1010,7 @@ async function Contenido({
 
             <Link
               href="/administrador/catalogo"
-              className="inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 px-5 py-3 text-sm hover:bg-slate-100 dark:hover:bg-white/10"
             >
               Limpiar
             </Link>
@@ -1020,18 +1020,18 @@ async function Contenido({
         {/* LISTADOS */}
 
         <div className="grid items-start gap-5 xl:grid-cols-2">
-          <section className="rounded-3xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+          <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
             <h2 className="text-xl font-bold">
               Ejercicios registrados
             </h2>
 
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {ejerciciosFiltrados.length} registros en esta vista
             </p>
 
             <div className="mt-5 space-y-3">
               {ejerciciosFiltrados.length === 0 && (
-                <p className="rounded-xl bg-[#081525] p-5 text-sm text-slate-400">
+                <p className="rounded-xl bg-slate-50 dark:bg-[#081525] p-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   No se encontraron ejercicios.
                 </p>
               )}
@@ -1039,7 +1039,7 @@ async function Contenido({
               {ejerciciosFiltrados.map((ejercicio) => (
                 <article
                   key={ejercicio.id}
-                  className="rounded-xl border border-white/10 bg-[#081525] p-4"
+                  className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-[#081525] p-4"
                 >
                   <div className="flex flex-wrap justify-between gap-3">
                     <h3 className="font-bold">
@@ -1048,8 +1048,8 @@ async function Contenido({
 
                     <span className={`rounded-full px-3 py-1 text-xs font-bold ${
                       ejercicio.activo
-                        ? "bg-emerald-400/10 text-emerald-300"
-                        : "bg-amber-400/10 text-amber-300"
+                        ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300"
+                        : "bg-amber-50 dark:bg-amber-400/10 text-amber-700 dark:text-amber-300"
                     }`}>
                       {ejercicio.activo
                         ? "Activo"
@@ -1057,12 +1057,12 @@ async function Contenido({
                     </span>
                   </div>
 
-                  <p className="mt-3 text-sm text-slate-300">
+                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
                     {etiqueta(ejercicio.nivel)} ·{" "}
                     {etiqueta(ejercicio.lugar)}
                   </p>
 
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {ejercicio.grupo_muscular || "Sin grupo"} ·{" "}
                     {ejercicio.equipamiento
                       ? etiqueta(ejercicio.equipamiento)
@@ -1073,18 +1073,18 @@ async function Contenido({
             </div>
           </section>
 
-          <section className="rounded-3xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+          <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
             <h2 className="text-xl font-bold">
               Rutinas registradas
             </h2>
 
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {rutinasFiltradas.length} registros en esta vista
             </p>
 
             <div className="mt-5 space-y-3">
               {rutinasFiltradas.length === 0 && (
-                <p className="rounded-xl bg-[#081525] p-5 text-sm text-slate-400">
+                <p className="rounded-xl bg-slate-50 dark:bg-[#081525] p-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   No se encontraron rutinas.
                 </p>
               )}
@@ -1092,7 +1092,7 @@ async function Contenido({
               {rutinasFiltradas.map((rutina) => (
                 <article
                   key={rutina.id}
-                  className="rounded-xl border border-white/10 bg-[#081525] p-4"
+                  className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-[#081525] p-4"
                 >
                   <div className="flex flex-wrap justify-between gap-3">
                     <h3 className="font-bold">
@@ -1101,24 +1101,24 @@ async function Contenido({
 
                     <span className={`rounded-full px-3 py-1 text-xs font-bold ${
                       rutina.estado === "publicada"
-                        ? "bg-emerald-400/10 text-emerald-300"
-                        : "bg-amber-400/10 text-amber-300"
+                        ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300"
+                        : "bg-amber-50 dark:bg-amber-400/10 text-amber-700 dark:text-amber-300"
                     }`}>
                       {rutina.estado}
                     </span>
                   </div>
 
-                  <p className="mt-3 text-sm text-slate-300">
+                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
                     {etiqueta(rutina.objetivo)}
                   </p>
 
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {etiqueta(rutina.nivel)} ·{" "}
                     {rutina.frecuencia_semanal} días/semana ·{" "}
                     {rutina.duracion_min} min
                   </p>
 
-                  <p className="mt-3 border-t border-white/10 pt-3 text-xs text-cyan-300">
+                  <p className="mt-3 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-3 text-xs text-cyan-700 dark:text-cyan-300">
                     Ejercicios asociados:{" "}
                     {relacionesCompletas
                       ? asociaciones.get(rutina.id) ?? 0
@@ -1132,19 +1132,19 @@ async function Contenido({
 
         {/* SEGURIDAD */}
 
-        <section className="rounded-2xl border border-cyan-400/15 bg-gradient-to-r from-[#102d40] to-[#1b1d39] p-6">
+        <section className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-r from-[#eaf9fd] to-[#f0edff] dark:from-[#102d40] dark:to-[#1b1d39] p-6">
           <h2 className="font-bold">
             Control de publicación
           </h2>
 
-          <p className="mt-3 text-sm leading-7 text-slate-300">
+          <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
             Las nuevas rutinas permanecen en borrador
             y los ejercicios nuevos permanecen
             inactivos. No se modifican las
             rutinas ya asignadas a los clientes.
           </p>
 
-          <p className="mt-3 text-sm text-amber-200">
+          <p className="mt-3 text-sm text-amber-800 dark:text-amber-200">
             La activación, edición y publicación
             requieren validaciones adicionales.
             El historial persistente de cambios
@@ -1152,7 +1152,7 @@ async function Contenido({
           </p>
         </section>
 
-        <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 py-6 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Catálogo administrativo
         </footer>
       </div>

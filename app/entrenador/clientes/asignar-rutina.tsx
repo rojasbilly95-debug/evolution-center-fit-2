@@ -347,21 +347,21 @@ export default function AsignarRutina({
   return (
     <section
       aria-label={`Asignación de ${rutinaNombre}`}
-      className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-950/10 p-4"
+      className="mt-4 rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-950/10 p-4"
     >
       {/* ENCABEZADO */}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-semibold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Gestión del plan
           </p>
 
-          <h6 className="mt-1 text-sm font-semibold text-white">
+          <h6 className="mt-1 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
             Asignación al cliente
           </h6>
 
-          <p className="mt-1 text-xs leading-5 text-slate-400">
+          <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Rutina aprobada por
             el entrenador.
             Registro de revisión #
@@ -375,7 +375,7 @@ export default function AsignarRutina({
             type="button"
             onClick={actualizar}
             disabled={guardando}
-            className="text-xs font-medium text-cyan-300 hover:text-cyan-200 disabled:opacity-40"
+            className="text-xs font-medium text-cyan-700 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200 disabled:opacity-40"
           >
             Actualizar estado
           </button>
@@ -387,7 +387,7 @@ export default function AsignarRutina({
       {estado.cargando && (
         <p
           role="status"
-          className="mt-3 text-sm text-slate-400"
+          className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
         >
           Comprobando asignaciones
           del cliente...
@@ -397,10 +397,10 @@ export default function AsignarRutina({
       {/* ERROR */}
 
       {estado.error && (
-        <div className="mt-3 rounded-lg border border-rose-400/20 bg-rose-400/10 p-3">
+        <div className="mt-3 rounded-lg border border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-3">
           <p
             role="alert"
-            className="text-sm text-rose-200"
+            className="text-sm text-rose-800 dark:text-rose-200"
           >
             {estado.error}
           </p>
@@ -408,7 +408,7 @@ export default function AsignarRutina({
           <button
             type="button"
             onClick={actualizar}
-            className="mt-2 text-xs font-semibold text-cyan-300 underline"
+            className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300 underline"
           >
             Reintentar
           </button>
@@ -420,7 +420,7 @@ export default function AsignarRutina({
       {exito && (
         <p
           role="status"
-          className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm font-medium text-emerald-200"
+          className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/10 p-3 text-sm font-medium text-emerald-800 dark:text-emerald-200"
         >
           {exito}
         </p>
@@ -432,29 +432,29 @@ export default function AsignarRutina({
         !estado.error &&
         rutinaYaAsignada &&
         planVigente && (
-          <div className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3">
-            <p className="text-sm font-semibold text-emerald-200">
+          <div className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/10 p-3">
+            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
               Rutina asignada al cliente
             </p>
 
-            <p className="mt-2 text-xs text-slate-300">
+            <p className="mt-2 text-xs text-slate-700 dark:text-slate-300">
               Asignación #
               {planVigente.id}
             </p>
 
-            <p className="mt-1 text-xs text-slate-300">
+            <p className="mt-1 text-xs text-slate-700 dark:text-slate-300">
               Estado:{" "}
               {planVigente.estado}
             </p>
 
-            <p className="mt-1 text-xs text-slate-300">
+            <p className="mt-1 text-xs text-slate-700 dark:text-slate-300">
               Inicio:{" "}
               {mostrarFecha(
                 planVigente.fecha_inicio
               )}
             </p>
 
-            <p className="mt-1 text-xs text-slate-300">
+            <p className="mt-1 text-xs text-slate-700 dark:text-slate-300">
               Fin:{" "}
               {mostrarFecha(
                 planVigente.fecha_fin
@@ -482,13 +482,13 @@ export default function AsignarRutina({
       {!estado.cargando &&
         !estado.error &&
         otroPlanVigente && (
-          <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-3">
-            <p className="text-sm font-semibold text-amber-200">
+          <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-3">
+            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
               El cliente ya tiene
               otro plan vigente.
             </p>
 
-            <p className="mt-1 text-xs leading-5 text-slate-300">
+            <p className="mt-1 text-xs leading-5 text-slate-700 dark:text-slate-300">
               Debes finalizar o
               cancelar el plan actual
               antes de asignar
@@ -503,13 +503,13 @@ export default function AsignarRutina({
         !estado.error &&
         !planVigente &&
         aprobacionUtilizada && (
-          <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-3">
-            <p className="text-sm font-semibold text-amber-200">
+          <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-3">
+            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
               Esta aprobación ya
               fue utilizada.
             </p>
 
-            <p className="mt-1 text-xs leading-5 text-slate-300">
+            <p className="mt-1 text-xs leading-5 text-slate-700 dark:text-slate-300">
               Para crear otra
               asignación será necesaria
               una nueva revisión y
@@ -530,7 +530,7 @@ export default function AsignarRutina({
               );
               setErrorGuardar("");
             }}
-            className="mt-4 w-full rounded-lg border border-cyan-400/30 bg-cyan-400/15 px-4 py-3 text-sm font-bold text-cyan-200 transition hover:bg-cyan-400/25"
+            className="mt-4 w-full rounded-lg border border-cyan-300 dark:border-cyan-400/30 bg-cyan-100 dark:bg-cyan-400/15 px-4 py-3 text-sm font-bold text-cyan-800 dark:text-cyan-200 transition hover:bg-cyan-200 dark:hover:bg-cyan-400/25"
           >
             Asignar rutina al cliente
           </button>
@@ -540,13 +540,13 @@ export default function AsignarRutina({
 
       {puedeAsignar &&
         mostrarFormulario && (
-          <div className="mt-4 space-y-4 rounded-lg border border-white/10 bg-slate-900/80 p-4">
+          <div className="mt-4 space-y-4 rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900/80 p-4">
             <div>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                 Programar entrenamiento
               </p>
 
-              <p className="mt-1 text-xs leading-5 text-slate-400">
+              <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Selecciona las fechas
                 y confirma la asignación
                 de la rutina.
@@ -559,7 +559,7 @@ export default function AsignarRutina({
               <div>
                 <label
                   htmlFor={`inicio-${clienteId}-${rutinaId}`}
-                  className="block text-xs font-medium text-slate-300"
+                  className="block text-xs font-medium text-slate-700 dark:text-slate-300"
                 >
                   Fecha de inicio *
                 </label>
@@ -574,14 +574,14 @@ export default function AsignarRutina({
                     )
                   }
                   required
-                  className="mt-2 w-full rounded-lg border border-white/15 bg-slate-950 px-3 py-2.5 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2.5 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus:border-cyan-400 focus:outline-none dark:[color-scheme:dark]"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor={`fin-${clienteId}-${rutinaId}`}
-                  className="block text-xs font-medium text-slate-300"
+                  className="block text-xs font-medium text-slate-700 dark:text-slate-300"
                 >
                   Fecha de fin
                   (opcional)
@@ -600,7 +600,7 @@ export default function AsignarRutina({
                       evento.target.value
                     )
                   }
-                  className="mt-2 w-full rounded-lg border border-white/15 bg-slate-950 px-3 py-2.5 text-sm text-white focus:border-cyan-400 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2.5 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus:border-cyan-400 focus:outline-none dark:[color-scheme:dark]"
                 />
               </div>
             </div>
@@ -610,7 +610,7 @@ export default function AsignarRutina({
             <div>
               <label
                 htmlFor={`notas-plan-${clienteId}-${rutinaId}`}
-                className="block text-xs font-medium text-slate-300"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300"
               >
                 Indicaciones
                 del entrenador
@@ -627,10 +627,10 @@ export default function AsignarRutina({
                 maxLength={1000}
                 rows={3}
                 placeholder="Ej.: Supervisar la técnica durante las primeras sesiones."
-                className="mt-2 w-full resize-y rounded-lg border border-white/15 bg-slate-950 px-3 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
+                className="mt-2 w-full resize-y rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
               />
 
-              <p className="mt-1 text-right text-xs text-slate-500">
+              <p className="mt-1 text-right text-xs text-slate-600 dark:text-slate-500">
                 {notas.length}/1000
                 caracteres
               </p>
@@ -641,7 +641,7 @@ export default function AsignarRutina({
             {errorGuardar && (
               <p
                 role="alert"
-                className="rounded-lg border border-rose-400/20 bg-rose-400/10 p-3 text-sm text-rose-200"
+                className="rounded-lg border border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-3 text-sm text-rose-800 dark:text-rose-200"
               >
                 {errorGuardar}
               </p>
@@ -675,7 +675,7 @@ export default function AsignarRutina({
                   setErrorGuardar("");
                 }}
                 disabled={guardando}
-                className="min-h-11 rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 disabled:opacity-50"
+                className="min-h-11 rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-50"
               >
                 Cancelar
               </button>

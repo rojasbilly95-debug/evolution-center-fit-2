@@ -159,13 +159,13 @@ function Etiqueta({
   color?: "cyan" | "emerald" | "amber" | "slate";
 }) {
   const estilos = {
-    cyan: "border-cyan-400/25 bg-cyan-400/10 text-cyan-200",
+    cyan: "border-cyan-400/25 bg-cyan-400/10 text-cyan-800 dark:text-cyan-200",
     emerald:
-      "border-emerald-400/25 bg-emerald-400/10 text-emerald-200",
+      "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200",
     amber:
-      "border-amber-400/25 bg-amber-400/10 text-amber-200",
+      "border-amber-400/25 bg-amber-400/10 text-amber-800 dark:text-amber-200",
     slate:
-      "border-white/15 bg-white/5 text-slate-300",
+      "border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300",
   };
 
   return (
@@ -215,7 +215,7 @@ function Cabecera({
       ];
 
   return (
-    <header className="relative z-40 border-b border-white/10 bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
+    <header className="relative z-40 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/95 dark:bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link
           href={volver}
@@ -228,10 +228,10 @@ function Cabecera({
           <span className="min-w-0">
             <span className="block truncate text-xs font-black tracking-wide sm:text-sm">
               EVOLUTION CENTER FIT{" "}
-              <span className="text-cyan-300">2.0</span>
+              <span className="text-cyan-700 dark:text-cyan-300">2.0</span>
             </span>
 
-            <span className="block text-[11px] text-slate-400">
+            <span className="block text-[11px] text-slate-500 dark:text-slate-400">
               Catálogo de entrenamiento
             </span>
           </span>
@@ -252,8 +252,8 @@ function Cabecera({
               }
               className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                 enlace.href === "/catalogo"
-                  ? "bg-cyan-400/10 text-cyan-300"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-cyan-400/10 text-cyan-700 dark:text-cyan-300"
+                  : "text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
               }`}
             >
               {enlace.texto}
@@ -262,14 +262,14 @@ function Cabecera({
         </nav>
 
         <details className="relative shrink-0 xl:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
             <Icono nombre="menu" />
             Menú
           </summary>
 
           <nav
             aria-label="Navegación móvil"
-            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#101d31] p-2 shadow-2xl shadow-black/50"
           >
             {enlaces.map((enlace) => (
               <Link
@@ -282,8 +282,8 @@ function Cabecera({
                 }
                 className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                   enlace.href === "/catalogo"
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-200 hover:bg-white/10"
+                    ? "bg-cyan-400/10 text-cyan-700 dark:text-cyan-300"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10"
                 }`}
               >
                 {enlace.texto}
@@ -308,18 +308,18 @@ function TarjetaIndicador({
   color: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.19)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
+    <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#172a43] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.19)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
       <span
         className={`flex h-11 w-11 items-center justify-center rounded-xl ${color}`}
       >
         <Icono nombre={icono} />
       </span>
 
-      <p className="mt-5 text-3xl font-extrabold tabular-nums text-white sm:text-4xl">
+      <p className="mt-5 text-3xl font-extrabold tabular-nums text-[var(--ecf-text,#102238)] dark:text-white sm:text-4xl">
         {valor}
       </p>
 
-      <p className="mt-2 text-sm font-semibold text-slate-300">
+      <p className="mt-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
         {titulo}
       </p>
     </article>
@@ -339,9 +339,9 @@ function TarjetaRutina({
   const publicada = rutina.estado === "publicada";
 
   return (
-    <article className="group min-w-0 rounded-3xl border border-white/10 bg-gradient-to-br from-[#152740] to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 hover:shadow-[0_24px_55px_rgba(0,0,0,0.28)] sm:p-6">
+    <article className="group min-w-0 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#152740] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 hover:shadow-[0_24px_55px_rgba(0,0,0,0.28)] sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-400/10 text-violet-200">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-400/10 text-violet-800 dark:text-violet-200">
           <Icono
             nombre="layers"
             className="h-6 w-6"
@@ -353,29 +353,29 @@ function TarjetaRutina({
         </Etiqueta>
       </div>
 
-      <h3 className="mt-5 text-xl font-extrabold leading-snug text-white">
+      <h3 className="mt-5 text-xl font-extrabold leading-snug text-[var(--ecf-text,#102238)] dark:text-white">
         {rutina.nombre}
       </h3>
 
-      <p className="mt-2 text-sm text-slate-400">
+      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
         {formatear(rutina.objetivo)}
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
-          <p className="text-xs text-slate-400">
+        <div className="rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.04] p-3">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Duración
           </p>
-          <p className="mt-1 font-bold text-slate-100">
+          <p className="mt-1 font-bold text-slate-900 dark:text-slate-100">
             {rutina.duracion_min} min
           </p>
         </div>
 
-        <div className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
-          <p className="text-xs text-slate-400">
+        <div className="rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.04] p-3">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Frecuencia
           </p>
-          <p className="mt-1 font-bold text-slate-100">
+          <p className="mt-1 font-bold text-slate-900 dark:text-slate-100">
             {rutina.frecuencia_semanal} días/sem.
           </p>
         </div>
@@ -395,8 +395,8 @@ function TarjetaRutina({
         </Etiqueta>
       </div>
 
-      <details className="group/detalle mt-6 overflow-hidden rounded-2xl border border-white/10 bg-[#0a1627]/70 open:border-cyan-400/25">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-cyan-200 transition-colors hover:bg-cyan-400/[0.07] focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+      <details className="group/detalle mt-6 overflow-hidden rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50/90 dark:bg-[#0a1627]/70 open:border-cyan-400/25">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-cyan-800 dark:text-cyan-200 transition-colors hover:bg-cyan-400/[0.07] focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
           <span className="flex items-center gap-2">
             <Icono
               nombre="book"
@@ -411,9 +411,9 @@ function TarjetaRutina({
           />
         </summary>
 
-        <div className="border-t border-white/10 p-3 sm:p-4">
+        <div className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 p-3 sm:p-4">
           {componentes.length === 0 ? (
-            <p className="p-3 text-sm text-slate-400">
+            <p className="p-3 text-sm text-slate-500 dark:text-slate-400">
               Esta rutina todavía no tiene ejercicios
               vinculados.
             </p>
@@ -441,20 +441,20 @@ function TarjetaRutina({
                 return (
                   <li
                     key={`${item.rutina_id}-${item.orden}-${item.ejercicio_id}`}
-                    className="flex flex-col gap-2 rounded-xl border border-white/[0.05] bg-white/[0.045] p-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-white/[0.05] bg-slate-50 dark:bg-white/[0.045] p-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="flex min-w-0 items-start gap-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-xs font-bold text-cyan-300">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-xs font-bold text-cyan-700 dark:text-cyan-300">
                         {item.orden}
                       </span>
 
                       <div className="min-w-0">
-                        <p className="break-words text-sm font-semibold text-white">
+                        <p className="break-words text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                           {ejercicio?.nombre ??
                             "Ejercicio no encontrado"}
                         </p>
 
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                           {ejercicio
                             ? formatear(
                                 ejercicio.grupo_muscular
@@ -465,11 +465,11 @@ function TarjetaRutina({
                     </div>
 
                     <div className="pl-11 text-xs sm:pl-3 sm:text-right">
-                      <p className="font-semibold text-cyan-200">
+                      <p className="font-semibold text-cyan-800 dark:text-cyan-200">
                         {objetivo ||
                           "Sin objetivo detallado"}
                       </p>
-                      <p className="mt-1 text-slate-400">
+                      <p className="mt-1 text-slate-500 dark:text-slate-400">
                         Descanso: {item.descanso_seg} s
                       </p>
                     </div>
@@ -491,9 +491,9 @@ function TarjetaEjercicio({
   ejercicio: Ejercicio;
 }) {
   return (
-    <article className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-br from-[#152740] to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
+    <article className="min-w-0 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#152740] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
       <div className="flex items-start justify-between gap-3">
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-700 dark:text-cyan-300">
           <Icono
             nombre="dumbbell"
             className="h-6 w-6"
@@ -507,16 +507,16 @@ function TarjetaEjercicio({
         </Etiqueta>
       </div>
 
-      <h3 className="mt-5 text-lg font-bold text-white">
+      <h3 className="mt-5 text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
         {ejercicio.nombre}
       </h3>
 
-      <p className="mt-2 min-h-10 text-sm leading-6 text-slate-400">
+      <p className="mt-2 min-h-10 text-sm leading-6 text-slate-500 dark:text-slate-400">
         {ejercicio.descripcion ||
           "Sin descripción registrada."}
       </p>
 
-      <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
+      <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-5">
         {[
           {
             etiqueta: "Grupo muscular",
@@ -538,21 +538,21 @@ function TarjetaEjercicio({
           },
         ].map((dato) => (
           <div key={dato.etiqueta} className="min-w-0">
-            <dt className="text-xs text-slate-400">
+            <dt className="text-xs text-slate-500 dark:text-slate-400">
               {dato.etiqueta}
             </dt>
-            <dd className="mt-1 break-words text-sm font-semibold text-slate-100">
+            <dd className="mt-1 break-words text-sm font-semibold text-slate-900 dark:text-slate-100">
               {dato.valor}
             </dd>
           </div>
         ))}
       </dl>
 
-      <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
-        <p className="text-xs text-slate-400">
+      <div className="mt-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.04] p-3">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Equipamiento
         </p>
-        <p className="mt-1 text-sm font-semibold text-slate-200">
+        <p className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
           {formatear(ejercicio.equipamiento)}
         </p>
       </div>
@@ -672,13 +672,13 @@ export default function CatalogoInteractivo({
   }
 
   const campo =
-    "min-h-12 w-full rounded-xl border border-white/15 " +
-    "bg-[#0b1628] px-4 py-3 text-sm text-white outline-none " +
+    "min-h-12 w-full rounded-xl border border-slate-300 dark:border-white/15 " +
+    "bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1628] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white outline-none " +
     "transition-colors focus:border-cyan-400/70 " +
     "focus:ring-2 focus:ring-cyan-400/20";
 
   return (
-    <main className="relative min-h-screen bg-[#080d1a] text-white">
+    <main className="relative min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] text-[var(--ecf-text,#102238)] dark:text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-cyan-500/[0.06] to-transparent"
@@ -688,10 +688,10 @@ export default function CatalogoInteractivo({
 
       <div className="relative mx-auto w-full max-w-7xl space-y-8 px-4 pb-20 pt-7 sm:px-6 lg:px-8">
         {/* BIENVENIDA */}
-        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-[#122b40] via-[#111d32] to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
+        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-cyan-50 dark:from-[#122b40] via-white dark:via-[#111d32] to-violet-50 dark:to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-200">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-200">
                 <Icono
                   nombre="dumbbell"
                   className="h-4 w-4"
@@ -701,12 +701,12 @@ export default function CatalogoInteractivo({
 
               <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
                 Ejercicios y{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-700 dark:text-cyan-300">
                   rutinas
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base">
                 Explora los ejercicios y las rutinas
                 disponibles en Supabase. Consulta
                 objetivos, niveles y composición de
@@ -717,7 +717,7 @@ export default function CatalogoInteractivo({
             <div className="flex flex-wrap gap-3">
               <Link
                 href={volver}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-slate-200 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
               >
                 Volver a mi panel
                 <Icono
@@ -738,28 +738,28 @@ export default function CatalogoInteractivo({
             titulo="Ejercicios registrados"
             valor={ejercicios.length}
             icono="dumbbell"
-            color="bg-cyan-400/10 text-cyan-300"
+            color="bg-cyan-400/10 text-cyan-700 dark:text-cyan-300"
           />
 
           <TarjetaIndicador
             titulo="Rutinas registradas"
             valor={rutinas.length}
             icono="layers"
-            color="bg-violet-400/10 text-violet-300"
+            color="bg-violet-400/10 text-violet-700 dark:text-violet-300"
           />
 
           <TarjetaIndicador
             titulo="Vínculos rutina-ejercicio"
             valor={relaciones.length}
             icono="calendar"
-            color="bg-emerald-400/10 text-emerald-300"
+            color="bg-emerald-400/10 text-emerald-700 dark:text-emerald-300"
           />
         </section>
 
         {/* EXPLORADOR */}
         <section aria-labelledby="titulo-explorador">
           <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
               Explorador
             </p>
 
@@ -770,7 +770,7 @@ export default function CatalogoInteractivo({
               Descubre el catálogo
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-400">
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Selecciona una vista, utiliza los filtros y
               consulta los detalles de los registros.
             </p>
@@ -788,7 +788,7 @@ export default function CatalogoInteractivo({
               className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold shadow-lg shadow-black/10 transition-[transform,background-color,border-color] duration-200 motion-safe:hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
                 vista === "rutinas"
                   ? "bg-cyan-400 text-[#07121e]"
-                  : "border border-white/15 bg-white/5 text-slate-200 hover:bg-white/10"
+                  : "border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10"
               }`}
             >
               <Icono
@@ -805,7 +805,7 @@ export default function CatalogoInteractivo({
               className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold shadow-lg shadow-black/10 transition-[transform,background-color,border-color] duration-200 motion-safe:hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
                 vista === "ejercicios"
                   ? "bg-cyan-400 text-[#07121e]"
-                  : "border border-white/15 bg-white/5 text-slate-200 hover:bg-white/10"
+                  : "border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10"
               }`}
             >
               <Icono
@@ -817,11 +817,11 @@ export default function CatalogoInteractivo({
           </div>
 
           {/* FILTROS */}
-          <div className="mt-5 grid gap-4 rounded-2xl border border-white/10 bg-[#111d31] p-4 shadow-[0_14px_35px_rgba(0,0,0,0.16)] sm:p-5 lg:grid-cols-[minmax(0,1fr)_190px_190px]">
+          <div className="mt-5 grid gap-4 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-4 shadow-[0_14px_35px_rgba(0,0,0,0.16)] sm:p-5 lg:grid-cols-[minmax(0,1fr)_190px_190px]">
             <div className="min-w-0">
               <label
                 htmlFor="buscar-catalogo"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Buscar
               </label>
@@ -829,7 +829,7 @@ export default function CatalogoInteractivo({
               <div className="relative">
                 <Icono
                   nombre="search"
-                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 dark:text-slate-400"
                 />
 
                 <input
@@ -852,7 +852,7 @@ export default function CatalogoInteractivo({
             <div>
               <label
                 htmlFor="nivel-catalogo"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Nivel
               </label>
@@ -883,7 +883,7 @@ export default function CatalogoInteractivo({
             <div>
               <label
                 htmlFor="lugar-catalogo"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Lugar
               </label>
@@ -916,7 +916,7 @@ export default function CatalogoInteractivo({
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p
               role="status"
-              className="text-sm text-slate-400"
+              className="text-sm text-slate-500 dark:text-slate-400"
             >
               {totalVisible} de {totalOriginal}{" "}
               {vista === "rutinas"
@@ -928,7 +928,7 @@ export default function CatalogoInteractivo({
               <button
                 type="button"
                 onClick={limpiarFiltros}
-                className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+                className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-cyan-700 dark:text-cyan-300 transition hover:bg-cyan-400/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
               >
                 <Icono
                   nombre="filter"
@@ -969,17 +969,17 @@ export default function CatalogoInteractivo({
 
           {/* SIN COINCIDENCIAS */}
           {totalVisible === 0 && (
-            <div className="mt-5 rounded-3xl border border-dashed border-white/15 bg-[#111d31] p-10 text-center shadow-lg shadow-black/10">
+            <div className="mt-5 rounded-3xl border border-dashed border-slate-300 dark:border-white/15 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] p-10 text-center shadow-lg shadow-black/10">
               <Icono
                 nombre="search"
-                className="mx-auto h-10 w-10 text-slate-500"
+                className="mx-auto h-10 w-10 text-slate-600 dark:text-slate-500"
               />
 
-              <h3 className="mt-4 text-xl font-bold text-white">
+              <h3 className="mt-4 text-xl font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                 No se encontraron resultados
               </h3>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Prueba otros filtros para encontrar
                 {vista === "rutinas"
                   ? " rutinas."
@@ -1002,16 +1002,16 @@ export default function CatalogoInteractivo({
         {/* NOTA FUNCIONAL */}
         <section className="rounded-2xl border border-cyan-400/15 bg-gradient-to-r from-cyan-500/[0.07] to-violet-500/[0.07] p-5 sm:p-6">
           <div className="flex items-start gap-3">
-            <span className="rounded-xl bg-cyan-400/10 p-3 text-cyan-300">
+            <span className="rounded-xl bg-cyan-400/10 p-3 text-cyan-700 dark:text-cyan-300">
               <Icono nombre="check" />
             </span>
 
             <div>
-              <h2 className="font-bold text-white">
+              <h2 className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                 Consulta de entrenamiento
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-slate-300">
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
                 Este catálogo muestra las rutinas y
                 ejercicios registrados. Consultar una
                 rutina no significa que haya sido
@@ -1023,7 +1023,7 @@ export default function CatalogoInteractivo({
           </div>
         </section>
 
-        <footer className="pt-2 text-center text-xs text-slate-500">
+        <footer className="pt-2 text-center text-xs text-slate-600 dark:text-slate-500">
           Evolution Center Fit 2.0 · Catálogo de entrenamiento
         </footer>
       </div>

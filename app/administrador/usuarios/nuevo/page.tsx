@@ -373,7 +373,7 @@ const invitacion =
 
 function Cargando() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+    <main className="ecf-role-admin flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
       Cargando formulario de invitación...
     </main>
   );
@@ -430,20 +430,20 @@ async function Contenido({
     rol?.rol !== "administrador"
   ) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080e1b] p-6 text-white">
-        <section className="max-w-lg rounded-2xl border border-rose-400/25 bg-rose-400/10 p-8 text-center">
+      <main className="ecf-role-admin flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
+        <section className="max-w-lg rounded-2xl border border-rose-200 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-8 text-center">
           <h1 className="text-2xl font-bold">
             Acceso restringido
           </h1>
 
-          <p className="mt-3 text-sm text-slate-300">
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
             Solo un administrador puede
             invitar usuarios.
           </p>
 
           <Link
             href="/login"
-            className="mt-4 inline-block font-semibold text-cyan-300"
+            className="mt-4 inline-block font-semibold text-cyan-700 dark:text-cyan-300"
           >
             Volver al inicio
           </Link>
@@ -457,7 +457,7 @@ async function Contenido({
   // ----------------------------------------------
 
   return (
-    <main className="min-h-screen bg-[#080e1b] px-4 py-8 text-white sm:px-6">
+    <main className="ecf-role-admin min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] px-4 py-8 text-[var(--ecf-text)] dark:text-white sm:px-6">
       <div className="mx-auto max-w-3xl space-y-6">
 
         {/* NAVEGACION */}
@@ -465,14 +465,14 @@ async function Contenido({
         <nav className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <Link
             href="/administrador"
-            className="font-semibold text-cyan-300 hover:underline"
+            className="font-semibold text-cyan-700 dark:text-cyan-300 hover:underline"
           >
             ← Centro administrativo
           </Link>
 
           <Link
             href="/administrador/usuarios"
-            className="rounded-xl border border-white/15 px-4 py-2.5 font-semibold text-slate-200 hover:bg-white/10"
+            className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
           >
             Ver directorio de usuarios
           </Link>
@@ -480,12 +480,12 @@ async function Contenido({
 
         {/* CABECERA */}
 
-        <header className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#17374b] to-[#171d39] p-6 shadow-xl sm:p-9">
-          <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300">
+        <header className="rounded-3xl border border-cyan-200 dark:border-cyan-400/20 bg-gradient-to-br from-[#e5f8fc] to-[#f1edff] dark:from-[#17374b] dark:to-[#171d39] p-6 shadow-lg shadow-slate-200/70 dark:shadow-xl dark:shadow-black/20 sm:p-9">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             EVOLUTION CENTER FIT 2.0
           </p>
 
-          <p className="mt-2 text-xs font-semibold text-slate-400">
+          <p className="mt-2 text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
             Administración de cuentas
           </p>
 
@@ -493,7 +493,7 @@ async function Contenido({
             Invitar nuevo usuario
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Registra un cliente o entrenador
             enviándole una invitación por
             correo electrónico.
@@ -510,8 +510,8 @@ async function Contenido({
             role="status"
             className={`rounded-2xl border p-5 text-sm leading-6 ${
               mensaje.error
-                ? "border-amber-400/25 bg-amber-400/10 text-amber-100"
-                : "border-emerald-400/25 bg-emerald-400/10 text-emerald-100"
+                ? "border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 text-amber-900 dark:text-amber-100"
+                : "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-900 dark:text-emerald-100"
             }`}
           >
             {mensaje.texto}
@@ -520,13 +520,13 @@ async function Contenido({
 
         {/* FORMULARIO */}
 
-        <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#162940] to-[#101c30] p-6 shadow-[0_16px_45px_rgba(0,0,0,0.2)] sm:p-8">
+        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-[#162940] dark:to-[#101c30] p-6 shadow-[0_16px_45px_rgba(15,23,42,0.07)] dark:shadow-[0_16px_45px_rgba(0,0,0,0.2)] sm:p-8">
 
           <h2 className="text-xl font-bold">
             Datos de la nueva cuenta
           </h2>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
             Completa todos los campos para
             enviar la invitación.
           </p>
@@ -541,7 +541,7 @@ async function Contenido({
             <div>
               <label
                 htmlFor="nombre"
-                className="mb-2 block text-sm font-semibold text-slate-200"
+                className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200"
               >
                 Nombre completo
               </label>
@@ -555,7 +555,7 @@ async function Contenido({
                 maxLength={120}
                 autoComplete="name"
                 placeholder="Ejemplo: María López"
-                className="w-full rounded-xl border border-white/15 bg-[#071627] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15"
+                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-white dark:bg-[#071627] px-4 py-3 text-[var(--ecf-text)] dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/15 dark:focus:ring-cyan-400/15"
               />
             </div>
 
@@ -564,7 +564,7 @@ async function Contenido({
             <div>
               <label
                 htmlFor="correo"
-                className="mb-2 block text-sm font-semibold text-slate-200"
+                className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200"
               >
                 Correo electrónico
               </label>
@@ -577,7 +577,7 @@ async function Contenido({
                 maxLength={254}
                 autoComplete="off"
                 placeholder="usuario@ejemplo.com"
-                className="w-full rounded-xl border border-white/15 bg-[#071627] px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/15"
+                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-white dark:bg-[#071627] px-4 py-3 text-[var(--ecf-text)] dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/15 dark:focus:ring-cyan-400/15"
               />
             </div>
 
@@ -586,7 +586,7 @@ async function Contenido({
             <div>
               <label
                 htmlFor="rol"
-                className="mb-2 block text-sm font-semibold text-slate-200"
+                className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200"
               >
                 Rol inicial
               </label>
@@ -596,7 +596,7 @@ async function Contenido({
                 name="rol"
                 required
                 defaultValue="cliente"
-                className="w-full rounded-xl border border-white/15 bg-[#071627] px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-white dark:bg-[#071627] px-4 py-3 text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 dark:focus:border-cyan-400"
               >
                 <option value="cliente">
                   Cliente
@@ -607,7 +607,7 @@ async function Contenido({
                 </option>
               </select>
 
-              <p className="mt-2 text-xs leading-5 text-slate-400">
+              <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted)] dark:text-slate-400">
                 Por seguridad, esta pantalla
                 no permite crear administradores.
               </p>
@@ -626,8 +626,8 @@ async function Contenido({
 
         {/* AVISO */}
 
-        <aside className="rounded-2xl border border-white/10 bg-[#111e32] p-5 text-sm leading-7 text-slate-300">
-          <h2 className="font-bold text-white">
+        <aside className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#111e32] p-5 text-sm leading-7 text-slate-600 dark:text-slate-300">
+          <h2 className="font-bold text-[var(--ecf-text)] dark:text-white">
             Información importante
           </h2>
 
@@ -644,14 +644,14 @@ async function Contenido({
             aceptarla y configurar el acceso.
           </p>
 
-          <p className="mt-3 text-amber-200">
+          <p className="mt-3 text-amber-800 dark:text-amber-200">
             Antes de habilitar esta función en
             producción, rota las credenciales
             privadas compartidas anteriormente.
           </p>
         </aside>
 
-        <footer className="border-t border-white/10 py-5 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border)] dark:border-white/10 py-5 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Administración
         </footer>
       </div>

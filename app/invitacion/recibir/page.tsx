@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -165,9 +164,9 @@ export default function RecibirInvitacionPage() {
   }, [router]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] px-4 py-10 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] px-4 py-10 text-[var(--ecf-text,#102238)] dark:bg-[#080e1b] dark:text-white">
 
-      <section className="w-full max-w-lg rounded-3xl border border-cyan-400/20 bg-[#112039] p-8 text-center shadow-2xl">
+      <section className="w-full max-w-lg rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-8 text-center shadow-2xl shadow-slate-200/60 dark:border-cyan-400/20 dark:bg-[#112039] dark:shadow-black/30">
 
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-400 text-3xl font-black text-[#081525]">
           E
@@ -177,7 +176,7 @@ export default function RecibirInvitacionPage() {
           Evolution Center Fit 2.0
         </h1>
 
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Activación de cuenta
         </p>
 
@@ -185,8 +184,8 @@ export default function RecibirInvitacionPage() {
           role="status"
           className={`mt-7 rounded-xl border p-5 text-sm leading-7 ${
             error
-              ? "border-amber-400/25 bg-amber-400/10 text-amber-100"
-              : "border-cyan-400/20 bg-cyan-400/10 text-cyan-100"
+              ? "border-amber-400/30 bg-amber-50 text-amber-900 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-100"
+              : "border-cyan-400/25 bg-cyan-50 text-cyan-900 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-100"
           }`}
         >
           {mensaje}
@@ -195,13 +194,13 @@ export default function RecibirInvitacionPage() {
         {error && (
           <Link
             href="/login"
-            className="mt-6 inline-block rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-cyan-200 hover:bg-white/10"
+            className="mt-6 inline-block rounded-xl border border-[var(--ecf-border,#dce5ee)] px-5 py-3 text-sm font-semibold text-cyan-800 hover:bg-cyan-50 dark:border-white/15 dark:text-cyan-200 dark:hover:bg-white/10"
           >
             Volver al inicio de sesión
           </Link>
         )}
 
-        <p className="mt-7 text-xs leading-6 text-slate-400">
+        <p className="mt-7 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Tu acceso está protegido
           mediante Supabase Auth.
         </p>

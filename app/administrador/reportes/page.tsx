@@ -1,4 +1,3 @@
-
 import "server-only";
 
 import Link from "next/link";
@@ -20,7 +19,7 @@ import {
 
 function Cargando() {
   return (
-    <main className="min-h-screen bg-[#080e1b] p-8 text-cyan-200">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-cyan-800 dark:text-cyan-200">
       Cargando reportes administrativos...
     </main>
   );
@@ -41,12 +40,12 @@ async function ContenidoReportes() {
 
   if (acceso.estado === "sin_configuracion") {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <h1 className="text-xl font-bold">
           Configuración pendiente
         </h1>
 
-        <p className="mt-3 text-amber-200">
+        <p className="mt-3 text-amber-800 dark:text-amber-200">
           No se configuró la conexión privada
           de Supabase en el servidor.
         </p>
@@ -77,14 +76,14 @@ async function ContenidoReportes() {
   );
 
   return (
-    <main className="min-h-screen bg-[#080e1b] px-4 py-8 text-white sm:px-7">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] px-4 py-8 text-[var(--ecf-text,#102238)] dark:text-white sm:px-7">
       <div className="mx-auto max-w-6xl space-y-7">
 
         {/* CABECERA */}
 
-        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#173a50] to-[#1f1d38] p-6 sm:p-9">
+        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#eaf8ff] dark:from-[#173a50] to-[#eef1fc] dark:to-[#1f1d38] p-6 sm:p-9">
 
-          <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             FASE 111.18 · ADMINISTRACIÓN
           </p>
 
@@ -92,7 +91,7 @@ async function ContenidoReportes() {
             Centro de reportes
           </h1>
 
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700 dark:text-slate-300">
             Consulta los indicadores operativos
             del gimnasio y descarga informes
             administrativos de Evolution
@@ -110,14 +109,14 @@ async function ContenidoReportes() {
 
             <Link
               href="/administrador"
-              className="rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold hover:bg-white/10"
+              className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-5 py-3 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-white/10"
             >
               Volver al administrador
             </Link>
 
           </div>
 
-          <p className="mt-5 text-xs text-slate-400">
+          <p className="mt-5 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Consulta generada: {generado}
             {" · "}Hora de Lima
           </p>
@@ -129,13 +128,13 @@ async function ContenidoReportes() {
         {fallidas > 0 && (
           <div
             role="alert"
-            className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-5"
+            className="rounded-2xl border border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-5"
           >
-            <h2 className="font-bold text-amber-200">
+            <h2 className="font-bold text-amber-800 dark:text-amber-200">
               Hay indicadores sin verificar
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
               No se pudieron consultar {fallidas}
               {" "}indicadores.
 
@@ -150,16 +149,16 @@ async function ContenidoReportes() {
 
         <section className="grid gap-4 md:grid-cols-2">
 
-          <article className="rounded-2xl border border-white/10 bg-[#14263f] p-6">
-            <p className="text-sm font-semibold text-slate-300">
+          <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#14263f] p-6">
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               Asistencia confirmada
             </p>
 
-            <p className="mt-3 text-4xl font-black text-white">
+            <p className="mt-3 text-4xl font-black text-[var(--ecf-text,#102238)] dark:text-white">
               {asistencia}
             </p>
 
-            <p className="mt-3 text-xs leading-6 text-slate-400">
+            <p className="mt-3 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Porcentaje calculado sobre
               sesiones realizadas y ausencias
               confirmadas.
@@ -169,12 +168,12 @@ async function ContenidoReportes() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-white/10 bg-[#14263f] p-6">
-            <p className="text-sm font-semibold text-slate-300">
+          <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#14263f] p-6">
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               Disponibilidad de los indicadores
             </p>
 
-            <p className="mt-3 text-4xl font-black text-white">
+            <p className="mt-3 text-4xl font-black text-[var(--ecf-text,#102238)] dark:text-white">
               {metricas.length - fallidas}
               <span className="text-slate-500">
                 {" / "}
@@ -182,7 +181,7 @@ async function ContenidoReportes() {
               </span>
             </p>
 
-            <p className="mt-3 text-xs leading-6 text-slate-400">
+            <p className="mt-3 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Indicadores consultados
               correctamente desde Supabase.
             </p>
@@ -209,7 +208,7 @@ async function ContenidoReportes() {
                   {seccion.titulo}
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   {seccion.nota}
                 </p>
               </div>
@@ -219,10 +218,10 @@ async function ContenidoReportes() {
                 {indicadores.map((indicador) => (
                   <article
                     key={indicador.codigo}
-                    className="rounded-2xl border border-white/10 bg-[#112039] p-5"
+                    className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5"
                   >
 
-                    <p className="text-sm font-semibold text-slate-300">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                       {indicador.titulo}
                     </p>
 
@@ -234,12 +233,12 @@ async function ContenidoReportes() {
                           )}
                     </p>
 
-                    <p className="mt-2 text-xs leading-5 text-slate-400">
+                    <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       {indicador.descripcion}
                     </p>
 
                     {indicador.valor === null && (
-                      <p className="mt-2 text-xs text-amber-200">
+                      <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
                         No disponible
                       </p>
                     )}
@@ -255,12 +254,12 @@ async function ContenidoReportes() {
 
         {/* INFORMACION IMPORTANTE */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
           <h2 className="text-lg font-bold">
             Alcance de los reportes
           </h2>
 
-          <p className="mt-3 text-sm leading-7 text-slate-300">
+          <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
             Este panel presenta información
             operativa registrada en Supabase.
 

@@ -289,7 +289,7 @@ async function editar(
 
 function Cargando() {
   return (
-    <main className="min-h-screen bg-[#08101e] p-8 text-cyan-200">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] p-8 text-cyan-800 dark:text-cyan-200">
       Cargando ejercicios...
     </main>
   );
@@ -309,10 +309,10 @@ async function Contenido({
 
   if (!acceso) {
     return (
-      <main className="min-h-screen bg-[#08101e] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <Link
           href="/administrador/catalogo"
-          className="text-cyan-300"
+          className="text-cyan-700 dark:text-cyan-300"
         >
           ← Volver
         </Link>
@@ -416,10 +416,10 @@ async function Contenido({
     activos.error
   ) {
     return (
-      <main className="min-h-screen bg-[#08101e] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <Link
           href="/administrador/catalogo"
-          className="text-cyan-300"
+          className="text-cyan-700 dark:text-cyan-300"
         >
           ← Volver
         </Link>
@@ -541,22 +541,22 @@ async function Contenido({
   // ==========================================
 
   return (
-    <main className="min-h-screen bg-[#08101e] text-white">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#08101e] text-[var(--ecf-text,#102238)] dark:text-white">
 
       {/* CABECERA */}
 
-      <header className="border-b border-white/10 bg-[#101d30]">
+      <header className="border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d30]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 p-5">
           <strong>
             EVOLUTION CENTER FIT{" "}
-            <span className="text-cyan-300">
+            <span className="text-cyan-700 dark:text-cyan-300">
               2.0
             </span>
           </strong>
 
           <Link
             href="/administrador/catalogo"
-            className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+            className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
           >
             ← Volver al catálogo
           </Link>
@@ -567,8 +567,8 @@ async function Contenido({
 
         {/* PRESENTACION */}
 
-        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#19384e] to-[#1b1e39] p-7">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-cyan-50 dark:from-[#19384e] to-indigo-50 dark:to-[#1b1e39] p-7">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             FASE 111.15 · Administración
           </p>
 
@@ -576,7 +576,7 @@ async function Contenido({
             Gestión de ejercicios
           </h1>
 
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-700 dark:text-slate-300">
             Consulta, edita y activa ejercicios.
             Para proteger los entrenamientos,
             no se pueden editar ni desactivar
@@ -598,7 +598,7 @@ async function Contenido({
           avisos[params.resultado] && (
             <p
               role="status"
-              className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100"
+              className="rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-900 dark:text-amber-100"
             >
               {avisos[params.resultado]}
             </p>
@@ -627,9 +627,9 @@ async function Contenido({
           ].map((item) => (
             <div
               key={item.titulo}
-              className="rounded-2xl border border-white/10 bg-[#14263b] p-5"
+              className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-5"
             >
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 {item.titulo}
               </p>
 
@@ -642,7 +642,7 @@ async function Contenido({
 
         {/* FILTROS */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-5">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5">
           <form
             action={RUTA}
             method="get"
@@ -661,7 +661,7 @@ async function Contenido({
               defaultValue={q}
               maxLength={60}
               placeholder="Buscar ejercicio..."
-              className="min-h-11 rounded-xl border border-white/15 bg-[#081525] px-4 py-2 text-sm"
+              className="min-h-11 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] px-4 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
             />
 
             <label
@@ -675,7 +675,7 @@ async function Contenido({
               id="estado"
               name="estado"
               defaultValue={estado}
-              className="min-h-11 rounded-xl border border-white/15 bg-[#081525] px-3 py-2 text-sm"
+              className="min-h-11 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-[#081525] px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
             >
               <option value="todos">
                 Todos
@@ -702,7 +702,7 @@ async function Contenido({
         {!referenciasCompletas && (
           <p
             role="alert"
-            className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200"
+            className="rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200"
           >
             No se pudo verificar el uso de todos
             los ejercicios. La edición y
@@ -713,7 +713,7 @@ async function Contenido({
         {/* DIRECTORIO DE EJERCICIOS */}
 
         <section className="space-y-4">
-          <div className="flex flex-wrap justify-between gap-2 text-sm text-slate-400">
+          <div className="flex flex-wrap justify-between gap-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             <span>
               {filas.count ?? 0} resultado(s)
             </span>
@@ -724,7 +724,7 @@ async function Contenido({
           </div>
 
           {ejercicios.length === 0 && (
-            <p className="rounded-xl border border-white/10 bg-[#112039] p-6 text-slate-400">
+            <p className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               No se encontraron ejercicios.
             </p>
           )}
@@ -739,7 +739,7 @@ async function Contenido({
             return (
               <article
                 key={e.id}
-                className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-6"
+                className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-6"
               >
                 {/* DATOS DEL EJERCICIO */}
 
@@ -749,7 +749,7 @@ async function Contenido({
                       {e.nombre}
                     </h2>
 
-                    <p className="mt-2 text-xs text-slate-400">
+                    <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       {etiqueta(e.nivel)}
                       {" · "}
                       {etiqueta(e.lugar)}
@@ -757,7 +757,7 @@ async function Contenido({
                       {etiqueta(e.equipamiento)}
                     </p>
 
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       {e.grupo_muscular}
                       {" · "}
                       {e.tipo}
@@ -767,8 +767,8 @@ async function Contenido({
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-bold ${
                       e.activo
-                        ? "bg-emerald-400/10 text-emerald-200"
-                        : "bg-amber-400/10 text-amber-200"
+                        ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                        : "bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
                     }`}
                   >
                     {e.activo
@@ -778,13 +778,13 @@ async function Contenido({
                 </div>
 
                 {e.descripcion && (
-                  <p className="mt-3 text-sm text-slate-300">
+                  <p className="mt-3 text-sm text-slate-700 dark:text-slate-300">
                     {e.descripcion}
                   </p>
                 )}
 
                 {vinculado && (
-                  <p className="mt-3 text-xs text-amber-200">
+                  <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
                     Este ejercicio se utiliza
                     en rutinas o sesiones.
                     No se puede editar ni
@@ -796,7 +796,7 @@ async function Contenido({
 
                   {/* FORMULARIO DE EDICION */}
 
-                  <details className="rounded-xl border border-white/10 bg-[#081525] p-4">
+                  <details className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-[#081525] p-4">
                     <summary className="cursor-pointer text-sm font-bold">
                       Editar ejercicio
                     </summary>
@@ -820,7 +820,7 @@ async function Contenido({
                             minLength={3}
                             maxLength={120}
                             defaultValue={e.nombre}
-                            className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2 text-sm"
+                            className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                           />
                         </label>
 
@@ -833,7 +833,7 @@ async function Contenido({
                             defaultValue={
                               e.descripcion ?? ""
                             }
-                            className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2 text-sm"
+                            className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                           />
                         </label>
 
@@ -848,7 +848,7 @@ async function Contenido({
                               defaultValue={
                                 e.grupo_muscular
                               }
-                              className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2"
+                              className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-[var(--ecf-text,#102238)] dark:text-white"
                             />
                           </label>
 
@@ -860,7 +860,7 @@ async function Contenido({
                               minLength={2}
                               maxLength={60}
                               defaultValue={e.tipo}
-                              className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2"
+                              className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-[var(--ecf-text,#102238)] dark:text-white"
                             />
                           </label>
                         </div>
@@ -893,7 +893,7 @@ async function Contenido({
                               defaultValue={
                                 campo.actual
                               }
-                              className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2 text-sm"
+                              className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                             >
                               {campo.valores.map(
                                 (v) => (
@@ -918,7 +918,7 @@ async function Contenido({
                             minLength={15}
                             maxLength={500}
                             rows={2}
-                            className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2 text-sm"
+                            className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                           />
                         </label>
 
@@ -930,7 +930,7 @@ async function Contenido({
                         </button>
                       </form>
                     ) : (
-                      <p className="mt-3 text-sm text-amber-200">
+                      <p className="mt-3 text-sm text-amber-800 dark:text-amber-200">
                         Edición bloqueada por seguridad.
                       </p>
                     )}
@@ -938,7 +938,7 @@ async function Contenido({
 
                   {/* ACTIVAR O DESACTIVAR */}
 
-                  <details className="rounded-xl border border-white/10 bg-[#081525] p-4">
+                  <details className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-[#081525] p-4">
                     <summary className="cursor-pointer text-sm font-bold">
                       {e.activo
                         ? "Desactivar ejercicio"
@@ -966,7 +966,7 @@ async function Contenido({
                           }
                         />
 
-                        <p className="text-xs leading-5 text-slate-400">
+                        <p className="text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                           El cambio quedará registrado
                           en auditoría.
                         </p>
@@ -979,7 +979,7 @@ async function Contenido({
                             minLength={15}
                             maxLength={500}
                             rows={3}
-                            className="mt-1 w-full rounded-lg border border-white/20 bg-[#14263b] p-2 text-sm"
+                            className="mt-1 w-full rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#14263b] p-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
                           />
                         </label>
 
@@ -998,7 +998,7 @@ async function Contenido({
                         </button>
                       </form>
                     ) : (
-                      <p className="mt-3 text-sm text-amber-200">
+                      <p className="mt-3 text-sm text-amber-800 dark:text-amber-200">
                         La desactivación está
                         bloqueada.
                       </p>
@@ -1015,7 +1015,7 @@ async function Contenido({
             {pagina > 1 ? (
               <Link
                 href={enlace(pagina - 1)}
-                className="rounded-xl border border-white/20 px-4 py-2"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2"
               >
                 ← Anterior
               </Link>
@@ -1026,7 +1026,7 @@ async function Contenido({
             {pagina < totalPaginas && (
               <Link
                 href={enlace(pagina + 1)}
-                className="rounded-xl border border-white/20 px-4 py-2"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2"
               >
                 Siguiente →
               </Link>

@@ -45,10 +45,10 @@ const equipamientos = [
 ];
 
 const estiloCampo =
-  "w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400";
+  "w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] px-4 py-3 text-[var(--ecf-text,#102238)] placeholder:text-slate-400 outline-none transition-colors focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15 dark:border-white/15 dark:bg-[#0b1729] dark:text-white dark:placeholder:text-slate-500 dark:focus:border-cyan-400";
 
 const estiloEtiqueta =
-  "mb-2 block text-sm font-semibold text-slate-200";
+  "mb-2 block text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-slate-200";
 
 export default function FormularioPerfil({
   perfilInicial,
@@ -259,10 +259,10 @@ export default function FormularioPerfil({
   return (
     <form
       onSubmit={guardarPerfil}
-      className="space-y-7"
+      className="space-y-7 text-[var(--ecf-text,#102238)] dark:text-white"
     >
       {/* DATOS FÍSICOS */}
-      <section className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8">
+      <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-6 shadow-sm dark:border-white/10 dark:bg-[#111d31] dark:shadow-none sm:p-8">
         <h2 className="mb-6 text-xl font-bold">
           1. Datos físicos
         </h2>
@@ -329,14 +329,14 @@ export default function FormularioPerfil({
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl bg-slate-800 p-4">
-          <p className="text-sm text-slate-400">
+        <div className="mt-6 rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] p-4 dark:border-white/10 dark:bg-[#0b1729]">
+          <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             IMC estimado
           </p>
-          <p className="mt-1 text-2xl font-bold text-cyan-400">
+          <p className="mt-1 text-2xl font-bold text-cyan-800 dark:text-cyan-300">
             {imcEstimado ?? "No disponible"}
           </p>
-          <p className="mt-2 text-xs text-slate-400">
+          <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Indicador orientativo. No constituye
             una evaluación médica.
           </p>
@@ -344,7 +344,7 @@ export default function FormularioPerfil({
       </section>
 
       {/* OBJETIVO Y EXPERIENCIA */}
-      <section className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8">
+      <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-6 shadow-sm dark:border-white/10 dark:bg-[#111d31] dark:shadow-none sm:p-8">
         <h2 className="mb-6 text-xl font-bold">
           2. Objetivo y experiencia
         </h2>
@@ -415,7 +415,7 @@ export default function FormularioPerfil({
       </section>
 
       {/* DISPONIBILIDAD */}
-      <section className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8">
+      <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-6 shadow-sm dark:border-white/10 dark:bg-[#111d31] dark:shadow-none sm:p-8">
         <h2 className="mb-6 text-xl font-bold">
           3. Disponibilidad
         </h2>
@@ -496,11 +496,11 @@ export default function FormularioPerfil({
       </section>
 
       {/* EQUIPAMIENTO */}
-      <section className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8">
+      <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-6 shadow-sm dark:border-white/10 dark:bg-[#111d31] dark:shadow-none sm:p-8">
         <h2 className="mb-3 text-xl font-bold">
           4. Equipamiento disponible
         </h2>
-        <p className="mb-6 text-sm text-slate-400">
+        <p className="mb-6 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Puedes seleccionar varias opciones.
         </p>
 
@@ -508,7 +508,7 @@ export default function FormularioPerfil({
           {equipamientos.map((equipo) => (
             <label
               key={equipo.valor}
-              className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-slate-800 p-4"
+              className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] p-4 transition-colors hover:border-cyan-400/40 dark:border-white/10 dark:bg-[#0b1729] dark:hover:bg-[#112238]"
             >
               <input
                 type="checkbox"
@@ -533,12 +533,12 @@ export default function FormularioPerfil({
       </section>
 
       {/* RESTRICCIONES */}
-      <section className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8">
+      <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-6 shadow-sm dark:border-white/10 dark:bg-[#111d31] dark:shadow-none sm:p-8">
         <h2 className="mb-3 text-xl font-bold">
           5. Consideraciones adicionales
         </h2>
 
-        <p className="mb-5 text-sm text-slate-400">
+        <p className="mb-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Campo opcional para indicar consideraciones
           relevantes que deberá revisar el entrenador.
           No incluyas información médica innecesaria.
@@ -563,7 +563,7 @@ export default function FormularioPerfil({
           className={estiloCampo}
         />
 
-        <p className="mt-2 text-right text-xs text-slate-400">
+        <p className="mt-2 text-right text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           {datos.restricciones.length}/500
         </p>
       </section>
@@ -572,7 +572,7 @@ export default function FormularioPerfil({
       {error && (
         <p
           role="alert"
-          className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300"
+          className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300"
         >
           {error}
         </p>
@@ -581,7 +581,7 @@ export default function FormularioPerfil({
       {guardado && (
         <p
           role="status"
-          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-300"
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-300"
         >
           Perfil guardado correctamente en Supabase.
         </p>

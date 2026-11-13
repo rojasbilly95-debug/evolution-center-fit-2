@@ -80,18 +80,18 @@ function Barra({
   return (
     <div>
       <div className="flex items-center justify-between gap-2 text-xs">
-        <span className="text-slate-300">
+        <span className="text-slate-700 dark:text-slate-300">
           {etiqueta}
         </span>
 
-        <span className="font-semibold text-cyan-200">
+        <span className="font-semibold text-cyan-800 dark:text-cyan-200">
           {valor === null
             ? "No disponible"
             : `${valor}%`}
         </span>
       </div>
 
-      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-800">
+      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
         <div
           className="h-full rounded-full bg-cyan-400 transition-all"
           style={{
@@ -227,16 +227,16 @@ export default function ResumenCumplimiento({
 
   return (
     <section
-      className="ecf-compliance mt-3 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-3 sm:p-4"
+      className="ecf-compliance mt-3 rounded-2xl border border-cyan-200/70 bg-white dark:border-cyan-400/20 dark:bg-slate-950/70 p-4 shadow-sm dark:shadow-none sm:p-5"
       aria-label={`Cumplimiento de la sesión ${sesionId}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
             Seguimiento de adherencia
           </p>
 
-          <h6 className="mt-1 text-sm font-semibold text-white">
+          <h6 className="mt-1 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
             Cumplimiento de la sesión
           </h6>
         </div>
@@ -255,7 +255,7 @@ export default function ResumenCumplimiento({
             );
           }}
           disabled={estado.cargando}
-          className="text-xs font-semibold text-cyan-300 disabled:opacity-50"
+          className="text-xs font-semibold text-cyan-700 dark:text-cyan-300 disabled:opacity-50"
         >
           Actualizar indicadores
         </button>
@@ -266,7 +266,7 @@ export default function ResumenCumplimiento({
       {estado.cargando && (
         <p
           role="status"
-          className="mt-3 text-xs text-slate-400"
+          className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
         >
           Calculando indicadores...
         </p>
@@ -277,7 +277,7 @@ export default function ResumenCumplimiento({
       {estado.error && (
         <p
           role="alert"
-          className="mt-3 rounded-lg border border-rose-400/25 bg-rose-400/10 p-3 text-xs text-rose-200"
+          className="mt-3 rounded-lg border border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-3 text-xs text-rose-800 dark:text-rose-200"
         >
           {estado.error}
         </p>
@@ -288,7 +288,7 @@ export default function ResumenCumplimiento({
       {!estado.cargando &&
         resumen && (
           <div className="mt-3 space-y-3">
-            <p className="rounded-lg border border-white/10 bg-slate-900/60 p-3 text-xs leading-5 text-slate-300">
+            <p className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 p-3 text-xs leading-5 text-slate-700 dark:text-slate-300">
               {mensaje}
             </p>
 
@@ -319,13 +319,13 @@ export default function ResumenCumplimiento({
               ].map((dato) => (
                 <div
                   key={dato.nombre}
-                  className="ecf-compliance-stat rounded-lg border border-white/10 bg-slate-900/60 p-3 text-center"
+                  className="ecf-compliance-stat rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 p-3 text-center sm:p-4"
                 >
-                  <p className="text-lg font-bold text-white">
+                  <p className="text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                     {dato.valor}
                   </p>
 
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {dato.nombre}
                   </p>
                 </div>
@@ -340,7 +340,7 @@ export default function ResumenCumplimiento({
               medicion === "sin_evidencia" ||
               medicion === "verificada"
             ) && (
-              <div className="ecf-compliance-bars space-y-3 rounded-lg border border-white/10 bg-slate-900/40 p-3">
+              <div className="ecf-compliance-bars space-y-4 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900/40 p-4">
                 <Barra
                   etiqueta="Cobertura de registros"
                   valor={
@@ -381,7 +381,7 @@ export default function ResumenCumplimiento({
 
             {resumen.cumplimientoFinalPct !==
               null && (
-              <p className="rounded-lg border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm font-semibold text-emerald-200">
+              <p className="rounded-lg border border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 p-3 text-sm font-semibold text-emerald-800 dark:text-emerald-200">
                 Cumplimiento final de series:{" "}
                 {
                   resumen.cumplimientoFinalPct
@@ -392,7 +392,7 @@ export default function ResumenCumplimiento({
 
             {/* NOTA METODOLOGICA */}
 
-            <p className="text-xs leading-5 text-slate-500">
+            <p className="text-xs leading-5 text-slate-600 dark:text-slate-500">
               Ejercicios completos:{" "}
               {
                 resumen.ejerciciosCompletados

@@ -1,4 +1,3 @@
-
 import "server-only";
 
 import Link from "next/link";
@@ -63,20 +62,20 @@ function mostrarFecha(fecha: string) {
 
 function MensajeError() {
   return (
-    <main className="min-h-screen bg-[#080e1b] p-6 text-white">
-      <div className="mx-auto max-w-xl rounded-2xl border border-rose-400/20 bg-[#101d31] p-8">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text,#102238)] dark:text-white">
+      <div className="mx-auto max-w-xl rounded-2xl border border-rose-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d31] p-8">
         <h1 className="text-xl font-bold">
           No se pudo consultar la auditoría
         </h1>
 
-        <p className="mt-3 text-sm leading-6 text-slate-300">
+        <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
           Verifica la configuración y los permisos
           de lectura de la tabla de auditoría.
         </p>
 
         <Link
           href="/administrador/roles"
-          className="mt-6 inline-block font-semibold text-cyan-300"
+          className="mt-6 inline-block font-semibold text-cyan-800 dark:text-cyan-300"
         >
           Volver a roles y permisos
         </Link>
@@ -207,19 +206,19 @@ async function ContenidoHistorial() {
   );
 
   return (
-    <main className="min-h-screen bg-[#080e1b] px-4 py-10 text-white sm:px-6">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] px-4 py-10 text-[var(--ecf-text,#102238)] dark:text-white sm:px-6">
       <div className="mx-auto max-w-7xl">
 
         <Link
           href="/administrador/roles"
-          className="text-sm font-semibold text-cyan-300 hover:underline"
+          className="text-sm font-semibold text-cyan-800 dark:text-cyan-300 hover:underline"
         >
           ← Volver a roles y permisos
         </Link>
 
-        <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+        <div className="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-3xl border border-cyan-200/70 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 p-6 shadow-sm dark:border-cyan-400/20 dark:from-[#173a50] dark:via-[#14263d] dark:to-[#211d3d] dark:shadow-black/10 sm:p-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-800 dark:text-cyan-300">
               Administración · Seguridad
             </p>
 
@@ -227,36 +226,36 @@ async function ContenidoHistorial() {
               Historial de cambios de roles
             </h1>
 
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Registro de las modificaciones
               realizadas sobre los permisos
               de usuarios del gimnasio.
             </p>
           </div>
 
-          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-bold text-emerald-200">
+          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-200">
             Consulta administrativa
           </span>
         </div>
 
-        <section className="mt-8 rounded-2xl border border-white/10 bg-[#101d31] p-5 sm:p-6">
+        <section className="mt-8 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d31] p-5 sm:p-6 shadow-sm dark:shadow-none">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-bold">
               Últimas operaciones registradas
             </h2>
 
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {registros.length} registros mostrados
             </span>
           </div>
 
           {registros.length === 0 ? (
-            <div className="mt-6 rounded-xl border border-white/10 bg-[#080e1b] p-8 text-center">
-              <p className="font-semibold text-white">
+            <div className="mt-6 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#eef4fb)] dark:bg-[#080e1b] p-8 text-center">
+              <p className="font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                 Todavía no existen cambios registrados
               </p>
 
-              <p className="mt-3 text-sm leading-6 text-slate-400">
+              <p className="mt-3 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Los cambios de rol realizados mediante
                 la nueva operación auditada aparecerán
                 aquí automáticamente.
@@ -265,7 +264,7 @@ async function ContenidoHistorial() {
           ) : (
             <div className="mt-6 overflow-x-auto">
               <table className="w-full min-w-[950px] text-left text-sm">
-                <thead className="border-b border-white/10 text-xs uppercase tracking-wide text-slate-400">
+                <thead className="border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 text-xs uppercase tracking-wide text-[var(--ecf-muted,#64748b)] dark:text-slate-400 bg-slate-50/80 dark:bg-[#0b172a]">
                   <tr>
                     <th className="px-3 py-4">
                       Fecha
@@ -292,9 +291,9 @@ async function ContenidoHistorial() {
                   {registros.map((registro) => (
                     <tr
                       key={registro.id}
-                      className="border-b border-white/5 align-top"
+                      className="border-b border-slate-200/80 dark:border-white/5 align-top transition-colors hover:bg-cyan-50/70 dark:hover:bg-white/5"
                     >
-                      <td className="whitespace-nowrap px-3 py-4 text-slate-300">
+                      <td className="whitespace-nowrap px-3 py-4 text-slate-700 dark:text-slate-300">
                         {mostrarFecha(registro.creado_en)}
                       </td>
 
@@ -310,19 +309,19 @@ async function ContenidoHistorial() {
                         ) ?? "Usuario no disponible"}
                       </td>
 
-                      <td className="px-3 py-4 text-slate-300">
+                      <td className="px-3 py-4 text-slate-700 dark:text-slate-300">
                         {mostrarRol(
                           registro.rol_anterior
                         )}
                       </td>
 
-                      <td className="px-3 py-4 font-semibold text-cyan-300">
+                      <td className="px-3 py-4 font-semibold text-cyan-800 dark:text-cyan-300">
                         {mostrarRol(
                           registro.rol_nuevo
                         )}
                       </td>
 
-                      <td className="max-w-xs break-words px-3 py-4 text-slate-300">
+                      <td className="max-w-xs break-words px-3 py-4 text-slate-700 dark:text-slate-300">
                         {registro.motivo}
                       </td>
                     </tr>
@@ -333,7 +332,7 @@ async function ContenidoHistorial() {
           )}
         </section>
 
-        <p className="mt-5 text-xs text-slate-500">
+        <p className="mt-5 text-xs text-slate-600 dark:text-slate-500">
           Se muestran hasta 100 operaciones recientes.
           Las fechas se presentan en horario de Lima, Perú.
           Este historial solo permite consultar información.
@@ -347,7 +346,7 @@ export default function HistorialRolesPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+        <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
           Consultando historial de auditoría...
         </main>
       }

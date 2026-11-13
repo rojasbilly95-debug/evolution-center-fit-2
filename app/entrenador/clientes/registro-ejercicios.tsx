@@ -161,13 +161,13 @@ function ProgresoEjercicio({
       : 0;
 
   return (
-    <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/35 p-3">
+    <div className="mt-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-950/35 p-3">
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        <span className="font-semibold text-slate-200">
+        <span className="font-semibold text-slate-800 dark:text-slate-200">
           Avance del ejercicio
         </span>
 
-        <span className="font-bold tabular-nums text-emerald-300">
+        <span className="font-bold tabular-nums text-emerald-700 dark:text-emerald-300">
           {progreso.completadas} / {progreso.objetivo} completadas
         </span>
       </div>
@@ -180,7 +180,7 @@ function ProgresoEjercicio({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={porcentaje}
-        className="mt-2 h-2 overflow-hidden rounded-full bg-slate-700"
+        className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
       >
         <div
           aria-hidden="true"
@@ -189,7 +189,7 @@ function ProgresoEjercicio({
         />
       </div>
 
-      <p className="mt-2 text-xs text-slate-400">
+      <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {progreso.registradas} guardadas ·{" "}
         {progreso.completadas} completadas
       </p>
@@ -439,16 +439,16 @@ function FilaSerie({
   // ==========================================
 
   return (
-    <div className="ecf-series-card rounded-xl border border-white/10 bg-[#0d192b] p-4">
+    <div className="ecf-series-card rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#0d192b] p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-white">
+        <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
           Serie {numeroSerie}
         </p>
 
         <span
           className={`text-xs ${registro?.completada
-              ? "text-emerald-300"
-              : "text-slate-400"
+              ? "text-emerald-700 dark:text-emerald-300"
+              : "text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
             }`}
         >
           {registro?.completada
@@ -464,7 +464,7 @@ function FilaSerie({
 {editable && cambiosSinGuardar && (
   <p
     role="status"
-    className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200"
+    className="mt-3 rounded-lg border border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-900 dark:text-amber-200"
   >
     Tienes cambios sin guardar en esta serie.
   </p>
@@ -475,7 +475,7 @@ function FilaSerie({
       ==================================== */}
 
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
-        <label className="text-xs text-slate-300">
+        <label className="text-xs text-slate-700 dark:text-slate-300">
           Repeticiones reales
 
           <input
@@ -492,11 +492,11 @@ function FilaSerie({
             disabled={
               !editable || guardando
             }
-            className="mt-1 w-full rounded-md border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white disabled:opacity-50"
+            className="mt-1 w-full rounded-md border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white disabled:opacity-50"
           />
         </label>
 
-        <label className="text-xs text-slate-300">
+        <label className="text-xs text-slate-700 dark:text-slate-300">
           Duración real (segundos)
 
           <input
@@ -513,11 +513,11 @@ function FilaSerie({
             disabled={
               !editable || guardando
             }
-            className="mt-1 w-full rounded-md border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white disabled:opacity-50"
+            className="mt-1 w-full rounded-md border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white disabled:opacity-50"
           />
         </label>
 
-        <label className="text-xs text-slate-300">
+        <label className="text-xs text-slate-700 dark:text-slate-300">
           Peso (kg, opcional)
 
           <input
@@ -534,7 +534,7 @@ function FilaSerie({
             disabled={
               !editable || guardando
             }
-            className="mt-1 w-full rounded-md border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white disabled:opacity-50"
+            className="mt-1 w-full rounded-md border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white disabled:opacity-50"
           />
         </label>
       </div>
@@ -543,7 +543,7 @@ function FilaSerie({
           SERIE COMPLETADA
       ==================================== */}
 
-      <label className="mt-3 flex items-center gap-2 text-xs text-slate-200">
+      <label className="mt-3 flex items-center gap-2 text-xs text-slate-800 dark:text-slate-200">
         <input
           type="checkbox"
           checked={completada}
@@ -565,7 +565,7 @@ function FilaSerie({
           OBSERVACIONES
       ==================================== */}
 
-      <label className="mt-3 block text-xs text-slate-300">
+      <label className="mt-3 block text-xs text-slate-700 dark:text-slate-300">
         Observaciones (opcional)
 
         <textarea
@@ -580,7 +580,7 @@ function FilaSerie({
           disabled={
             !editable || guardando
           }
-          className="mt-1 w-full resize-y rounded-md border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white disabled:opacity-50"
+          className="mt-1 w-full resize-y rounded-md border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white disabled:opacity-50"
         />
       </label>
 
@@ -591,7 +591,7 @@ function FilaSerie({
       {error && (
         <p
           role="alert"
-          className="mt-2 text-xs text-rose-300"
+          className="mt-2 text-xs text-rose-800 dark:text-rose-300"
         >
           {error}
         </p>
@@ -600,7 +600,7 @@ function FilaSerie({
       {mensaje && (
         <p
           role="status"
-          className="mt-2 text-xs text-emerald-300"
+          className="mt-2 text-xs text-emerald-700 dark:text-emerald-300"
         >
           {mensaje}
         </p>
@@ -869,7 +869,7 @@ export default function RegistroEjercicios({
 
   return (
     <section
-      className="ecf-exercises mt-3 w-full min-w-0 rounded-2xl border border-cyan-400/20 bg-[#0b1729] p-3 sm:p-5"
+      className="ecf-exercises mt-3 w-full min-w-0 rounded-2xl border border-cyan-400/20 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#0b1729] p-3 sm:p-5"
       aria-label={`Ejercicios de la sesión ${sesionId}`}
     >
       {/* ====================================
@@ -878,11 +878,11 @@ export default function RegistroEjercicios({
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h6 className="text-sm font-bold text-white">
+          <h6 className="text-sm font-bold text-[var(--ecf-text,#102238)] dark:text-white">
             Ejercicios de la sesión
           </h6>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Objetivos programados y
             resultados reales.
           </p>
@@ -894,7 +894,7 @@ export default function RegistroEjercicios({
           disabled={
             cargando || preparando
           }
-          className="text-xs font-semibold text-cyan-300 disabled:opacity-50"
+          className="text-xs font-semibold text-cyan-700 dark:text-cyan-300 disabled:opacity-50"
         >
           Actualizar
         </button>
@@ -907,7 +907,7 @@ export default function RegistroEjercicios({
       {cargando && (
         <p
           role="status"
-          className="mt-3 text-xs text-slate-400"
+          className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
         >
           Cargando ejercicios...
         </p>
@@ -920,7 +920,7 @@ export default function RegistroEjercicios({
       {error && (
         <p
           role="alert"
-          className="mt-3 rounded-lg border border-rose-400/20 bg-rose-400/10 p-3 text-xs text-rose-200"
+          className="mt-3 rounded-lg border border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-3 text-xs text-rose-800 dark:text-rose-200"
         >
           {error}
         </p>
@@ -939,8 +939,8 @@ export default function RegistroEjercicios({
               // EJERCICIOS NO PREPARADOS
               // =================================
 
-              <div className="mt-3 rounded-lg border border-white/10 p-3">
-                <p className="text-xs text-slate-300">
+              <div className="mt-3 rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 p-3">
+                <p className="text-xs text-slate-700 dark:text-slate-300">
                   Esta sesión todavía no
                   tiene ejercicios preparados.
                 </p>
@@ -959,7 +959,7 @@ export default function RegistroEjercicios({
                       : "Preparar ejercicios de esta sesión"}
                   </button>
                 ) : (
-                  <p className="mt-2 text-xs text-amber-200">
+                  <p className="mt-2 text-xs text-amber-900 dark:text-amber-200">
                     El estado actual no
                     permite preparar ejercicios.
                   </p>
@@ -972,14 +972,14 @@ export default function RegistroEjercicios({
 
               <div className="mt-3 space-y-3">
 
-                <div className="rounded-2xl border border-cyan-400/20 bg-slate-950/45 p-4 sm:p-5">
+                <div className="rounded-2xl border border-cyan-400/20 bg-slate-50 dark:bg-slate-950/45 p-4 sm:p-5">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="text-sm font-bold text-white">
+                      <p className="text-sm font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                         Progreso de la sesión
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {datos.totalEjercicios ??
                           datos.ejercicios?.length ??
                           0}{" "}
@@ -987,7 +987,7 @@ export default function RegistroEjercicios({
                       </p>
                     </div>
 
-                    <span className="text-sm font-extrabold tabular-nums text-emerald-300">
+                    <span className="text-sm font-extrabold tabular-nums text-emerald-700 dark:text-emerald-300">
                       {progresoSesion.seriesCompletadas} /{" "}
                       {progresoSesion.seriesObjetivo} series
                     </span>
@@ -999,7 +999,7 @@ export default function RegistroEjercicios({
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={porcentajeSesion}
-                    className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-700"
+                    className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
                   >
                     <div
                       aria-hidden="true"
@@ -1009,35 +1009,35 @@ export default function RegistroEjercicios({
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 gap-2 text-center sm:grid-cols-3">
-                    <div className="rounded-lg bg-white/[0.04] p-3">
-                      <p className="text-lg font-extrabold tabular-nums text-white">
+                    <div className="rounded-lg bg-slate-100 dark:bg-white/[0.04] p-3">
+                      <p className="text-lg font-extrabold tabular-nums text-[var(--ecf-text,#102238)] dark:text-white">
                         {progresoSesion.seriesObjetivo}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Series objetivo
                       </p>
                     </div>
 
-                    <div className="rounded-lg bg-white/[0.04] p-3">
-                      <p className="text-lg font-extrabold tabular-nums text-cyan-200">
+                    <div className="rounded-lg bg-slate-100 dark:bg-white/[0.04] p-3">
+                      <p className="text-lg font-extrabold tabular-nums text-cyan-800 dark:text-cyan-200">
                         {progresoSesion.seriesRegistradas}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Registradas
                       </p>
                     </div>
 
-                    <div className="col-span-2 rounded-lg bg-white/[0.04] p-3 sm:col-span-1">
-                      <p className="text-lg font-extrabold tabular-nums text-emerald-300">
+                    <div className="col-span-2 rounded-lg bg-slate-100 dark:bg-white/[0.04] p-3 sm:col-span-1">
+                      <p className="text-lg font-extrabold tabular-nums text-emerald-700 dark:text-emerald-300">
                         {progresoSesion.seriesCompletadas}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Completadas
                       </p>
                     </div>
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-400">
+                  <p className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {progresoSesion.ejerciciosCompletados} ejercicios
                     con todas sus series completas.
                     Este avance es informativo, no el indicador
@@ -1047,7 +1047,7 @@ export default function RegistroEjercicios({
 
 
                 {!editable && (
-                  <p className="rounded-lg border border-amber-400/20 bg-amber-400/10 p-3 text-xs text-amber-200">
+                  <p className="rounded-lg border border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-3 text-xs text-amber-900 dark:text-amber-200">
                     Solo se pueden registrar
                     o editar series cuando la
                     sesión está en curso y el
@@ -1063,18 +1063,18 @@ export default function RegistroEjercicios({
                   (ejercicio) => (
                     <div
                       key={ejercicio.id}
-                      className="ecf-exercise-card rounded-2xl border border-white/10 bg-[#14243a] p-4 sm:p-5"
+                      className="ecf-exercise-card rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#14243a] p-4 sm:p-5"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
-                          <p className="text-sm font-bold text-white">
+                          <p className="text-sm font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                             {ejercicio.orden}.{" "}
                             {ejercicio.ejercicio
                               ?.nombre ??
                               `Ejercicio #${ejercicio.ejercicio_id}`}
                           </p>
 
-                          <p className="mt-1 text-xs text-slate-400">
+                          <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                             {ejercicio.ejercicio
                               ?.grupo_muscular ??
                               "Sin grupo muscular"}
@@ -1087,7 +1087,7 @@ export default function RegistroEjercicios({
                           </p>
                         </div>
 
-                        <span className="text-xs font-semibold text-cyan-200">
+                        <span className="text-xs font-semibold text-cyan-800 dark:text-cyan-200">
                           {ejercicio.estado}
                         </span>
                       </div>
@@ -1096,7 +1096,7 @@ export default function RegistroEjercicios({
                           OBJETIVOS
                       ====================== */}
 
-                      <p className="mt-2 text-xs text-slate-300">
+                      <p className="mt-2 text-xs text-slate-700 dark:text-slate-300">
                         Objetivo:{" "}
                         {ejercicio.series_objetivo ??
                           1}{" "}

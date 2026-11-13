@@ -52,7 +52,7 @@ const apartados = [
 
 function CabeceraPerfil() {
   return (
-    <header className="relative z-40 border-b border-white/10 bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
+    <header className="relative z-40 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/95 dark:bg-[#0c1526]/95 shadow-lg shadow-slate-900/5 dark:shadow-black/20 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link
           href="/cliente"
@@ -65,10 +65,10 @@ function CabeceraPerfil() {
           <span className="min-w-0">
             <span className="block truncate text-xs font-black tracking-wide sm:text-sm">
               EVOLUTION CENTER FIT{" "}
-              <span className="text-cyan-300">2.0</span>
+              <span className="text-cyan-800 dark:text-cyan-300">2.0</span>
             </span>
 
-            <span className="block text-[11px] text-slate-400">
+            <span className="block text-[11px] text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Mi perfil de entrenamiento
             </span>
           </span>
@@ -90,8 +90,8 @@ function CabeceraPerfil() {
                 aria-current={activo ? "page" : undefined}
                 className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                   activo
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                    ? "bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
                 }`}
               >
                 {enlace.texto}
@@ -102,7 +102,7 @@ function CabeceraPerfil() {
           <form action={cerrarSesion}>
             <button
               type="submit"
-              className="ml-1 min-h-11 rounded-xl border border-rose-400/20 px-3 py-2.5 text-sm font-semibold text-rose-300 transition-colors hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
+              className="ml-1 min-h-11 rounded-xl border border-rose-200 dark:border-rose-400/20 px-3 py-2.5 text-sm font-semibold text-rose-700 dark:text-rose-300 transition-colors hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
             >
               Cerrar sesión
             </button>
@@ -111,7 +111,7 @@ function CabeceraPerfil() {
 
         {/* NAVEGACION PARA CELULAR Y TABLET */}
         <details className="relative shrink-0 xl:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100/80 dark:bg-white/5 px-3 py-2.5 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
@@ -128,7 +128,7 @@ function CabeceraPerfil() {
 
           <nav
             aria-label="Navegación móvil"
-            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#101d31] p-2 shadow-2xl shadow-slate-900/10 dark:shadow-black/50"
           >
             {enlaces.map((enlace) => (
               <Link
@@ -141,8 +141,8 @@ function CabeceraPerfil() {
                 }
                 className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
                   enlace.href === "/cliente/perfil"
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-200 hover:bg-white/10"
+                    ? "bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
                 }`}
               >
                 {enlace.texto}
@@ -151,11 +151,11 @@ function CabeceraPerfil() {
 
             <form
               action={cerrarSesion}
-              className="mt-2 border-t border-white/10 pt-2"
+              className="mt-2 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-2"
             >
               <button
                 type="submit"
-                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-300 hover:bg-rose-400/10"
+                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-400/10"
               >
                 Cerrar sesión
               </button>
@@ -169,11 +169,11 @@ function CabeceraPerfil() {
 
 function CargandoPerfil() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080d1a] px-5 text-white">
-      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#111d31] px-6 py-5 shadow-xl">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-400/20 border-t-cyan-300" />
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-5 text-[var(--ecf-text,#102238)] dark:text-white">
+      <div className="flex items-center gap-3 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] px-6 py-5 shadow-xl">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-200 dark:border-cyan-400/20 border-t-cyan-300" />
 
-        <p className="text-sm text-slate-300">
+        <p className="text-sm text-slate-700 dark:text-slate-300">
           Cargando tu perfil de entrenamiento...
         </p>
       </div>
@@ -189,11 +189,11 @@ function EstadoPerfil({
   descripcion: string;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080d1a] px-5 py-10 text-white">
-      <section className="w-full max-w-lg rounded-3xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-8 text-center shadow-[0_24px_65px_rgba(0,0,0,0.3)]">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-5 py-10 text-[var(--ecf-text,#102238)] dark:text-white">
+      <section className="w-full max-w-lg rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#172a43] to-[#f1f7fc] dark:to-[#101a2d] p-8 text-center shadow-[0_24px_65px_rgba(0,0,0,0.3)]">
         <h1 className="text-2xl font-bold">{titulo}</h1>
 
-        <p className="mt-4 text-sm leading-7 text-slate-400">
+        <p className="mt-4 text-sm leading-7 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           {descripcion}
         </p>
 
@@ -260,7 +260,7 @@ async function ContenidoPerfil() {
   }
 
   return (
-    <main className="ecf-profile relative min-h-screen bg-[#080d1a] text-white">
+    <main className="ecf-profile relative min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] text-[var(--ecf-text,#102238)] dark:text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-cyan-500/[0.06] to-transparent"
@@ -270,21 +270,21 @@ async function ContenidoPerfil() {
 
       <div className="relative mx-auto w-full max-w-7xl space-y-7 px-4 pb-20 pt-7 sm:px-6 lg:px-8">
         {/* ENCABEZADO DESTACADO */}
-        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-[#122b40] via-[#111d32] to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
+        <section className="overflow-hidden rounded-[28px] border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#eaf7ff] dark:from-[#122b40] via-white dark:via-[#111d32] to-[#f3f1ff] dark:to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-3xl">
-              <span className="inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-200">
+              <span className="inline-flex items-center rounded-full border border-cyan-200 dark:border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-200">
                 Configuración personal
               </span>
 
               <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
                 Mi perfil de{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-800 dark:text-cyan-300">
                   entrenamiento
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base">
                 Configura tus datos físicos, objetivos,
                 disponibilidad y equipamiento para
                 facilitar la selección de rutinas
@@ -294,8 +294,8 @@ async function ContenidoPerfil() {
               <span
                 className={`mt-5 inline-flex rounded-full border px-3 py-1.5 text-xs font-semibold ${
                   perfil
-                    ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
-                    : "border-amber-400/25 bg-amber-400/10 text-amber-200"
+                    ? "border-emerald-300 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                    : "border-amber-300 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
                 }`}
               >
                 {perfil
@@ -306,7 +306,7 @@ async function ContenidoPerfil() {
 
             <Link
               href="/cliente"
-              className="inline-flex min-h-11 items-center justify-center self-start rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+              className="inline-flex min-h-11 items-center justify-center self-start rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100/80 dark:bg-white/5 px-5 py-3 text-sm font-semibold transition-colors hover:bg-slate-100 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
             >
               Volver a mi panel
             </Link>
@@ -317,8 +317,8 @@ async function ContenidoPerfil() {
         <div className="grid items-start gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
           {/* GUIA DEL PERFIL */}
           <aside className="space-y-4 xl:sticky xl:top-6">
-            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.18)] sm:p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+            <div className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#172a43] to-[#f1f7fc] dark:to-[#101a2d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.18)] sm:p-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Tu información
               </p>
 
@@ -332,16 +332,16 @@ async function ContenidoPerfil() {
                     key={apartado.numero}
                     className="flex items-start gap-3"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/10 text-xs font-bold text-cyan-200">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 text-xs font-bold text-cyan-800 dark:text-cyan-200">
                       {apartado.numero}
                     </span>
 
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                         {apartado.titulo}
                       </p>
 
-                      <p className="mt-1 text-xs leading-5 text-slate-400">
+                      <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {apartado.descripcion}
                       </p>
                     </div>
@@ -350,12 +350,12 @@ async function ContenidoPerfil() {
               </ol>
             </div>
 
-            <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.06] p-5">
-              <h3 className="text-sm font-bold text-cyan-200">
+            <div className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-cyan-400/[0.06] p-5">
+              <h3 className="text-sm font-bold text-cyan-800 dark:text-cyan-200">
                 Información importante
               </h3>
 
-              <p className="mt-2 text-xs leading-6 text-slate-300">
+              <p className="mt-2 text-xs leading-6 text-slate-700 dark:text-slate-300">
                 Tu perfil ayuda a evaluar la
                 compatibilidad de nuevas rutinas.
                 Las recomendaciones continúan sujetas
