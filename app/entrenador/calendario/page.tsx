@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { createBrowserClient } from "@supabase/ssr";
 import {
   Suspense,
   useEffect,
@@ -304,6 +305,123 @@ function CalendarioEntrenadorContenido() {
     vista,
     fecha
   );
+
+
+
+  // =================================================
+  // FASE 127.6 - REALTIME DEL CALENDARIO
+  // =================================================
+
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+    );
+
+    let activo = true;
+    let suscritoAntes = false;
+
+    let temporizador:
+      ReturnType<typeof setTimeout> | undefined;
+
+    function actualizarCalendario() {
+      if (!activo) return;
+
+      if (temporizador) {
+        clearTimeout(temporizador);
+      }
+
+      // Agrupar cambios próximos para evitar
+      // consultas repetidas a la API.
+      temporizador = setTimeout(() => {
+        if (activo) {
+          setRecarga((valor) => valor + 1);
+        }
+      }, 500);
+    }
+
+    const canal = supabase
+      .channel("ecf-calendario-entrenador")
+
+      // Nuevas sesiones.
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "sesiones_entrenamiento",
+        },
+        actualizarCalendario
+      )
+
+      // Modificaciones de horarios o estados.
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "sesiones_entrenamiento",
+        },
+        actualizarCalendario
+      )
+
+      .subscribe((estado) => {
+        if (estado === "SUBSCRIBED") {
+          console.info(
+            "[ECF Realtime] Calendario conectado"
+          );
+
+          // Recuperar datos después de reconectar.
+          if (suscritoAntes) {
+            actualizarCalendario();
+          }
+
+          suscritoAntes = true;
+        }
+
+        if (
+          estado === "CHANNEL_ERROR" ||
+          estado === "TIMED_OUT"
+        ) {
+          console.warn(
+            "[ECF Realtime] Problema de conexión:",
+            estado
+          );
+        }
+      });
+
+    // Recuperar cambios cuando se vuelve
+    // a una pestaña que estaba en segundo plano.
+    function alVolverAPestana() {
+      if (document.visibilityState === "visible") {
+        actualizarCalendario();
+      }
+    }
+
+    document.addEventListener(
+      "visibilitychange",
+      alVolverAPestana
+    );
+
+    return () => {
+      activo = false;
+
+      if (temporizador) {
+        clearTimeout(temporizador);
+      }
+
+      document.removeEventListener(
+        "visibilitychange",
+        alVolverAPestana
+      );
+
+      void supabase.removeChannel(canal);
+    };
+  }, []);
+
+  // =================================================
+  // FIN DE REALTIME DEL CALENDARIO
+  // =================================================
 
   // =================================================
   // CONSULTAR SESIONES REALES

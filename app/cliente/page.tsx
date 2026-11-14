@@ -9,6 +9,7 @@ import { cerrarSesion } from "@/lib/actions/auth";
 
 import CalendarioCliente from "./calendario-cliente";
 import CentroEntrenamientoDia from "./centro-entrenamiento-dia";
+import EscuchaSesionesRealtime from "./escucha-sesiones-realtime";
 
 type Asignacion = {
   id: number;
@@ -893,6 +894,12 @@ async function ContenidoCliente() {
 
 
         {/* CENTRO DE ENTRENAMIENTO DEL DÍA */}
+
+{asignacion && !errorAsignacion && (
+  <EscuchaSesionesRealtime
+    asignacionId={Number(asignacion.id)}
+  />
+)}
 
         {asignacion && !errorAsignacion && (
           <CentroEntrenamientoDia
