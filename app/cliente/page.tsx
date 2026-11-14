@@ -177,7 +177,7 @@ function colorEstado(estado: string) {
   if (
     ["realizada", "completada", "activa"].includes(estado)
   ) {
-    return "border-emerald-400/25 bg-emerald-400/10 text-emerald-300";
+    return "border-emerald-400/25 bg-emerald-400/10 text-emerald-700 dark:text-emerald-300";
   }
 
   if (estado === "en_curso") {
@@ -187,10 +187,10 @@ function colorEstado(estado: string) {
   if (
     ["ausente", "cancelada", "anulada"].includes(estado)
   ) {
-    return "border-rose-400/25 bg-rose-400/10 text-rose-300";
+    return "border-rose-400/25 bg-rose-400/10 text-rose-700 dark:text-rose-300";
   }
 
-  return "border-cyan-400/25 bg-cyan-400/10 text-cyan-300";
+  return "border-cyan-400/25 bg-cyan-400/10 text-cyan-800 dark:text-cyan-300";
 }
 
 function numeroSemana(fecha: string, inicio: string) {
@@ -226,20 +226,20 @@ function TarjetaIndicador({
   icono: IconName;
 }) {
   return (
-    <article className="ecf-client-stat rounded-2xl border border-white/10 bg-[#111c30] p-5 transition-colors hover:border-cyan-400/25">
-      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+    <article className="ecf-client-stat rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-5 transition-colors hover:border-cyan-400/25">
+      <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-800 dark:text-cyan-300">
         <Icon name={icono} />
       </div>
 
-      <p className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+      <p className="text-2xl font-black tracking-tight text-[var(--ecf-text,#102238)] dark:text-white sm:text-3xl">
         {valor}
       </p>
 
-      <h3 className="mt-2 text-sm font-semibold text-slate-200">
+      <h3 className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
         {titulo}
       </h3>
 
-      <p className="mt-1 text-xs leading-5 text-slate-400">
+      <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {detalle}
       </p>
     </article>
@@ -257,15 +257,15 @@ function EncabezadoSeccion({
 }) {
   return (
     <div className="mb-5">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-400">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-400">
         {etiqueta}
       </p>
 
-      <h2 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
+      <h2 className="mt-2 text-xl font-bold tracking-tight text-[var(--ecf-text,#102238)] dark:text-white sm:text-2xl">
         {titulo}
       </h2>
 
-      <p className="mt-2 text-sm leading-6 text-slate-400">
+      <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {descripcion}
       </p>
     </div>
@@ -274,19 +274,19 @@ function EncabezadoSeccion({
 
 function CargandoPanel() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] px-6 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] px-6 text-[var(--ecf-text,#102238)] dark:text-white">
       <div className="text-center">
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400 text-xl font-black text-slate-950">
           E
         </div>
 
-        <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-[3px] border-slate-700 border-t-cyan-400" />
+        <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-[3px] border-slate-300 dark:border-slate-700 border-t-cyan-400" />
 
         <h1 className="text-lg font-bold">
           Evolution Center Fit 2.0
         </h1>
 
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Cargando tu espacio de entrenamiento...
         </p>
       </div>
@@ -321,8 +321,8 @@ async function ContenidoCliente() {
 
   if (accesoError || acceso?.rol !== "cliente") {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[#080e1b] px-6 text-white">
-        <div className="rounded-2xl bg-rose-400/10 p-4 text-rose-300">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] px-6 text-[var(--ecf-text,#102238)] dark:text-white">
+        <div className="rounded-2xl bg-rose-400/10 p-4 text-rose-700 dark:text-rose-300">
           <Icon
             name="shield"
             className="h-9 w-9"
@@ -333,7 +333,7 @@ async function ContenidoCliente() {
           Acceso restringido
         </h1>
 
-        <p className="max-w-md text-center text-slate-400">
+        <p className="max-w-md text-center text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Tu cuenta no tiene autorización para
           acceder al portal del cliente.
         </p>
@@ -670,14 +670,14 @@ async function ContenidoCliente() {
   // ============================================
 
   return (
-    <main className="ecf-client relative min-h-screen overflow-hidden bg-[#080e1b] text-white">
+    <main className="ecf-client relative min-h-screen overflow-hidden bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-[var(--ecf-text,#102238)] dark:text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-cyan-500/[0.06] blur-3xl"
       />
 
       {/* ENCABEZADO */}
-      <header className="ecf-client-header relative z-50 border-b border-white/10 bg-[#0d1729]/95">
+      <header className="ecf-client-header relative z-50 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/95 dark:bg-[#0d1729]/95">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <Link
             href="/cliente"
@@ -690,12 +690,12 @@ async function ContenidoCliente() {
             <span className="min-w-0">
               <span className="block text-sm font-black tracking-tight sm:text-base">
                 EVOLUTION CENTER FIT{" "}
-                <span className="text-cyan-400">
+                <span className="text-cyan-700 dark:text-cyan-400">
                   2.0
                 </span>
               </span>
 
-              <span className="block text-xs text-slate-400">
+              <span className="block text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Portal personal de entrenamiento
               </span>
             </span>
@@ -723,8 +723,8 @@ async function ContenidoCliente() {
                     : undefined
                 }
                 className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${enlace.href === "/cliente"
-                  ? "bg-cyan-400/10 text-cyan-300"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
                   }`}
               >
                 {enlace.texto}
@@ -734,7 +734,7 @@ async function ContenidoCliente() {
             <form action={cerrarSesion}>
               <button
                 type="submit"
-                className="ml-1 min-h-11 rounded-xl border border-rose-400/20 px-3 py-2.5 text-sm font-semibold text-rose-300 transition hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
+                className="ml-1 min-h-11 rounded-xl border border-rose-400/20 px-3 py-2.5 text-sm font-semibold text-rose-700 dark:text-rose-300 transition hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
               >
                 Cerrar sesión
               </button>
@@ -743,7 +743,7 @@ async function ContenidoCliente() {
 
           {/* NAVEGACION PARA CELULAR Y TABLET */}
           <details className="group relative shrink-0 lg:hidden">
-            <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 px-4 py-2.5 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
               <svg
                 viewBox="0 0 24 24"
                 width="19"
@@ -761,7 +761,7 @@ async function ContenidoCliente() {
 
             <nav
               aria-label="Navegación móvil del cliente"
-              className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+              className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-300 dark:border-white/15 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d31] p-2 shadow-2xl shadow-black/50"
             >
               {[
                 { href: "/cliente", texto: "Inicio" },
@@ -775,7 +775,7 @@ async function ContenidoCliente() {
                 <Link
                   key={enlace.href}
                   href={enlace.href}
-                  className="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-200 transition hover:bg-cyan-400/10 hover:text-cyan-300"
+                  className="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-cyan-400/10 hover:text-cyan-800 dark:hover:text-cyan-300"
                 >
                   {enlace.texto}
                 </Link>
@@ -783,11 +783,11 @@ async function ContenidoCliente() {
 
               <form
                 action={cerrarSesion}
-                className="mt-2 border-t border-white/10 pt-2"
+                className="mt-2 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-2"
               >
                 <button
                   type="submit"
-                  className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-300 hover:bg-rose-400/10"
+                  className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-400/10"
                 >
                   Cerrar sesión
                 </button>
@@ -800,7 +800,7 @@ async function ContenidoCliente() {
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-9 px-5 py-8 sm:px-8 sm:py-10">
         {/* BIENVENIDA */}
-        <section className="ecf-client-hero relative overflow-hidden rounded-3xl border border-cyan-400/10 bg-gradient-to-br from-[#14253d] via-[#111d31] to-[#17172f] p-6 sm:p-9">
+        <section className="ecf-client-hero relative overflow-hidden rounded-3xl border border-cyan-400/10 bg-gradient-to-br from-cyan-50 dark:from-[#14253d] via-white dark:via-[#111d31] to-indigo-50 dark:to-[#17172f] p-6 sm:p-9">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl"
@@ -808,7 +808,7 @@ async function ContenidoCliente() {
 
           <div className="relative grid gap-8 lg:grid-cols-[1fr_300px] lg:items-center">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-cyan-300">
+              <p className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-300">
                 <Icon
                   name="activity"
                   className="h-4 w-4"
@@ -818,12 +818,12 @@ async function ContenidoCliente() {
 
               <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
                 ¡Bienvenido,{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-800 dark:text-cyan-300">
                   {nombre}!
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base">
                 Consulta tu rutina personalizada,
                 organiza tus próximas sesiones y
                 sigue tu progreso de entrenamiento.
@@ -843,7 +843,7 @@ async function ContenidoCliente() {
 
                 <Link
                   href="#mi-calendario"
-                  className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                  className="rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 px-5 py-3 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10"
                 >
                   Ver calendario
                 </Link>
@@ -851,8 +851,8 @@ async function ContenidoCliente() {
             </div>
 
             {/* PRÓXIMO ENTRENAMIENTO */}
-            <div className="rounded-2xl border border-white/10 bg-[#091527]/75 p-5">
-              <div className="flex items-center gap-3 text-cyan-300">
+            <div className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/85 dark:bg-[#091527]/75 p-5">
+              <div className="flex items-center gap-3 text-cyan-800 dark:text-cyan-300">
                 <Icon name="calendar" />
                 <span className="text-sm font-semibold">
                   Próximo entrenamiento
@@ -867,7 +867,7 @@ async function ContenidoCliente() {
                     )}
                   </p>
 
-                  <p className="mt-2 text-sm text-slate-300">
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
                     Sesión #
                     {sesionDestacada.numero_sesion}
                   </p>
@@ -879,7 +879,7 @@ async function ContenidoCliente() {
                   </div>
                 </>
               ) : (
-                <p className="mt-5 text-sm leading-6 text-slate-400">
+                <p className="mt-5 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   {errorSesiones
                     ? "No se pudo consultar el calendario."
                     : "No hay próximas sesiones programadas."}
@@ -904,7 +904,7 @@ async function ContenidoCliente() {
             <Link
               key={destino}
               href={destino}
-              className="rounded-xl border border-white/10 bg-[#111c30] px-4 py-2.5 text-xs font-semibold text-slate-200 transition hover:border-cyan-400/30 hover:text-cyan-300 sm:text-sm"
+              className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 transition hover:border-cyan-400/30 hover:text-cyan-800 dark:hover:text-cyan-300 sm:text-sm"
             >
               {texto}
             </Link>
@@ -913,18 +913,18 @@ async function ContenidoCliente() {
 
         {/* ESTADO DE ASIGNACIÓN */}
         {errorAsignacion ? (
-          <section className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-6 text-sm text-rose-200">
+          <section className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-6 text-sm text-rose-700 dark:text-rose-200">
             No fue posible consultar tu plan.
             Intenta nuevamente o contacta al
             administrador.
           </section>
         ) : !asignacion ? (
-          <section className="rounded-2xl border border-amber-400/20 bg-[#111c30] p-7">
+          <section className="rounded-2xl border border-amber-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-7">
             <h2 className="text-xl font-bold">
               Todavía no tienes un plan asignado
             </h2>
 
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Cuando tu entrenador apruebe y asigne
               una rutina, aquí aparecerán tus sesiones,
               ejercicios e indicadores.
@@ -993,11 +993,11 @@ async function ContenidoCliente() {
             {/* PLAN DE ENTRENAMIENTO */}
             <section
               id="mi-rutina"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-6 sm:p-8"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">
+                  <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-400">
                     Mi plan de entrenamiento
                   </p>
 
@@ -1005,7 +1005,7 @@ async function ContenidoCliente() {
                     {nombreRutina}
                   </h2>
 
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Asignación #{asignacion.id}
                   </p>
                 </div>
@@ -1046,13 +1046,13 @@ async function ContenidoCliente() {
                 ].map((dato) => (
                   <div
                     key={dato.titulo}
-                    className="rounded-xl border border-white/5 bg-[#091527] p-4"
+                    className="rounded-xl border border-slate-200 dark:border-white/5 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#091527] p-4"
                   >
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       {dato.titulo}
                     </p>
 
-                    <p className="mt-2 text-lg font-bold text-white">
+                    <p className="mt-2 text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                       {dato.valor}
                     </p>
                   </div>
@@ -1061,7 +1061,7 @@ async function ContenidoCliente() {
 
               <Link
                 href="/cliente/mi-rutina"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-cyan-300 hover:text-cyan-200"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-cyan-800 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200"
               >
                 Ver detalles de mi rutina
                 <Icon
@@ -1074,7 +1074,7 @@ async function ContenidoCliente() {
             {/* CALENDARIO INTERACTIVO DEL CLIENTE */}
             <section
               id="mi-calendario"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-5 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-5 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Organización"
@@ -1085,23 +1085,23 @@ async function ContenidoCliente() {
               {errorSesiones ? (
                 <div
                   role="alert"
-                  className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-5 text-sm text-rose-200"
+                  className="rounded-2xl border border-rose-400/20 bg-rose-400/10 p-5 text-sm text-rose-700 dark:text-rose-200"
                 >
                   No se pudo consultar el calendario.
                   Revisa los permisos de lectura.
                 </div>
               ) : sesiones.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1729] p-7 text-center">
+                <div className="rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-[#0b1729] p-7 text-center">
                   <Icon
                     name="calendar"
-                    className="mx-auto h-10 w-10 text-slate-400"
+                    className="mx-auto h-10 w-10 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
                   />
 
                   <h3 className="mt-4 text-lg font-bold">
                     Sin sesiones programadas
                   </h3>
 
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Cuando tu entrenador programe los
                     entrenamientos, aparecerán aquí.
                   </p>
@@ -1117,11 +1117,11 @@ async function ContenidoCliente() {
                 <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-cyan-400/20 bg-cyan-400/[0.06] px-4 py-3">
                   <Icon
                     name="calendar"
-                    className="h-5 w-5 text-cyan-300"
+                    className="h-5 w-5 text-cyan-800 dark:text-cyan-300"
                   />
 
-                  <p className="text-sm text-slate-200">
-                    <span className="font-bold text-cyan-300">
+                  <p className="text-sm text-slate-700 dark:text-slate-200">
+                    <span className="font-bold text-cyan-800 dark:text-cyan-300">
                       Próxima sesión:
                     </span>{" "}
                     #{proximasSesiones[0].numero_sesion}
@@ -1137,7 +1137,7 @@ async function ContenidoCliente() {
             {/* EJERCICIOS */}
             <section
               id="mis-ejercicios"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-6 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Preparación"
@@ -1146,21 +1146,21 @@ async function ContenidoCliente() {
               />
 
               {errorEjercicios && (
-                <p className="mb-4 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200">
+                <p className="mb-4 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200">
                   No fue posible cargar todos los
                   ejercicios.
                 </p>
               )}
 
               {vistaEjercicios.length === 0 ? (
-                <p className="rounded-xl bg-[#091527] p-5 text-sm text-slate-400">
+                <p className="rounded-xl bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#091527] p-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Todavía no hay ejercicios preparados
                   visibles. Puedes consultar tu rutina
                   asignada desde el botón inferior.
                 </p>
               ) : (
                 <>
-                  <p className="mb-4 text-sm font-semibold text-cyan-300">
+                  <p className="mb-4 text-sm font-semibold text-cyan-800 dark:text-cyan-300">
                     Sesión #
                     {sesionConEjercicios?.numero_sesion}
                     {" · "}
@@ -1172,10 +1172,10 @@ async function ContenidoCliente() {
                       (ejercicio, indice) => (
                         <article
                           key={ejercicio.id}
-                          className="rounded-xl border border-white/10 bg-[#091527] p-5"
+                          className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#091527] p-5"
                         >
                           <div className="flex items-start gap-3">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-sm font-black text-cyan-300">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-sm font-black text-cyan-800 dark:text-cyan-300">
                               {indice + 1}
                             </span>
 
@@ -1187,14 +1187,14 @@ async function ContenidoCliente() {
                                   `Ejercicio #${ejercicio.ejercicio_id}`}
                               </h3>
 
-                              <p className="mt-2 text-sm text-slate-300">
+                              <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
                                 {ejercicio.series_objetivo}{" "}
                                 serie(s)
                               </p>
 
                               {ejercicio.repeticiones_objetivo !==
                                 null && (
-                                  <p className="mt-1 text-xs text-slate-400">
+                                  <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                     {
                                       ejercicio.repeticiones_objetivo
                                     }{" "}
@@ -1204,7 +1204,7 @@ async function ContenidoCliente() {
 
                               {ejercicio.duracion_objetivo_min !==
                                 null && (
-                                  <p className="mt-1 text-xs text-slate-400">
+                                  <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                     Duración objetivo:{" "}
                                     {
                                       ejercicio.duracion_objetivo_min
@@ -1215,7 +1215,7 @@ async function ContenidoCliente() {
 
                               {ejercicio.descanso_objetivo_seg !==
                                 null && (
-                                  <p className="mt-1 text-xs text-slate-400">
+                                  <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                                     Descanso:{" "}
                                     {
                                       ejercicio.descanso_objetivo_seg
@@ -1232,15 +1232,15 @@ async function ContenidoCliente() {
                 </>
               )}
 
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
-                <p className="text-xs text-slate-500">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-5">
+                <p className="text-xs text-slate-600 dark:text-slate-500">
                   El registro de resultados corresponde
                   al entrenador autorizado.
                 </p>
 
                 <Link
                   href="/cliente/mi-rutina"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-cyan-300"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-cyan-800 dark:text-cyan-300"
                 >
                   Ver rutina completa
                   <Icon
@@ -1258,7 +1258,7 @@ async function ContenidoCliente() {
 
             <section
               id="mi-progreso"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.22)] sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.22)] sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Seguimiento personalizado"
@@ -1322,12 +1322,12 @@ async function ContenidoCliente() {
                   const esCyan = indicador.color === "cyan";
 
                   const colorTexto = esCyan
-                    ? "text-cyan-300"
-                    : "text-violet-300";
+                    ? "text-cyan-800 dark:text-cyan-300"
+                    : "text-violet-700 dark:text-violet-300";
 
                   const colorIcono = esCyan
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "bg-violet-400/10 text-violet-300";
+                    ? "bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                    : "bg-violet-400/10 text-violet-700 dark:text-violet-300";
 
                   const colorBarra = esCyan
                     ? "from-cyan-500 to-cyan-300"
@@ -1344,7 +1344,7 @@ async function ContenidoCliente() {
                   return (
                     <article
                       key={indicador.titulo}
-                      className="group flex min-w-0 flex-col rounded-2xl border border-white/10 bg-gradient-to-br from-[#192d45] to-[#0c192d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:p-6"
+                      className="group flex min-w-0 flex-col rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#192d45] to-slate-50 dark:to-[#0c192d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:p-6"
                     >
                       {/* ICONO Y ESTADO */}
                       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1356,8 +1356,8 @@ async function ContenidoCliente() {
 
                         <span
                           className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${porcentaje === null
-                              ? "border-white/10 bg-white/5 text-slate-400"
-                              : "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                              ? "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
+                              : "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
                             }`}
                         >
                           {porcentaje === null
@@ -1367,11 +1367,11 @@ async function ContenidoCliente() {
                       </div>
 
                       {/* TITULO */}
-                      <h3 className="mt-5 text-base font-bold text-white">
+                      <h3 className="mt-5 text-base font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                         {indicador.titulo}
                       </h3>
 
-                      <p className="mt-1 min-h-10 text-xs leading-5 text-slate-400">
+                      <p className="mt-1 min-h-10 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {indicador.subtitulo}
                       </p>
 
@@ -1393,7 +1393,7 @@ async function ContenidoCliente() {
                             aria-valuenow={porcentaje}
                             aria-valuemin={0}
                             aria-valuemax={100}
-                            className="h-2.5 overflow-hidden rounded-full bg-[#071321]"
+                            className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-[#071321]"
                           >
                             <div
                               className={`h-full rounded-full bg-gradient-to-r ${colorBarra} transition-[width] duration-500 motion-reduce:transition-none`}
@@ -1405,14 +1405,14 @@ async function ContenidoCliente() {
                         ) : (
                           <div
                             aria-label="Todavía no hay datos para calcular este indicador"
-                            className="h-2.5 rounded-full border border-dashed border-white/15 bg-[#071321]"
+                            className="h-2.5 rounded-full border border-dashed border-slate-300 dark:border-white/15 bg-slate-200 dark:bg-[#071321]"
                           />
                         )}
                       </div>
 
                       {/* DESCRIPCION */}
                       <div className="mt-auto pt-5">
-                        <p className="border-t border-white/10 pt-4 text-xs leading-6 text-slate-300">
+                        <p className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-4 text-xs leading-6 text-slate-700 dark:text-slate-300">
                           {indicador.detalle}
                         </p>
                       </div>
@@ -1421,10 +1421,10 @@ async function ContenidoCliente() {
                 })}
 
                 {/* CONTINUIDAD */}
-                <article className="group flex min-w-0 flex-col rounded-2xl border border-white/10 bg-gradient-to-br from-[#192d45] to-[#0c192d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-emerald-400/25 hover:shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:p-6">
+                <article className="group flex min-w-0 flex-col rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#192d45] to-slate-50 dark:to-[#0c192d] p-5 shadow-[0_14px_36px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-emerald-400/25 hover:shadow-[0_20px_45px_rgba(0,0,0,0.28)] sm:p-6">
 
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-300">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-700 dark:text-emerald-300">
                       <svg
                         aria-hidden="true"
                         viewBox="0 0 24 24"
@@ -1442,8 +1442,8 @@ async function ContenidoCliente() {
 
                     <span
                       className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${continuidadTexto === "Sin datos"
-                          ? "border-white/10 bg-white/5 text-slate-400"
-                          : "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                          ? "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
+                          : "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
                         }`}
                     >
                       {continuidadTexto === "Sin datos"
@@ -1452,15 +1452,15 @@ async function ContenidoCliente() {
                     </span>
                   </div>
 
-                  <h3 className="mt-5 text-base font-bold text-white">
+                  <h3 className="mt-5 text-base font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                     Continuidad
                   </h3>
 
-                  <p className="mt-1 min-h-10 text-xs leading-5 text-slate-400">
+                  <p className="mt-1 min-h-10 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Regularidad semanal de tus entrenamientos
                   </p>
 
-                  <p className="mt-4 break-words text-3xl font-black tracking-tight text-emerald-300 sm:text-4xl">
+                  <p className="mt-4 break-words text-3xl font-black tracking-tight text-emerald-700 dark:text-emerald-300 sm:text-4xl">
                     {continuidadTexto}
                   </p>
 
@@ -1473,14 +1473,14 @@ async function ContenidoCliente() {
                         className={`h-2.5 min-w-0 flex-1 rounded-full ${continuidadTexto !== "Sin datos" &&
                             indice < semanasConAsistencia
                             ? "bg-emerald-400"
-                            : "bg-white/10"
+                            : "bg-slate-100 dark:bg-white/10"
                           }`}
                       />
                     ))}
                   </div>
 
                   <div className="mt-auto pt-5">
-                    <p className="border-t border-white/10 pt-4 text-xs leading-6 text-slate-300">
+                    <p className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-4 text-xs leading-6 text-slate-700 dark:text-slate-300">
                       {continuidadTexto === "Sin datos"
                         ? "La continuidad se mostrará cuando existan sesiones con resultados confirmados."
                         : "Semanas con al menos una sesión realizada."}
@@ -1490,19 +1490,19 @@ async function ContenidoCliente() {
               </div>
 
               {/* EVIDENCIAS DEL ENTRENAMIENTO */}
-              <div className="mt-6 rounded-2xl border border-white/10 bg-gradient-to-r from-[#14273e] to-[#101a2e] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.15)] sm:p-6">
+              <div className="mt-6 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-r from-white dark:from-[#14273e] to-cyan-50 dark:to-[#101a2e] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.15)] sm:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-lg font-bold text-white">
+                    <h3 className="text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                       Evidencias del entrenamiento
                     </h3>
 
-                    <p className="mt-2 text-xs leading-6 text-slate-400">
+                    <p className="mt-2 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Registros utilizados para evaluar tu asistencia.
                     </p>
                   </div>
 
-                  <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-200">
+                  <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-800 dark:text-cyan-200">
                     {realizadas + ausencias} evaluadas
                   </span>
                 </div>
@@ -1512,24 +1512,24 @@ async function ContenidoCliente() {
                     {
                       titulo: "Sesiones realizadas",
                       valor: realizadas,
-                      color: "text-emerald-300",
+                      color: "text-emerald-700 dark:text-emerald-300",
                     },
                     {
                       titulo: "Ausencias confirmadas",
                       valor: ausencias,
-                      color: "text-rose-300",
+                      color: "text-rose-700 dark:text-rose-300",
                     },
                     {
                       titulo: "Sesiones evaluadas",
                       valor: realizadas + ausencias,
-                      color: "text-cyan-300",
+                      color: "text-cyan-800 dark:text-cyan-300",
                     },
                   ].map((dato) => (
                     <div
                       key={dato.titulo}
-                      className="rounded-xl border border-white/[0.07] bg-[#081525]/80 p-4"
+                      className="rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white/80 dark:bg-[#081525]/80 p-4"
                     >
-                      <p className="text-xs leading-5 text-slate-400">
+                      <p className="text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {dato.titulo}
                       </p>
 
@@ -1547,7 +1547,7 @@ async function ContenidoCliente() {
               {pendientesVencidas > 0 && (
                 <div
                   role="status"
-                  className="mt-5 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-200"
+                  className="mt-5 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/[0.07] p-4 text-sm leading-6 text-amber-800 dark:text-amber-200"
                 >
                   <svg
                     aria-hidden="true"
@@ -1576,7 +1576,7 @@ async function ContenidoCliente() {
               {enCurso > 0 && (
                 <div
                   role="status"
-                  className="mt-4 flex items-start gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] p-4 text-sm leading-6 text-cyan-200"
+                  className="mt-4 flex items-start gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] p-4 text-sm leading-6 text-cyan-800 dark:text-cyan-200"
                 >
                   <svg
                     aria-hidden="true"
@@ -1600,7 +1600,7 @@ async function ContenidoCliente() {
               )}
 
               {/* NOTA METODOLOGICA */}
-              <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-6 text-slate-400">
+              <p className="mt-6 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-5 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Los indicadores se calculan utilizando los
                 registros confirmados del entrenamiento.
                 Las sesiones futuras no se consideran ausencias.
@@ -1613,7 +1613,7 @@ async function ContenidoCliente() {
             {/* HISTORIAL */}
             <section
               id="mi-historial"
-              className="ecf-client-section scroll-mt-8 rounded-3xl border border-white/10 bg-[#111c30] p-6 sm:p-8"
+              className="ecf-client-section scroll-mt-8 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111c30] p-6 sm:p-8"
             >
               <EncabezadoSeccion
                 etiqueta="Registro"
@@ -1623,19 +1623,19 @@ async function ContenidoCliente() {
 
               {historial.length === 0 ? (
 
-                <div className="rounded-2xl border border-dashed border-white/15 bg-[#0b1729] px-6 py-9 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+                <div className="rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-[#0b1729] px-6 py-9 text-center shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-800 dark:text-cyan-300">
                     <Icon
                       name="clock"
                       className="h-7 w-7"
                     />
                   </span>
 
-                  <h3 className="mt-4 text-lg font-bold text-white">
+                  <h3 className="mt-4 text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                     Tu historial está por comenzar
                   </h3>
 
-                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Todavía no tienes entrenamientos
                     finalizados ni ausencias confirmadas.
                     Los registros aparecerán aquí cuando
@@ -1648,7 +1648,7 @@ async function ContenidoCliente() {
                   {historial.map((sesion) => (
                     <div
                       key={sesion.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#091527] p-4"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f8fafc)] dark:bg-[#091527] p-4"
                     >
                       <div>
                         <p className="font-semibold">
@@ -1656,7 +1656,7 @@ async function ContenidoCliente() {
                           {sesion.numero_sesion}
                         </p>
 
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                           {fechaBonita(
                             sesion.fecha_programada
                           )}
@@ -1672,7 +1672,7 @@ async function ContenidoCliente() {
           </>
         )}
 
-        <footer className="border-t border-white/10 pt-6 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-6 text-center text-xs text-slate-600 dark:text-slate-500">
           Evolution Center Fit 2.0 · Portal del cliente
         </footer>
       </div>

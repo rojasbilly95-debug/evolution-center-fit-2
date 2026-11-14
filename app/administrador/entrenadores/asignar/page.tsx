@@ -1,4 +1,3 @@
-
 import "server-only";
 
 import Link from "next/link";
@@ -189,7 +188,7 @@ async function asignarEntrenador(
 
 function Cargando() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#08101f] text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#08101f] text-cyan-800 dark:text-cyan-200">
       Comprobando asignaciones...
     </main>
   );
@@ -231,10 +230,10 @@ async function Contenido({
     rol?.rol !== "administrador"
   ) {
     return (
-      <main className="min-h-screen bg-[#08101f] p-10 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#08101f] p-10 text-[var(--ecf-text)] dark:text-white">
         <p>Acceso restringido al administrador.</p>
         <Link
-          className="text-cyan-300"
+          className="text-cyan-700 dark:text-cyan-300"
           href="/administrador"
         >
           Volver
@@ -247,13 +246,13 @@ async function Contenido({
 
   if (!admin) {
     return (
-      <main className="min-h-screen bg-[#08101f] p-10 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#08101f] p-10 text-[var(--ecf-text)] dark:text-white">
         <p>
           Falta configurar la credencial privada
           del servidor.
         </p>
         <Link
-          className="text-cyan-300"
+          className="text-cyan-700 dark:text-cyan-300"
           href="/administrador"
         >
           Volver
@@ -475,17 +474,17 @@ async function Contenido({
   // ==============================================
 
   return (
-    <main className="min-h-screen bg-[#08101f] text-white">
-      <header className="border-b border-white/10 bg-[#102038] px-5 py-5">
+    <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#08101f] text-[var(--ecf-text)] dark:text-white">
+      <header className="border-b border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#102038] px-5 py-5">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <Link
             href="/administrador/entrenadores"
-            className="text-sm font-bold text-cyan-300 hover:text-cyan-200"
+            className="text-sm font-bold text-cyan-700 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200"
           >
             ← Volver a entrenadores
           </Link>
 
-          <span className="text-xs font-semibold tracking-wide text-slate-400">
+          <span className="text-xs font-semibold tracking-wide text-[var(--ecf-muted)] dark:text-slate-400">
             EVOLUTION CENTER FIT 2.0 · ADMINISTRACIÓN
           </span>
         </div>
@@ -494,16 +493,25 @@ async function Contenido({
       <div className="mx-auto max-w-5xl space-y-6 px-5 py-8">
         {/* CABECERA */}
 
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#173a50] to-[#191e3e] p-7 sm:p-10">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">
-            FASE 111.12
-          </p>
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#def5fc] dark:from-[#173a50] to-[#f0edff] dark:to-[#191e3e] p-7 sm:p-10">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+              Gestión de asignaciones
+            </p>
+
+            <Link
+              href="/administrador/entrenadores"
+              className="inline-flex min-h-10 items-center rounded-xl border border-cyan-200 bg-white/70 px-4 py-2 text-xs font-bold text-cyan-800 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-cyan-500 dark:border-cyan-400/25 dark:bg-white/5 dark:text-cyan-200 dark:hover:bg-white/10"
+            >
+              ← Volver a entrenadores
+            </Link>
+          </div>
 
           <h1 className="mt-3 text-3xl font-black sm:text-4xl">
             Asignar un entrenador
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Asigna o cambia el entrenador de un
             cliente que no participa en el estudio
             y que no tiene planes vigentes.
@@ -520,8 +528,8 @@ async function Contenido({
             role="status"
             className={`rounded-2xl border p-5 text-sm ${
               estado === "correcto"
-                ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
-                : "border-amber-400/25 bg-amber-400/10 text-amber-200"
+                ? "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                : "border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
             }`}
           >
             {mensajes[estado]}
@@ -531,7 +539,7 @@ async function Contenido({
         {fallo && (
           <div
             role="alert"
-            className="rounded-2xl border border-rose-400/30 bg-rose-400/10 p-5 text-sm leading-6 text-rose-200"
+            className="rounded-2xl border border-rose-200 dark:border-rose-400/30 bg-rose-50 dark:bg-rose-400/10 p-5 text-sm leading-6 text-rose-800 dark:text-rose-200"
           >
             No se pudo verificar completamente la
             información o el número de registros
@@ -561,9 +569,9 @@ async function Contenido({
           ].map((item) => (
             <article
               key={item.titulo}
-              className="rounded-2xl border border-white/10 bg-[#15263d] p-5"
+              className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#15263d] p-5 shadow-sm dark:shadow-none"
             >
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                 {item.titulo}
               </p>
 
@@ -576,12 +584,12 @@ async function Contenido({
 
         {/* FORMULARIO */}
 
-        <section className="rounded-3xl border border-white/10 bg-[#13233a] p-6 sm:p-8">
+        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#13233a] p-6 shadow-sm dark:shadow-none sm:p-8">
           <h2 className="text-xl font-extrabold">
             Datos de la asignación
           </h2>
 
-          <p className="mt-2 text-sm leading-6 text-slate-400">
+          <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
             Los clientes protegidos no pueden
             seleccionarse.
 
@@ -609,7 +617,7 @@ async function Contenido({
                 required
                 defaultValue=""
                 disabled={!permitirFormulario}
-                className="w-full rounded-xl border border-white/15 bg-[#081526] p-3 text-sm text-white disabled:opacity-50"
+                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] p-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="" disabled>
                   Selecciona un cliente
@@ -646,7 +654,7 @@ async function Contenido({
                 required
                 defaultValue=""
                 disabled={!permitirFormulario}
-                className="w-full rounded-xl border border-white/15 bg-[#081526] p-3 text-sm text-white disabled:opacity-50"
+                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] p-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="" disabled>
                   Selecciona un entrenador
@@ -684,10 +692,10 @@ async function Contenido({
                 rows={4}
                 disabled={!permitirFormulario}
                 placeholder="Ejemplo: El cliente solicitó el cambio por disponibilidad de horarios."
-                className="w-full rounded-xl border border-white/15 bg-[#081526] p-3 text-sm text-white placeholder:text-slate-500 disabled:opacity-50"
+                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] p-3 text-sm text-[var(--ecf-text)] dark:text-white placeholder:text-slate-500 outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
               />
 
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                 Entre 15 y 500 caracteres.
                 El motivo quedará registrado.
               </p>
@@ -703,7 +711,7 @@ async function Contenido({
           </form>
 
           {!permitirFormulario && !fallo && (
-            <p className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-200">
+            <p className="mt-5 rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200">
               No hay clientes elegibles o entrenadores
               disponibles. Los clientes del estudio
               se mantienen protegidos.
@@ -713,7 +721,7 @@ async function Contenido({
 
         {/* CLIENTES PROTEGIDOS */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+        <section className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-bold">
             Clientes protegidos
           </h2>
@@ -726,13 +734,13 @@ async function Contenido({
               .map((cliente) => (
                 <div
                   key={cliente.id}
-                  className="flex flex-wrap justify-between gap-3 rounded-xl border border-white/10 bg-[#0b192c] p-3 text-sm"
+                  className="flex flex-wrap justify-between gap-3 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface-soft)] dark:bg-[#0b192c] p-3 text-sm"
                 >
                   <span className="font-semibold">
                     {cliente.nombre}
                   </span>
 
-                  <span className="text-amber-200">
+                  <span className="text-amber-800 dark:text-amber-200">
                     {cliente.motivo}
                   </span>
                 </div>
@@ -741,7 +749,7 @@ async function Contenido({
             {clientes.every(
               (cliente) => !cliente.protegido
             ) && (
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-[var(--ecf-muted)] dark:text-slate-400">
                 No hay clientes protegidos entre
                 los registros consultados.
               </p>
@@ -749,7 +757,7 @@ async function Contenido({
           </div>
         </section>
 
-        <p className="pb-5 text-xs leading-6 text-slate-400">
+        <p className="pb-5 text-xs leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
           Esta operación no modifica planes,
           sesiones, grupos de investigación ni
           recomendaciones de IA.

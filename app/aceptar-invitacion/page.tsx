@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -100,9 +99,9 @@ async function ContenidoInvitacion({
     !/\s/.test(tokenHash);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] px-4 py-10 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] px-4 py-10 text-[var(--ecf-text,#102238)] dark:bg-[#080e1b] dark:text-white">
 
-      <section className="w-full max-w-lg rounded-3xl border border-cyan-400/20 bg-[#112039] p-7 shadow-2xl sm:p-10">
+      <section className="w-full max-w-lg rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-7 shadow-2xl shadow-slate-200/60 dark:border-cyan-400/20 dark:bg-[#112039] dark:shadow-black/30 sm:p-10">
 
         {/* LOGO */}
 
@@ -117,7 +116,7 @@ async function ContenidoInvitacion({
               Evolution Center Fit 2.0
             </p>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Activación de usuarios
             </p>
           </div>
@@ -132,7 +131,7 @@ async function ContenidoInvitacion({
 
         {valido ? (
           <>
-            <p className="mt-4 text-sm leading-7 text-slate-300">
+            <p className="mt-4 text-sm leading-7 text-slate-700 dark:text-slate-300">
               Has recibido una invitación
               para utilizar Evolution Center Fit.
 
@@ -166,7 +165,7 @@ async function ContenidoInvitacion({
           <>
             <div
               role="alert"
-              className="mt-6 rounded-xl border border-amber-400/25 bg-amber-400/10 p-5 text-sm leading-7 text-amber-100"
+              className="mt-6 rounded-xl border border-amber-400/30 bg-amber-50 p-5 text-sm leading-7 text-amber-900 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-100"
             >
               {parametros.estado === "invalida"
                 ? "No se pudo verificar la invitación. Es posible que haya caducado o ya se haya utilizado."
@@ -179,14 +178,14 @@ async function ContenidoInvitacion({
 
             <Link
               href="/login"
-              className="mt-6 inline-block text-sm font-semibold text-cyan-300 hover:underline"
+              className="mt-6 inline-block text-sm font-semibold text-cyan-800 hover:underline dark:text-cyan-300"
             >
               Volver al inicio de sesión
             </Link>
           </>
         )}
 
-        <p className="mt-6 text-xs leading-6 text-slate-400">
+        <p className="mt-6 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           No compartas este enlace con otras
           personas. Es personal y de un solo uso.
         </p>
@@ -203,8 +202,8 @@ async function ContenidoInvitacion({
 
 function CargandoInvitacion() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] px-4 text-white">
-      <section className="w-full max-w-lg rounded-3xl border border-white/10 bg-[#112039] p-8 text-center">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] px-4 text-[var(--ecf-text,#102238)] dark:bg-[#080e1b] dark:text-white">
+      <section className="w-full max-w-lg rounded-3xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface,#ffffff)] p-8 text-center dark:border-white/10 dark:bg-[#112039]">
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-400 text-2xl font-black text-[#081525]">
           E
         </div>
@@ -213,7 +212,7 @@ function CargandoInvitacion() {
           Evolution Center Fit 2.0
         </p>
 
-        <p className="mt-3 text-sm text-slate-400">
+        <p className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Preparando tu invitación...
         </p>
       </section>

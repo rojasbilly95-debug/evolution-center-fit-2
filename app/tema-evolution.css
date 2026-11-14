@@ -1,0 +1,472 @@
+
+/* ==========================================
+   EVOLUTION CENTER FIT 2.0
+   SISTEMA VISUAL GLOBAL
+   MODO CLARO / OSCURO / AUTOMATICO
+========================================== */
+
+/* MODO CLARO */
+
+:root {
+  color-scheme: light;
+
+  --ecf-bg: #f4f8fc;
+  --ecf-surface: #ffffff;
+  --ecf-surface-soft: #eef5fa;
+
+  --ecf-text: #102238;
+  --ecf-muted: #53667f;
+
+  --ecf-border: #dbe5ee;
+
+  --ecf-primary: #0891b2;
+  --ecf-primary-hover: #0e7490;
+
+  --ecf-success: #059669;
+  --ecf-danger: #dc2626;
+
+  --ecf-role: #0891b2;
+
+  --ecf-shadow:
+    0 8px 25px rgba(16, 34, 56, 0.055);
+}
+
+/* MODO OSCURO */
+
+html.dark {
+  color-scheme: dark;
+
+  --ecf-bg: #08111f;
+  --ecf-surface: #122238;
+  --ecf-surface-soft: #192d46;
+
+  --ecf-text: #f8fafc;
+  --ecf-muted: #b3c2d4;
+
+  --ecf-border: #2b4058;
+
+  --ecf-primary: #22d3ee;
+  --ecf-primary-hover: #67e8f9;
+
+  --ecf-success: #34d399;
+  --ecf-danger: #f87171;
+
+  --ecf-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.20);
+}
+
+body {
+  background-color: var(--ecf-bg);
+  color: var(--ecf-text);
+}
+
+/* IDENTIDAD SEGUN ROL */
+
+.ecf-role-admin {
+  --ecf-role: #7356d8;
+}
+
+.ecf-role-entrenador {
+  --ecf-role: #0891b2;
+}
+
+.ecf-role-cliente {
+  --ecf-role: #059669;
+}
+
+/* COMPONENTES COMPARTIDOS */
+
+.ecf-page {
+  min-height: 100vh;
+  background: var(--ecf-bg);
+  color: var(--ecf-text);
+}
+
+.ecf-card {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+  border: 1px solid var(--ecf-border);
+  border-radius: 18px;
+  box-shadow: var(--ecf-shadow);
+}
+
+.ecf-card-soft {
+  background: var(--ecf-surface-soft);
+  color: var(--ecf-text);
+  border: 1px solid var(--ecf-border);
+  border-radius: 14px;
+}
+
+.ecf-text-muted {
+  color: var(--ecf-muted);
+}
+
+.ecf-role-accent {
+  color: var(--ecf-role);
+}
+
+.ecf-input {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+  border: 1px solid var(--ecf-border);
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 9px 12px;
+}
+
+.ecf-input:focus-visible {
+  outline: 2px solid var(--ecf-primary);
+  outline-offset: 2px;
+}
+
+.ecf-button-primary {
+  background: #0891b2;
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 11px 18px;
+}
+
+.ecf-button-primary:hover {
+  background: #0e7490;
+}
+
+.ecf-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--ecf-text);
+}
+
+.ecf-table th {
+  background: var(--ecf-surface-soft);
+  color: var(--ecf-muted);
+  text-align: left;
+}
+
+.ecf-table th,
+.ecf-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--ecf-border);
+}
+
+/* SELECTOR GLOBAL DE APARIENCIA */
+
+.ecf-theme-control {
+  position: fixed;
+  z-index: 1000;
+  right: 20px;
+  bottom: 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+
+  border: 1px solid var(--ecf-border);
+  border-radius: 14px;
+  padding: 8px 12px;
+
+  box-shadow: var(--ecf-shadow);
+}
+
+.ecf-theme-control select {
+  min-width: 110px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ecf-theme-control select:focus-visible {
+  outline: 2px solid var(--ecf-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.ecf-theme-control option {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+}
+
+@media (max-width: 640px) {
+  .ecf-theme-control {
+    right: 12px;
+    bottom: 12px;
+    padding: 8px;
+  }
+}
+
+
+/* ==========================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 126.9.2
+
+   ADAPTACION INICIAL DE MODULOS EXISTENTES
+   AL MODO CLARO
+
+   El modo oscuro conserva los estilos
+   originales de globals.css.
+========================================== */
+
+/* ==========================================
+   1. PANEL DEL ENTRENADOR
+========================================== */
+
+html:not(.dark) .ecf-dashboard {
+  background-color: var(--ecf-bg);
+
+  background-image:
+    radial-gradient(
+      ellipse at 85% 4%,
+      rgba(6, 182, 212, 0.07),
+      transparent 38%
+    );
+}
+
+html:not(.dark) .ecf-dashboard .ecf-header {
+  border-bottom-color: var(--ecf-border);
+
+  box-shadow:
+    0 5px 20px rgba(16, 34, 56, 0.055);
+}
+
+html:not(.dark) .ecf-dashboard .ecf-stat-card,
+html:not(.dark) .ecf-dashboard .ecf-module-card {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+
+  border-color: var(--ecf-border);
+  box-shadow: var(--ecf-shadow);
+}
+
+/* ==========================================
+   2. PORTAL DEL CLIENTE
+========================================== */
+
+html:not(.dark) .ecf-client {
+  background-color: var(--ecf-bg);
+
+  background-image:
+    radial-gradient(
+      ellipse at 86% 3%,
+      rgba(6, 182, 212, 0.065),
+      transparent 38%
+    );
+}
+
+html:not(.dark) .ecf-client-header {
+  box-shadow:
+    0 6px 22px rgba(16, 34, 56, 0.07);
+}
+
+html:not(.dark) .ecf-client-stat,
+html:not(.dark) .ecf-client-section {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+
+  border-color: var(--ecf-border);
+  box-shadow: var(--ecf-shadow);
+}
+
+html:not(.dark) .ecf-client-section article {
+  background: var(--ecf-surface-soft);
+  border-color: var(--ecf-border);
+}
+
+/* ==========================================
+   3. EJERCICIOS Y SERIES
+========================================== */
+
+html:not(.dark) .ecf-exercises {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+
+  border-color: var(--ecf-border);
+  box-shadow: var(--ecf-shadow);
+}
+
+html:not(.dark)
+.ecf-exercises .ecf-exercise-card {
+  background: var(--ecf-surface);
+  border-color: var(--ecf-border);
+}
+
+html:not(.dark)
+.ecf-exercises .ecf-series-card {
+  background: var(--ecf-surface-soft);
+  border-color: var(--ecf-border);
+}
+
+html:not(.dark)
+.ecf-exercises .ecf-series-card input[type="number"],
+html:not(.dark)
+.ecf-exercises .ecf-series-card textarea {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+  border-color: var(--ecf-border);
+  color-scheme: light;
+}
+
+/* ==========================================
+   4. CUMPLIMIENTO Y ADHERENCIA
+========================================== */
+
+html:not(.dark) .ecf-compliance,
+html:not(.dark) .ecf-adherence {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+
+  border-color: var(--ecf-border);
+  box-shadow: var(--ecf-shadow);
+}
+
+html:not(.dark) .ecf-compliance-stat,
+html:not(.dark) .ecf-adherence-metric,
+html:not(.dark) .ecf-week-card {
+  background: var(--ecf-surface-soft);
+  color: var(--ecf-text);
+
+  border-color: var(--ecf-border);
+  box-shadow: var(--ecf-shadow);
+}
+
+html:not(.dark) .ecf-compliance-bars {
+  background: var(--ecf-surface-soft);
+  border-color: var(--ecf-border);
+}
+
+html:not(.dark) .ecf-export-panel {
+  background: linear-gradient(
+    120deg,
+    #e9f9fc,
+    #f2f5ff
+  );
+
+  border-color: #bfe7ee;
+  box-shadow: var(--ecf-shadow);
+}
+
+/* ==========================================
+   5. PERFIL DEL CLIENTE
+========================================== */
+
+html:not(.dark)
+.ecf-profile-content form > section {
+  background: var(--ecf-surface);
+  border-color: var(--ecf-border);
+  box-shadow: var(--ecf-shadow);
+}
+
+html:not(.dark)
+.ecf-profile-content form > section h2 {
+  color: var(--ecf-text);
+}
+
+html:not(.dark)
+.ecf-profile-content form > section label {
+  color: var(--ecf-text);
+}
+
+html:not(.dark)
+.ecf-profile-content input:not([type="checkbox"]),
+html:not(.dark)
+.ecf-profile-content select,
+html:not(.dark)
+.ecf-profile-content textarea {
+  background: var(--ecf-surface);
+  color: var(--ecf-text);
+
+  color-scheme: light;
+
+  border-color: var(--ecf-border);
+  box-shadow: none;
+}
+
+html:not(.dark)
+.ecf-profile-content
+form > section:nth-of-type(4) label {
+  background: var(--ecf-surface-soft);
+  border-color: var(--ecf-border);
+}
+
+html:not(.dark)
+.ecf-profile-content
+form > section:nth-of-type(4)
+label:has(input[type="checkbox"]:checked) {
+  background: #e0f7f8;
+  border-color: #0891b2;
+}
+
+html:not(.dark)
+.ecf-profile-content
+form > section:first-of-type > div:last-child {
+  background: #ecfaff;
+  border-color: #bfe7ee;
+}
+
+/* ==========================================
+   6. TEXTOS EN TARJETAS CLARAS
+
+   Alcance limitado a textos de contenido.
+   No cambia automáticamente los botones
+   ni los estados de advertencia o éxito.
+========================================== */
+
+html:not(.dark)
+:is(
+  .ecf-dashboard .ecf-stat-card,
+  .ecf-dashboard .ecf-module-card,
+  .ecf-client .ecf-client-stat,
+  .ecf-client .ecf-client-section,
+  .ecf-exercises,
+  .ecf-compliance,
+  .ecf-adherence
+)
+:is(h1, h2, h3, h4, h5, h6, p)
+:is(.text-white, .text-slate-100, .text-slate-200) {
+  color: var(--ecf-text);
+}
+
+html:not(.dark)
+:is(
+  .ecf-dashboard .ecf-stat-card,
+  .ecf-dashboard .ecf-module-card,
+  .ecf-client .ecf-client-stat,
+  .ecf-client .ecf-client-section,
+  .ecf-exercises,
+  .ecf-compliance,
+  .ecf-adherence
+)
+:is(p, span)
+:is(.text-slate-300, .text-slate-400) {
+  color: var(--ecf-muted);
+}
+
+/* ==========================================
+   7. ACCESIBILIDAD
+========================================== */
+
+html:not(.dark)
+:is(
+  .ecf-dashboard,
+  .ecf-client,
+  .ecf-exercises,
+  .ecf-profile,
+  .ecf-compliance,
+  .ecf-adherence
+)
+:is(button, a, input, select, textarea):focus-visible {
+  outline-color: var(--ecf-primary-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ecf-card,
+  .ecf-card-soft,
+  .ecf-theme-control {
+    transition: none;
+  }
+}

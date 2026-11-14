@@ -136,13 +136,13 @@ function decisionTexto(valor: string) {
 function decisionClase(valor: string) {
   switch (valor) {
     case "aprobada":
-      return "border-emerald-400/25 bg-emerald-400/10 text-emerald-200";
+      return "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200";
 
     case "rechazada":
-      return "border-rose-400/25 bg-rose-400/10 text-rose-200";
+      return "border-rose-400/25 bg-rose-400/10 text-rose-800 dark:text-rose-200";
 
     default:
-      return "border-amber-400/25 bg-amber-400/10 text-amber-200";
+      return "border-amber-400/25 bg-amber-400/10 text-amber-800 dark:text-amber-200";
   }
 }
 
@@ -271,16 +271,16 @@ function Indicador({
   detalle: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1a304a] to-[#111e33] p-5">
-      <p className="text-sm font-medium text-slate-300">
+    <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-[#f8fcff] to-[#ebf5ff] dark:from-[#1a304a] dark:to-[#111e33] p-5">
+      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums text-white">
+      <p className="mt-3 text-3xl font-black tabular-nums text-[var(--ecf-text,#102238)] dark:text-white">
         {valor}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-slate-400">
+      <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {detalle}
       </p>
     </article>
@@ -289,7 +289,7 @@ function Indicador({
 
 function EstadoCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
       Cargando supervision del motor IA...
     </main>
   );
@@ -303,12 +303,12 @@ function Aviso({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5">
-      <h3 className="font-bold text-amber-200">
+    <section className="rounded-2xl border border-amber-200 dark:border-amber-400/20 bg-amber-400/5 p-5">
+      <h3 className="font-bold text-amber-800 dark:text-amber-200">
         {titulo}
       </h3>
 
-      <div className="mt-2 text-sm leading-7 text-slate-300">
+      <div className="mt-2 text-sm leading-7 text-slate-700 dark:text-slate-300">
         {children}
       </div>
     </section>
@@ -369,12 +369,12 @@ async function Contenido({
 
   if (!url || !clave) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <h1 className="text-xl font-bold">
           Configuracion incompleta
         </h1>
 
-        <p className="mt-3 text-amber-200">
+        <p className="mt-3 text-amber-800 dark:text-amber-200">
           Faltan credenciales privadas de Supabase
           en el servidor de Vercel.
         </p>
@@ -496,12 +496,12 @@ async function Contenido({
 
   if (errorGeneral) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <h1 className="text-xl font-bold">
           Error consultando revisiones
         </h1>
 
-        <p className="mt-3 text-amber-200">
+        <p className="mt-3 text-amber-800 dark:text-amber-200">
           No se pudieron leer los indicadores
           de revisiones_rutinas desde Supabase.
         </p>
@@ -763,22 +763,22 @@ async function Contenido({
     return (
       <article
         key={item.id}
-        className="rounded-2xl border border-white/10 bg-[#091728] p-5"
+        className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#091728] p-5"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="break-words text-base font-bold text-white">
+            <h3 className="break-words text-base font-bold text-[var(--ecf-text,#102238)] dark:text-white">
               {nombresRutinas.get(item.rutina_id) ??
                 `Rutina #${item.rutina_id}`}
             </h3>
 
-            <p className="mt-2 text-sm text-slate-300">
+            <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">
               Cliente:{" "}
               {nombres.get(item.cliente_id) ??
                 "Nombre no disponible"}
             </p>
 
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Entrenador:{" "}
               {nombres.get(item.entrenador_id) ??
                 "Nombre no disponible"}
@@ -795,18 +795,18 @@ async function Contenido({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <span className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200">
+          <span className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-white/5 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200">
             Grupo: {grupoRegistro}
           </span>
 
-          <span className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-300">
+          <span className="rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-slate-50 dark:bg-white/5 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300">
             {fechaLima(item.revisado_en)}
           </span>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl bg-[#13263e] p-4">
-            <p className="text-xs text-slate-400">
+          <div className="rounded-xl bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#13263e] p-4">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Compatibilidad registrada
             </p>
 
@@ -818,12 +818,12 @@ async function Contenido({
             </p>
           </div>
 
-          <div className="rounded-xl bg-[#13263e] p-4">
-            <p className="text-xs text-slate-400">
+          <div className="rounded-xl bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#13263e] p-4">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Método registrado
             </p>
 
-            <p className="mt-1 break-words text-sm font-semibold text-white">
+            <p className="mt-1 break-words text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
               {item.metodo_motor ??
                 "No registrado"}
             </p>
@@ -834,8 +834,8 @@ async function Contenido({
           <p
             className={`mt-4 rounded-xl border p-3 text-xs leading-6 ${
               conflictoGC
-                ? "border-amber-400/20 bg-amber-400/10 text-amber-200"
-                : "border-white/10 bg-white/5 text-slate-300"
+                ? "border-amber-200 dark:border-amber-400/20 bg-amber-400/10 text-amber-800 dark:text-amber-200"
+                : "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-300"
             }`}
           >
             {conflictoGC
@@ -845,7 +845,7 @@ async function Contenido({
         )}
 
         {grupoRegistro === "GE" && (
-          <p className="mt-4 text-xs leading-6 text-cyan-200">
+          <p className="mt-4 text-xs leading-6 text-cyan-800 dark:text-cyan-200">
             Grupo experimental. El puntaje y el
             método, cuando están registrados,
             corresponden a información de
@@ -854,12 +854,12 @@ async function Contenido({
         )}
 
         {item.observaciones && (
-          <details className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
-            <summary className="cursor-pointer text-sm font-bold text-cyan-200">
+          <details className="mt-4 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+            <summary className="cursor-pointer text-sm font-bold text-cyan-800 dark:text-cyan-200">
               Ver observaciones del entrenador
             </summary>
 
-            <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-slate-300">
+            <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700 dark:text-slate-300">
               {item.observaciones}
             </p>
           </details>
@@ -873,15 +873,15 @@ async function Contenido({
   // ================================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] px-4 py-7 text-white sm:px-6">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] px-4 py-7 text-[var(--ecf-text,#102238)] dark:text-white sm:px-6">
       <div className="mx-auto max-w-6xl space-y-6">
 
         {/* CABECERA */}
 
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#17394f] via-[#14263d] to-[#211d3d] p-6 shadow-xl shadow-black/10 sm:p-9">
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#e0f5ff] via-[#eef7ff] to-[#f0edff] dark:from-[#17394f] dark:via-[#14263d] dark:to-[#211d3d] p-6 shadow-xl shadow-black/10 sm:p-9">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Evolution Center Fit 2.0
               </p>
 
@@ -889,7 +889,7 @@ async function Contenido({
                 Centro de supervisión IA
               </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-700 dark:text-slate-300">
                 Supervisa el servicio recomendador,
                 las revisiones de entrenadores y
                 las diferencias entre los grupos
@@ -899,7 +899,7 @@ async function Contenido({
 
             <Link
               href="/administrador"
-              className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10"
+              className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
             >
               Volver al panel
             </Link>
@@ -910,7 +910,7 @@ async function Contenido({
 
         <nav
           aria-label="Secciones de supervisión IA"
-          className="flex gap-2 overflow-x-auto rounded-2xl border border-white/10 bg-[#112039] p-2"
+          className="flex gap-2 overflow-x-auto rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-2"
         >
           {[
             {
@@ -941,7 +941,7 @@ async function Contenido({
               className={`shrink-0 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${
                 vista === item.id
                   ? "bg-cyan-400 text-[#07121e]"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {item.nombre}
@@ -982,7 +982,7 @@ async function Contenido({
             </section>
 
             <section className="grid gap-4 lg:grid-cols-2">
-              <article className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+              <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
                 <h2 className="text-lg font-bold">
                   Estado de Render
                 </h2>
@@ -990,8 +990,8 @@ async function Contenido({
                 <span
                   className={`mt-4 inline-flex rounded-full border px-3 py-1.5 text-xs font-bold ${
                     salud?.estado === "responde"
-                      ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
-                      : "border-amber-400/20 bg-amber-400/10 text-amber-200"
+                      ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                      : "border-amber-200 dark:border-amber-400/20 bg-amber-400/10 text-amber-800 dark:text-amber-200"
                   }`}
                 >
                   {salud?.estado === "responde"
@@ -999,11 +999,11 @@ async function Contenido({
                     : "Requiere revisión"}
                 </span>
 
-                <p className="mt-4 text-sm leading-6 text-slate-300">
+                <p className="mt-4 text-sm leading-6 text-slate-700 dark:text-slate-300">
                   {salud?.descripcion}
                 </p>
 
-                <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-400">
+                <div className="mt-4 flex flex-wrap gap-4 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   <span>
                     Versión:{" "}
                     {salud?.version ?? "—"}
@@ -1020,20 +1020,20 @@ async function Contenido({
 
                 <Link
                   href={`${RUTA}?vista=monitor`}
-                  className="mt-5 inline-block text-sm font-bold text-cyan-300 hover:underline"
+                  className="mt-5 inline-block text-sm font-bold text-cyan-800 dark:text-cyan-300 hover:underline"
                 >
                   Ver diagnóstico técnico
                 </Link>
               </article>
 
-              <article className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+              <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
                 <h2 className="text-lg font-bold">
                   Revisiones por grupo
                 </h2>
 
                 <div className="mt-5 grid grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-cyan-400/15 bg-[#081728] p-4">
-                    <p className="text-sm text-cyan-200">
+                  <div className="rounded-xl border border-cyan-200 dark:border-cyan-400/15 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081728] p-4">
+                    <p className="text-sm text-cyan-800 dark:text-cyan-200">
                       Experimental · GE
                     </p>
 
@@ -1041,13 +1041,13 @@ async function Contenido({
                       {totalGE ?? "—"}
                     </p>
 
-                    <p className="mt-2 text-xs text-slate-400">
+                    <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Revisiones registradas
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-[#081728] p-4">
-                    <p className="text-sm text-slate-200">
+                  <div className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081728] p-4">
+                    <p className="text-sm text-slate-700 dark:text-slate-200">
                       Control · GC
                     </p>
 
@@ -1055,13 +1055,13 @@ async function Contenido({
                       {totalGC ?? "—"}
                     </p>
 
-                    <p className="mt-2 text-xs text-slate-400">
+                    <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                       Revisiones registradas
                     </p>
                   </div>
                 </div>
 
-                <p className="mt-4 text-xs leading-6 text-slate-400">
+                <p className="mt-4 text-xs leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   Una revisión del grupo control
                   no constituye evidencia de
                   que se ejecutó la IA.
@@ -1069,7 +1069,7 @@ async function Contenido({
               </article>
             </section>
 
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-xl font-bold">
                   Actividad reciente
@@ -1077,7 +1077,7 @@ async function Contenido({
 
                 <Link
                   href={`${RUTA}?vista=revisiones`}
-                  className="text-sm font-bold text-cyan-300 hover:underline"
+                  className="text-sm font-bold text-cyan-800 dark:text-cyan-300 hover:underline"
                 >
                   Ver todas las revisiones
                 </Link>
@@ -1085,11 +1085,11 @@ async function Contenido({
 
               <div className="mt-5 space-y-3">
                 {errorHistorial ? (
-                  <p className="text-sm text-amber-200">
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
                     No se pudo consultar el historial.
                   </p>
                 ) : revisiones.length === 0 ? (
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Todavía no hay revisiones
                     registradas.
                   </p>
@@ -1107,8 +1107,8 @@ async function Contenido({
 
         {vista === "evaluaciones" && (
           <div className="space-y-5">
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Motor recomendador
               </p>
 
@@ -1116,7 +1116,7 @@ async function Contenido({
                 Evaluaciones reales de inteligencia artificial
               </h2>
 
-              <p className="mt-3 text-sm leading-7 text-slate-300">
+              <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
                 Historial de llamadas registradas
                 desde el endpoint del entrenador.
                 Los eventos empiezan a almacenarse
@@ -1127,21 +1127,21 @@ async function Contenido({
             <HistorialEvaluaciones />
 
             <section className="grid gap-4 md:grid-cols-2">
-              <article className="rounded-2xl border border-cyan-400/20 bg-[#112039] p-5">
-                <h3 className="font-bold text-cyan-200">
+              <article className="rounded-2xl border border-cyan-200 dark:border-cyan-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5">
+                <h3 className="font-bold text-cyan-800 dark:text-cyan-200">
                   Grupo experimental (GE)
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
+                <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
                   Las evaluaciones estan sujetas
                   a los permisos y fechas del estudio.
                 </p>
               </article>
 
-              <article className="rounded-2xl border border-white/10 bg-[#112039] p-5">
-                <h3 className="font-bold text-white">
+              <article className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5">
+                <h3 className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                   Grupo control (GC)
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
+                <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
                   Mantiene el procedimiento manual.
                   No se registran evaluaciones IA
                   atribuidas a este grupo.
@@ -1158,12 +1158,12 @@ async function Contenido({
         {vista === "revisiones" && (
           <>
             <TrazabilidadRevisiones />
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
               <h2 className="text-xl font-bold">
                 Buscar decisiones
               </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Filtra por decisión, grupo
                 de investigación y entrenador.
               </p>
@@ -1179,13 +1179,13 @@ async function Contenido({
                   value="revisiones"
                 />
 
-                <label className="text-xs text-slate-300">
+                <label className="text-xs text-slate-700 dark:text-slate-300">
                   Decisión
 
                   <select
                     name="decision"
                     defaultValue={decision}
-                    className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081728] px-3 text-sm"
+                    className="mt-2 min-h-12 w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081728] px-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/35"
                   >
                     <option value="todas">
                       Todas
@@ -1205,14 +1205,14 @@ async function Contenido({
                   </select>
                 </label>
 
-                <label className="text-xs text-slate-300">
+                <label className="text-xs text-slate-700 dark:text-slate-300">
                   Grupo
 
                   <select
                     name="grupo"
                     defaultValue={grupo}
                     disabled={!gruposVerificados}
-                    className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081728] px-3 text-sm disabled:opacity-50"
+                    className="mt-2 min-h-12 w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081728] px-3 text-sm disabled:opacity-50 text-[var(--ecf-text,#102238)] dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/35"
                   >
                     <option value="todos">
                       Todos
@@ -1228,13 +1228,13 @@ async function Contenido({
                   </select>
                 </label>
 
-                <label className="text-xs text-slate-300">
+                <label className="text-xs text-slate-700 dark:text-slate-300">
                   Entrenador
 
                   <select
                     name="entrenador"
                     defaultValue={entrenador}
-                    className="mt-2 min-h-12 w-full rounded-xl border border-white/15 bg-[#081728] px-3 text-sm"
+                    className="mt-2 min-h-12 w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081728] px-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/35"
                   >
                     <option value="todos">
                       Todos
@@ -1267,7 +1267,7 @@ async function Contenido({
               </form>
 
               {!gruposVerificados && (
-                <p className="mt-4 text-xs text-amber-200">
+                <p className="mt-4 text-xs text-amber-800 dark:text-amber-200">
                   No se pudo consultar completamente
                   la inscripción GE/GC. El filtro
                   por grupo está deshabilitado.
@@ -1275,13 +1275,13 @@ async function Contenido({
               )}
             </section>
 
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-5 sm:p-7">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-xl font-bold">
                   Historial de revisiones
                 </h2>
 
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   {totalFiltrado} registros · Página{" "}
                   {pagina} de {totalPaginas}
                 </span>
@@ -1289,12 +1289,12 @@ async function Contenido({
 
               <div className="mt-5 space-y-3">
                 {errorHistorial ? (
-                  <p className="text-amber-200">
+                  <p className="text-amber-800 dark:text-amber-200">
                     No se pudieron consultar
                     las revisiones.
                   </p>
                 ) : revisiones.length === 0 ? (
-                  <p className="rounded-xl bg-[#081728] p-5 text-sm text-slate-400">
+                  <p className="rounded-xl bg-[var(--ecf-surface-soft,#f1f5f9)] dark:bg-[#081728] p-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     No hay resultados con
                     estos filtros.
                   </p>
@@ -1303,11 +1303,11 @@ async function Contenido({
                 )}
               </div>
 
-              <div className="mt-6 flex items-center justify-between gap-3 border-t border-white/10 pt-5">
+              <div className="mt-6 flex items-center justify-between gap-3 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-5">
                 {pagina > 1 ? (
                   <Link
                     href={enlacePagina(pagina - 1)}
-                    className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                    className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
                   >
                     ← Anterior
                   </Link>
@@ -1318,7 +1318,7 @@ async function Contenido({
                 {pagina < totalPaginas ? (
                   <Link
                     href={enlacePagina(pagina + 1)}
-                    className="rounded-xl border border-white/20 px-4 py-2 text-sm"
+                    className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-4 py-2 text-sm"
                   >
                     Siguiente →
                   </Link>
@@ -1336,12 +1336,12 @@ async function Contenido({
 
         {vista === "monitor" && (
           <>
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6 sm:p-8">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6 sm:p-8">
               <h2 className="text-2xl font-black">
                 Diagnóstico técnico
               </h2>
 
-              <p className="mt-3 text-sm text-slate-400">
+              <p className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Comprobaciones puntuales de
                 disponibilidad y lectura de datos.
               </p>
@@ -1396,12 +1396,12 @@ async function Contenido({
               funcionando correctamente.
             </Aviso>
 
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
               <h3 className="text-lg font-bold">
                 Controles de investigación
               </h3>
 
-              <p className="mt-3 text-sm leading-7 text-slate-300">
+              <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
                 El registro de evaluaciones
                 deberá respetar la inscripción
                 en el estudio y los permisos
@@ -1416,7 +1416,7 @@ async function Contenido({
 
         {/* PIE */}
 
-        <footer className="border-t border-white/10 py-5 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 py-5 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Supervisión IA
           · Consulta administrativa de solo lectura
         </footer>

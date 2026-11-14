@@ -58,31 +58,31 @@ const ESTADOS: Record<
   programada: {
     nombre: "Programada",
     clases:
-      "border-cyan-400/30 bg-cyan-400/10 text-cyan-200",
+      "border-cyan-300 bg-cyan-50 text-cyan-800 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200",
   },
 
   en_curso: {
     nombre: "En curso",
     clases:
-      "border-amber-400/30 bg-amber-400/10 text-amber-200",
+      "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200",
   },
 
   realizada: {
     nombre: "Realizada",
     clases:
-      "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
+      "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
   },
 
   ausente: {
     nombre: "Ausente",
     clases:
-      "border-rose-400/30 bg-rose-400/10 text-rose-200",
+      "border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-400/30 dark:bg-rose-400/10 dark:text-rose-200",
   },
 
   cancelada: {
     nombre: "Cancelada",
     clases:
-      "border-slate-400/30 bg-slate-400/10 text-slate-300",
+      "border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-400/30 dark:bg-slate-400/10 dark:text-slate-300",
   },
 };
 
@@ -212,7 +212,7 @@ export default function ControlAsistencia({
     ESTADOS[sesion.estado] ?? {
       nombre: sesion.estado,
       clases:
-        "border-white/15 bg-white/5 text-slate-200",
+        "border-slate-200 bg-slate-100 text-slate-700 dark:border-white/15 dark:bg-white/5 dark:text-slate-200",
     };
 
   // ==========================================
@@ -318,16 +318,16 @@ export default function ControlAsistencia({
   // ==========================================
 
   return (
-    <article className="min-w-0 rounded-xl bg-white/[0.035] p-4 sm:p-5">
+    <article className="min-w-0 rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.035] dark:shadow-none p-4 sm:p-5">
       {/* ENCABEZADO */}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-base font-extrabold tracking-tight text-white sm:text-lg">
+          <p className="text-base font-extrabold tracking-tight text-[var(--ecf-text,#102238)] dark:text-white sm:text-lg">
             Sesión #{sesion.numeroSesion}
           </p>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             {mostrarFecha(sesion.fechaProgramada)}
             {" · "}
             {mostrarHora(sesion.horaProgramada)}
@@ -346,7 +346,7 @@ export default function ControlAsistencia({
 
       {sesion.estado === "realizada" &&
         sesion.duracionRealMin !== null && (
-          <p className="mt-2 text-xs text-emerald-200">
+          <p className="mt-2 text-xs text-emerald-800 dark:text-emerald-200">
             Duración registrada:{" "}
             {sesion.duracionRealMin} min
           </p>
@@ -356,7 +356,7 @@ export default function ControlAsistencia({
 
       {!planHabilitado &&
         (programada || enCurso) && (
-          <p className="mt-3 text-xs text-amber-200">
+          <p className="mt-3 text-xs text-amber-900 dark:text-amber-200">
             El estado actual del plan
             no permite registrar asistencia.
           </p>
@@ -367,7 +367,7 @@ export default function ControlAsistencia({
       {planHabilitado &&
         programada &&
         esPasada && (
-          <p className="mt-3 text-xs text-slate-400">
+          <p className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             La fecha ya pasó. Puedes
             registrar la ausencia si
             el cliente no asistió.
@@ -380,7 +380,7 @@ export default function ControlAsistencia({
         programada &&
         !esHoy &&
         !esPasada && (
-          <p className="mt-3 text-xs text-slate-400">
+          <p className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Esta sesión podrá iniciarse
             el día programado.
           </p>
@@ -433,7 +433,7 @@ export default function ControlAsistencia({
                   "marcar_ausente"
                 )
               }
-              className="rounded-lg border border-rose-400/30 bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-200 hover:bg-rose-400/20 disabled:opacity-50"
+              className="rounded-lg border border-rose-400/30 bg-rose-50 dark:bg-rose-400/10 px-3 py-2 text-xs font-semibold text-rose-800 dark:text-rose-200 hover:bg-rose-400/20 disabled:opacity-50"
             >
               Marcar ausencia
             </button>
@@ -451,7 +451,7 @@ export default function ControlAsistencia({
                     "cancelar"
                   )
                 }
-                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-rose-400/20 bg-rose-400/[0.04] px-4 py-2.5 text-xs font-bold text-rose-200 transition-[background-color,border-color,transform] duration-200 hover:border-rose-400/40 hover:bg-rose-400/10 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-rose-400/20 bg-rose-50 dark:bg-rose-400/[0.04] px-4 py-2.5 text-xs font-bold text-rose-800 dark:text-rose-200 transition-[background-color,border-color,transform] duration-200 hover:border-rose-400/40 hover:bg-rose-400/10 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Cancelar sesión
               </button>
@@ -462,8 +462,8 @@ export default function ControlAsistencia({
       {/* CONFIRMACIÓN */}
 
       {confirmacion && (
-        <div className="mt-3 space-y-3 rounded-lg border border-amber-400/25 bg-amber-400/5 p-3">
-          <p className="text-sm font-semibold text-amber-100">
+        <div className="mt-3 space-y-3 rounded-lg border border-amber-400/25 bg-amber-50 dark:bg-amber-400/5 p-3">
+          <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
             {confirmacion === "finalizar"
               ? "¿Confirmas que el entrenamiento terminó?"
               : confirmacion ===
@@ -477,7 +477,7 @@ export default function ControlAsistencia({
           <div>
             <label
               htmlFor={`observaciones-${sesion.id}`}
-              className="block text-xs text-slate-300"
+              className="block text-xs text-slate-700 dark:text-slate-300"
             >
               {confirmacion === "cancelar"
                 ? "Motivo obligatorio (mínimo 10 caracteres)"
@@ -499,7 +499,7 @@ export default function ControlAsistencia({
                   ? "Explica por qué se cancela la sesión"
                   : "Observaciones del entrenador"
               }
-              className="mt-2 w-full resize-y rounded-lg border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
+              className="mt-2 w-full resize-y rounded-lg border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
             />
           </div>
 
@@ -537,7 +537,7 @@ export default function ControlAsistencia({
                 setObservaciones("");
                 setError("");
               }}
-              className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/5 disabled:opacity-50"
+              className="rounded-lg border border-slate-300 dark:border-white/20 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-50"
             >
               Volver
             </button>
@@ -550,7 +550,7 @@ export default function ControlAsistencia({
       {error && (
         <p
           role="alert"
-          className="mt-3 rounded-lg border border-rose-400/25 bg-rose-400/10 p-2.5 text-xs text-rose-200"
+          className="mt-3 rounded-lg border border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-2.5 text-xs text-rose-800 dark:text-rose-200"
         >
           {error}
         </p>

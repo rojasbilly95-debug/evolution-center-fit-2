@@ -1,8 +1,23 @@
+
 @import "tailwindcss";
 
+/* ==========================================
+   EVOLUTION CENTER FIT 2.0
+   FASE 126.9
+   INTEGRACION CON NEXT-THEMES
+========================================== */
+
+/* Tailwind v4 seguirá la clase .dark
+   colocada por el proveedor de temas. */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Variables compartidas con el sistema
+   de apariencia global. */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--ecf-bg, #f4f8fc);
+  --foreground: var(--ecf-text, #102238);
 }
 
 @theme inline {
@@ -12,17 +27,18 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* El modo claro u oscuro lo controla
+   next-themes, no directamente Windows. */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family:
+    var(--font-geist-sans),
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
 

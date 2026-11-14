@@ -133,37 +133,37 @@ export default function AsignacionManualPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900">
+    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 dark:bg-[#080d1a] dark:text-white">
       <div className="mx-auto max-w-3xl space-y-6">
         <Link
           href="/entrenador/investigacion"
-          className="text-sm font-medium text-blue-700 hover:underline"
+          className="text-sm font-medium text-blue-700 hover:underline dark:text-cyan-300"
         >
           Volver al panel de investigación
         </Link>
 
         <header>
-          <p className="text-sm font-semibold text-blue-700">
+          <p className="text-sm font-semibold text-blue-700 dark:text-cyan-300">
             EVOLUTION CENTER FIT 2.0
           </p>
           <h1 className="mt-2 text-3xl font-bold">
             Asignación manual de rutinas
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Entrenamiento habitual para el grupo control
             y el pretest del grupo experimental.
           </p>
         </header>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111d31] dark:shadow-black/20">
           {error && (
-            <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+            <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:border dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200">
               {error}
             </p>
           )}
 
           {mensaje && (
-            <p role="status" className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">
+            <p role="status" className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:border dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-200">
               {mensaje}
             </p>
           )}
@@ -185,7 +185,7 @@ export default function AsignacionManualPage() {
                     setFechaInicio("");
                     setFechaFin("");
                   }}
-                  className="w-full rounded-xl border p-3"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#0b1628] dark:text-white dark:focus:border-cyan-400"
                 >
                   <option value="">Seleccionar participante</option>
                   {clientes.map((c) => (
@@ -197,7 +197,7 @@ export default function AsignacionManualPage() {
               </div>
 
               {seleccionado && (
-                <div className="rounded-xl bg-blue-50 p-4 text-sm text-blue-900">
+                <div className="rounded-xl bg-blue-50 p-4 text-sm text-blue-900 dark:border dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-100">
                   <p>Grupo: {seleccionado.grupoEstudio}</p>
                   <p>Inicio del estudio: {seleccionado.fechaInicio}</p>
                   <p>Último día permitido: {limite}</p>
@@ -213,7 +213,7 @@ export default function AsignacionManualPage() {
                   required
                   value={rutinaId}
                   onChange={(e) => setRutinaId(e.target.value)}
-                  className="w-full rounded-xl border p-3"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#0b1628] dark:text-white dark:focus:border-cyan-400"
                 >
                   <option value="">Seleccionar rutina</option>
                   {rutinas.map((r) => (
@@ -237,7 +237,7 @@ export default function AsignacionManualPage() {
                     max={limite ?? undefined}
                     value={fechaInicio}
                     onChange={(e) => setFechaInicio(e.target.value)}
-                    className="w-full rounded-xl border p-3"
+                    className="w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#0b1628] dark:text-white dark:focus:border-cyan-400 dark:[color-scheme:dark]"
                   />
                 </div>
 
@@ -252,7 +252,7 @@ export default function AsignacionManualPage() {
                     max={limite ?? undefined}
                     value={fechaFin}
                     onChange={(e) => setFechaFin(e.target.value)}
-                    className="w-full rounded-xl border p-3"
+                    className="w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#0b1628] dark:text-white dark:focus:border-cyan-400 dark:[color-scheme:dark]"
                   />
                 </div>
               </div>
@@ -267,7 +267,7 @@ export default function AsignacionManualPage() {
                   maxLength={1000}
                   value={notas}
                   onChange={(e) => setNotas(e.target.value)}
-                  className="w-full rounded-xl border p-3"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#0b1628] dark:text-white dark:focus:border-cyan-400"
                   placeholder="Indicaciones del entrenador..."
                 />
               </div>
@@ -275,7 +275,7 @@ export default function AsignacionManualPage() {
               <button
                 type="submit"
                 disabled={guardando || !clienteId || !rutinaId || !fechaInicio}
-                className="w-full rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+                className="w-full rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50 dark:bg-cyan-400 dark:text-slate-950 dark:hover:bg-cyan-300"
               >
                 {guardando ? "Guardando..." : "Asignar rutina sin IA"}
               </button>

@@ -109,16 +109,16 @@ function Tarjeta({
   definitivo: boolean;
 }) {
   return (
-    <div className="ecf-adherence-metric rounded-xl border border-white/10 bg-slate-900/70 p-3">
-      <p className="text-xs font-semibold text-slate-300">
+    <div className="ecf-adherence-metric rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-slate-900/70 p-3">
+      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
         {titulo}
       </p>
 
-      <p className="mt-2 text-2xl font-bold text-cyan-200">
+      <p className="mt-2 text-2xl font-bold text-cyan-800 dark:text-cyan-200">
         <Valor valor={valor} />
       </p>
 
-      <p className="mt-1 text-xs text-slate-400">
+      <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {valor === null
           ? "Sin evidencia suficiente"
           : definitivo
@@ -126,7 +126,7 @@ function Tarjeta({
             : "Resultado provisional"}
       </p>
 
-      <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-800">
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
         <div
           className="h-full rounded-full bg-cyan-400"
           style={{
@@ -140,7 +140,7 @@ function Tarjeta({
         />
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-slate-400">
+      <p className="mt-3 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         {detalle}
       </p>
     </div>
@@ -186,12 +186,12 @@ function EvolucionSemanal({
   );
 
   return (
-    <div className="rounded-2xl border border-cyan-400/20 bg-slate-900/50 p-4 sm:p-5">
-      <h6 className="text-sm font-bold text-white">
+    <div className="rounded-2xl border border-cyan-200 dark:border-cyan-400/20 bg-slate-50 dark:bg-slate-900/50 p-4 sm:p-5">
+      <h6 className="text-sm font-bold text-[var(--ecf-text,#102238)] dark:text-white">
         Evolución semanal de asistencia
       </h6>
 
-      <p className="mt-1 text-xs leading-5 text-slate-400">
+      <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
         Relación descriptiva entre sesiones realizadas
         y programadas no canceladas. Solo se muestra
         el porcentaje cuando la semana está verificada.
@@ -200,7 +200,7 @@ function EvolucionSemanal({
       </p>
 
       {ordenadas.length === 0 ? (
-        <p className="mt-4 text-sm text-slate-400">
+        <p className="mt-4 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Aún no existen semanas para este plan.
         </p>
       ) : (
@@ -246,14 +246,14 @@ function EvolucionSemanal({
             return (
               <div
                 key={semana.numero}
-                className="rounded-xl border border-white/10 bg-slate-950/50 p-3"
+                className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-950/50 p-3"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-slate-200">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     Semana {semana.numero}
                   </span>
 
-                  <span className="text-xs font-bold tabular-nums text-cyan-200">
+                  <span className="text-xs font-bold tabular-nums text-cyan-800 dark:text-cyan-200">
                     {porcentaje === null
                       ? "Sin medición"
                       : `${porcentaje}%`}
@@ -275,7 +275,7 @@ function EvolucionSemanal({
                       ? "Sin porcentaje verificable"
                       : `${porcentaje}% de sesiones no canceladas realizadas`
                   }
-                  className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-700"
+                  className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
                 >
                   <div
                     aria-hidden="true"
@@ -288,7 +288,7 @@ function EvolucionSemanal({
 
                 {/* SESIONES EFECTIVAS */}
 
-                <p className="mt-2 text-xs text-slate-400">
+                <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                   {semana.realizadas} realizadas de{" "}
                   {sesionesNoCanceladas} no canceladas
                 </p>
@@ -296,14 +296,14 @@ function EvolucionSemanal({
                 {/* SESIONES CANCELADAS */}
 
                 {semana.canceladas > 0 && (
-                  <p className="mt-1 text-xs text-amber-200">
+                  <p className="mt-1 text-xs text-amber-900 dark:text-amber-200">
                     {semana.canceladas} sesiones canceladas
                   </p>
                 )}
 
                 {/* ESTADO DE LA SEMANA */}
 
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-500">
                   {nombreEstado(semana.estado)}
                 </p>
               </div>
@@ -414,22 +414,22 @@ export default function ResumenAdherencia({
 
   return (
     <section
-      className="ecf-adherence mt-4 rounded-xl border border-cyan-400/20 bg-slate-950/70 p-4"
+      className="ecf-adherence mt-4 rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-[var(--ecf-surface,#ffffff)] dark:bg-slate-950/70 p-4"
       aria-label="Adherencia del plan"
     >
       {/* ENCABEZADO */}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
             Seguimiento integral
           </p>
 
-          <h6 className="mt-1 text-base font-bold text-white">
+          <h6 className="mt-1 text-base font-bold text-[var(--ecf-text,#102238)] dark:text-white">
             Adherencia al plan de entrenamiento
           </h6>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Asistencia, cumplimiento y continuidad
             del cliente.
           </p>
@@ -449,7 +449,7 @@ export default function ResumenAdherencia({
               (anterior) => anterior + 1
             );
           }}
-          className="rounded-lg border border-cyan-400/30 px-3 py-2 text-xs font-semibold text-cyan-200 hover:bg-cyan-400/10 disabled:opacity-50"
+          className="rounded-lg border border-cyan-300 dark:border-cyan-400/30 px-3 py-2 text-xs font-semibold text-cyan-800 dark:text-cyan-200 hover:bg-cyan-100 dark:hover:bg-cyan-400/10 disabled:opacity-50"
         >
           Actualizar resumen
         </button>
@@ -460,7 +460,7 @@ export default function ResumenAdherencia({
       {estado.cargando && (
         <p
           role="status"
-          className="mt-4 text-sm text-slate-400"
+          className="mt-4 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
         >
           Calculando adherencia...
         </p>
@@ -471,7 +471,7 @@ export default function ResumenAdherencia({
       {estado.error && (
         <p
           role="alert"
-          className="mt-4 rounded-lg border border-rose-400/25 bg-rose-400/10 p-3 text-sm text-rose-200"
+          className="mt-4 rounded-lg border border-rose-200 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-3 text-sm text-rose-800 dark:text-rose-200"
         >
           {estado.error}
         </p>
@@ -531,13 +531,13 @@ export default function ResumenAdherencia({
                 ESTADO DEL CALENDARIO
             ================================== */}
 
-            <div className="grid gap-3 rounded-lg border border-white/10 bg-slate-900/40 p-3 sm:grid-cols-2">
+            <div className="grid gap-3 rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-900/40 p-3 sm:grid-cols-2">
               <div>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                   Estado del calendario
                 </p>
 
-                <p className="mt-2 text-xs leading-6 text-slate-300">
+                <p className="mt-2 text-xs leading-6 text-slate-700 dark:text-slate-300">
                   {asistencia.sesionesProgramadas} sesiones programadas
                   {" · "}
                   {asistencia.enCurso} en curso
@@ -549,11 +549,11 @@ export default function ResumenAdherencia({
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                   Calidad del registro
                 </p>
 
-                <p className="mt-2 text-xs leading-6 text-slate-300">
+                <p className="mt-2 text-xs leading-6 text-slate-700 dark:text-slate-300">
                   {cumplimiento.sesionesVerificables} de{" "}
                   {cumplimiento.sesionesRealizadas} sesiones
                   realizadas verificables.
@@ -576,13 +576,13 @@ export default function ResumenAdherencia({
               cumplimiento.sesionesIncompletas > 0) && (
               <div
                 role="status"
-                className="rounded-xl border border-amber-400/25 bg-amber-400/[0.06] p-4"
+                className="rounded-xl border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/[0.06] p-4"
               >
-                <p className="text-sm font-bold text-amber-200">
+                <p className="text-sm font-bold text-amber-900 dark:text-amber-200">
                   Registros pendientes de revisión
                 </p>
 
-                <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-slate-300">
+                <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-slate-700 dark:text-slate-300">
                   {asistencia.pendientesVencidas > 0 && (
                     <li>
                       {asistencia.pendientesVencidas} sesiones
@@ -605,7 +605,7 @@ export default function ResumenAdherencia({
                   )}
                 </ul>
 
-                <p className="mt-2 text-xs text-amber-100/80">
+                <p className="mt-2 text-xs text-amber-900/90 dark:text-amber-100/80">
                   Los registros pendientes no se convierten
                   automáticamente en ausencias ni incumplimientos.
                 </p>
@@ -625,7 +625,7 @@ export default function ResumenAdherencia({
             ================================== */}
 
             <div>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                 Continuidad por semana
               </p>
 
@@ -634,24 +634,24 @@ export default function ResumenAdherencia({
                   (semana) => (
                     <div
                       key={semana.numero}
-                      className="ecf-week-card rounded-lg border border-white/10 bg-slate-900/50 p-3"
+                      className="ecf-week-card rounded-lg border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-slate-900/50 p-3"
                     >
-                      <p className="text-xs font-bold text-white">
+                      <p className="text-xs font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                         Semana {semana.numero}
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {semana.inicio} al{" "}
                         {semana.fin}
                       </p>
 
-                      <p className="mt-2 text-xs font-semibold text-cyan-200">
+                      <p className="mt-2 text-xs font-semibold text-cyan-800 dark:text-cyan-200">
                         {nombreEstado(
                           semana.estado
                         )}
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {semana.realizadas} asistencias
                         {" · "}
                         {semana.ausentes} ausencias
@@ -666,12 +666,12 @@ export default function ResumenAdherencia({
                 EXPORTACIÓN CSV
             ================================== */}
 
-            <div className="ecf-export-panel rounded-xl border border-cyan-400/20 bg-slate-900/60 p-4">
-              <p className="text-sm font-semibold text-white">
+            <div className="ecf-export-panel rounded-xl border border-cyan-200 dark:border-cyan-400/20 bg-white dark:bg-slate-900/60 p-4">
+              <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                 Exportar registros para análisis estadístico
               </p>
 
-              <p className="mt-1 text-xs leading-5 text-slate-400">
+              <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                 Archivos CSV separados por punto y coma.
                 No contienen nombres ni correos.
                 Los campos grupo_estudio y fase_medicion
@@ -683,7 +683,7 @@ export default function ResumenAdherencia({
                   href={`/api/adherencia/exportar?asignacionId=${encodeURIComponent(
                     String(asignacionId)
                   )}&tipo=sesiones`}
-                  className="inline-flex min-h-10 items-center rounded-lg border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-cyan-200 hover:bg-cyan-400/20"
+                  className="inline-flex min-h-10 items-center rounded-lg border border-cyan-300 dark:border-cyan-400/40 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-cyan-800 dark:text-cyan-200 hover:bg-cyan-100 dark:hover:bg-cyan-400/20"
                 >
                   Exportar sesiones (CSV)
                 </a>
@@ -692,7 +692,7 @@ export default function ResumenAdherencia({
                   href={`/api/adherencia/exportar?asignacionId=${encodeURIComponent(
                     String(asignacionId)
                   )}&tipo=semanas`}
-                  className="inline-flex min-h-10 items-center rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-200 hover:bg-emerald-400/20"
+                  className="inline-flex min-h-10 items-center rounded-lg border border-emerald-300 dark:border-emerald-400/40 bg-emerald-50 dark:bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-800 dark:text-emerald-200 hover:bg-emerald-400/20"
                 >
                   Exportar semanas (CSV)
                 </a>
@@ -703,7 +703,7 @@ export default function ResumenAdherencia({
                 NOTA METODOLÓGICA
             ================================== */}
 
-            <p className="text-xs leading-5 text-slate-400">
+            <p className="text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {datos?.nota ??
                 "Los registros incompletos no se contabilizan automáticamente como incumplimiento."}
             </p>

@@ -94,13 +94,13 @@ function formatoFecha(fecha: string) {
 function coloresRol(rol: string) {
   switch (rol) {
     case "administrador":
-      return "border-violet-400/25 bg-violet-400/10 text-violet-200";
+      return "border-violet-200 dark:border-violet-400/25 bg-violet-50 dark:bg-violet-400/10 text-violet-700 dark:text-violet-200";
     case "entrenador":
-      return "border-cyan-400/25 bg-cyan-400/10 text-cyan-200";
+      return "border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-200";
     case "cliente":
-      return "border-emerald-400/25 bg-emerald-400/10 text-emerald-200";
+      return "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-200";
     default:
-      return "border-white/15 bg-white/5 text-slate-300";
+      return "border-[var(--ecf-border)] dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300";
   }
 }
 
@@ -112,12 +112,12 @@ function Resumen({
   valor: number;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1a304b] to-[#101d31] p-5 shadow-lg shadow-black/10">
-      <p className="text-xs font-semibold text-slate-400">
+    <article className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-[#1a304b] dark:to-[#101d31] p-5 shadow-lg shadow-slate-200/70 dark:shadow-black/10">
+      <p className="text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums text-white">
+      <p className="mt-3 text-3xl font-black tabular-nums text-[var(--ecf-text)] dark:text-white">
         {new Intl.NumberFormat("es-PE").format(valor)}
       </p>
     </article>
@@ -126,7 +126,7 @@ function Resumen({
 
 function EstadoCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
       Cargando gestión de usuarios...
     </main>
   );
@@ -207,20 +207,20 @@ async function ContenidoUsuarios({
     rolActual?.rol !== "administrador"
   ) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080e1b] p-6 text-white">
-        <section className="max-w-md rounded-2xl border border-rose-400/20 bg-rose-400/10 p-8 text-center">
+      <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
+        <section className="max-w-md rounded-2xl border border-rose-200 dark:border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-8 text-center">
           <h1 className="text-2xl font-bold">
             Acceso restringido
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-slate-300">
+          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
             No tienes autorización para consultar
             las cuentas del gimnasio.
           </p>
 
           <Link
             href="/login"
-            className="mt-5 inline-block font-semibold text-cyan-300"
+            className="mt-5 inline-block font-semibold text-cyan-700 dark:text-cyan-300"
           >
             Volver al inicio
           </Link>
@@ -238,20 +238,20 @@ async function ContenidoUsuarios({
 
   if (!url || !clave) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-6 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
         <Link
           href="/administrador"
-          className="text-sm font-bold text-cyan-300"
+          className="text-sm font-bold text-cyan-700 dark:text-cyan-300"
         >
           ← Volver al administrador
         </Link>
 
-        <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-amber-400/20 bg-amber-400/10 p-6">
+        <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-6">
           <h1 className="text-xl font-bold">
             Configuración pendiente
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-amber-100">
+          <p className="mt-3 text-sm leading-6 text-amber-900 dark:text-amber-100">
             No están disponibles las credenciales
             privadas de consulta en el servidor.
             No se mostrarán datos ficticios.
@@ -315,24 +315,24 @@ async function ContenidoUsuarios({
 
   if (errorConsulta) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-6 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
         <div className="mx-auto max-w-4xl">
           <Link
             href="/administrador"
-            className="text-sm font-bold text-cyan-300"
+            className="text-sm font-bold text-cyan-700 dark:text-cyan-300"
           >
             ← Volver al administrador
           </Link>
 
           <div
             role="alert"
-            className="mt-8 rounded-2xl border border-rose-400/25 bg-rose-400/10 p-6"
+            className="mt-8 rounded-2xl border border-rose-200 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-6"
           >
             <h1 className="text-xl font-bold">
               No se pudieron cargar los usuarios
             </h1>
 
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
               Revisa la conexión y los permisos
               del servidor de Supabase.
             </p>
@@ -508,9 +508,9 @@ async function ContenidoUsuarios({
   // ==============================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] text-white">
+    <main className="ecf-role-admin min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] text-[var(--ecf-text)] dark:text-white">
       {/* CABECERA */}
-      <header className="border-b border-white/10 bg-[#101d31]">
+      <header className="border-b border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#101d31]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <Link
             href="/administrador"
@@ -523,12 +523,12 @@ async function ContenidoUsuarios({
             <span>
               <span className="block text-sm font-black">
                 EVOLUTION CENTER FIT{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-700 dark:text-cyan-300">
                   2.0
                 </span>
               </span>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                 Administración de usuarios
               </span>
             </span>
@@ -536,7 +536,7 @@ async function ContenidoUsuarios({
 
           <Link
             href="/administrador"
-            className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+            className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-white/10"
           >
             ← Volver al panel
           </Link>
@@ -545,8 +545,8 @@ async function ContenidoUsuarios({
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
         {/* PRESENTACION */}
-        <section className="rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-[#17344a] via-[#14263d] to-[#201b3d] p-6 shadow-xl shadow-black/20 sm:p-9">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#e4f7fb] via-[#f8fbff] to-[#f0ecff] dark:from-[#17344a] dark:via-[#14263d] dark:to-[#201b3d] p-6 shadow-xl shadow-slate-200/70 dark:shadow-black/20 sm:p-9">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Gestión administrativa
           </p>
 
@@ -554,15 +554,21 @@ async function ContenidoUsuarios({
             Gestión de usuarios
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Consulta las cuentas del gimnasio,
             identifica sus roles y revisa las
             relaciones con los entrenadores.
           </p>
 
-          <span className="mt-5 inline-flex rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-200">
+          <span className="mt-5 inline-flex rounded-full border border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-800 dark:text-cyan-200">
             Consulta autorizada · Solo lectura
           </span>
+          <Link
+            href="/administrador/usuarios/nuevo"
+            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] transition hover:bg-cyan-300"
+          >
+            + Invitar nuevo usuario
+          </Link>
         </section>
 
         {/* ESTADISTICAS */}
@@ -594,7 +600,7 @@ async function ContenidoUsuarios({
           </div>
 
           {vistaParcial && (
-            <p className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-xs text-amber-200">
+            <p className="mt-3 rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-xs text-amber-800 dark:text-amber-200">
               Hay más de {LIMITE_CONSULTA} usuarios.
               Los filtros y recuentos por rol solo
               incluyen los primeros registros consultados.
@@ -605,9 +611,9 @@ async function ContenidoUsuarios({
         </section>
 
         {/* BUSQUEDA Y FILTROS */}
-        <section className="rounded-3xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-5 sm:p-7">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
               Directorio
             </p>
 
@@ -615,7 +621,7 @@ async function ContenidoUsuarios({
               Buscar y filtrar usuarios
             </h2>
 
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
               Encuentra las cuentas registradas
               y revisa sus funciones.
             </p>
@@ -629,7 +635,7 @@ async function ContenidoUsuarios({
             <div>
               <label
                 htmlFor="buscar-usuarios"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Nombre del usuario
               </label>
@@ -641,14 +647,14 @@ async function ContenidoUsuarios({
                 maxLength={60}
                 defaultValue={busqueda}
                 placeholder="Escribe un nombre..."
-                className="min-h-12 w-full rounded-xl border border-white/15 bg-[#081526] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-cyan-400"
+                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-slate-50 dark:bg-[#081526] px-4 py-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15 dark:placeholder:text-slate-500"
               />
             </div>
 
             <div>
               <label
                 htmlFor="rol-usuarios"
-                className="mb-2 block text-xs font-semibold text-slate-300"
+                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
               >
                 Filtrar por rol
               </label>
@@ -657,7 +663,7 @@ async function ContenidoUsuarios({
                 id="rol-usuarios"
                 name="rol"
                 defaultValue={filtroRol}
-                className="min-h-12 w-full rounded-xl border border-white/15 bg-[#081526] px-4 py-3 text-sm text-white outline-none focus:border-cyan-400"
+                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-slate-50 dark:bg-[#081526] px-4 py-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15"
               >
                 <option value="todos">
                   Todos los roles
@@ -686,7 +692,7 @@ async function ContenidoUsuarios({
 
             <Link
               href="/administrador/usuarios"
-              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-white/10"
             >
               Limpiar
             </Link>
@@ -694,26 +700,26 @@ async function ContenidoUsuarios({
         </section>
 
         {/* RESULTADOS */}
-        <section className="rounded-3xl border border-white/10 bg-[#112039] p-5 sm:p-7">
+        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-extrabold">
                 Cuentas encontradas
               </h2>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
                 {registrosFiltrados.length} resultado(s)
                 dentro de los registros consultados.
               </p>
             </div>
 
-            <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-200">
+            <span className="rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-800 dark:text-cyan-200">
               Página {paginaActual} de {totalPaginas}
             </span>
           </div>
 
           {registrosPagina.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-white/10 bg-[#091729] p-8 text-center text-sm text-slate-400">
+            <div className="mt-6 rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-slate-50 dark:bg-[#091729] p-8 text-center text-sm text-[var(--ecf-muted)] dark:text-slate-400">
               No se encontraron usuarios con
               los filtros seleccionados.
             </div>
@@ -722,11 +728,11 @@ async function ContenidoUsuarios({
               {registrosPagina.map((usuario) => (
                 <article
                   key={usuario.id}
-                  className="rounded-2xl border border-white/10 bg-gradient-to-r from-[#152a44] to-[#0a192b] p-5 transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/25"
+                  className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-white dark:bg-gradient-to-r dark:from-[#152a44] dark:to-[#0a192b] p-5 transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/25"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex min-w-0 items-start gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-lg font-black text-cyan-300">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-lg font-black text-cyan-700 dark:text-cyan-300">
                         {usuario.nombre_completo
                           .trim()
                           .charAt(0)
@@ -734,11 +740,11 @@ async function ContenidoUsuarios({
                       </div>
 
                       <div className="min-w-0">
-                        <h3 className="break-words text-base font-bold text-white">
+                        <h3 className="break-words text-base font-bold text-[var(--ecf-text)] dark:text-white">
                           {usuario.nombre_completo}
                         </h3>
 
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                           Registrado el{" "}
                           {formatoFecha(
                             usuario.creado_en
@@ -757,12 +763,12 @@ async function ContenidoUsuarios({
                   </div>
 
                   {usuario.rol === "cliente" && (
-                    <div className="mt-5 rounded-xl border border-white/10 bg-[#081526] p-4">
-                      <p className="text-xs text-slate-400">
+                    <div className="mt-5 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-slate-50 dark:bg-[#081526] p-4">
+                      <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Entrenador asignado
                       </p>
 
-                      <p className="mt-1 text-sm font-semibold text-white">
+                      <p className="mt-1 text-sm font-semibold text-[var(--ecf-text)] dark:text-white">
                         {usuario.entrenador ??
                           "Sin entrenador asignado"}
                       </p>
@@ -771,7 +777,7 @@ async function ContenidoUsuarios({
                         <p
                           className={`mt-2 text-xs font-semibold ${
                             usuario.asignacionActiva
-                              ? "text-emerald-300"
+                              ? "text-emerald-700 dark:text-emerald-300"
                               : "text-amber-300"
                           }`}
                         >
@@ -784,24 +790,24 @@ async function ContenidoUsuarios({
                   )}
 
                   {usuario.rol === "entrenador" && (
-                    <div className="mt-5 rounded-xl border border-white/10 bg-[#081526] p-4">
-                      <p className="text-xs text-slate-400">
+                    <div className="mt-5 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-slate-50 dark:bg-[#081526] p-4">
+                      <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Clientes asignados actualmente
                       </p>
 
-                      <p className="mt-1 text-lg font-bold text-cyan-300">
+                      <p className="mt-1 text-lg font-bold text-cyan-700 dark:text-cyan-300">
                         {usuario.clientesAsignados}
                       </p>
                     </div>
                   )}
 
                   {usuario.rol === "administrador" && (
-                    <div className="mt-5 rounded-xl border border-violet-400/15 bg-violet-400/5 p-4">
-                      <p className="text-xs font-semibold text-violet-200">
+                    <div className="mt-5 rounded-xl border border-violet-200 dark:border-violet-400/15 bg-violet-50 dark:bg-violet-400/5 p-4">
+                      <p className="text-xs font-semibold text-violet-700 dark:text-violet-200">
                         Cuenta administrativa
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Acceso sujeto a verificación
                         de identidad y permisos.
                       </p>
@@ -813,23 +819,23 @@ async function ContenidoUsuarios({
           )}
 
           {/* PAGINACION */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ecf-border)] dark:border-white/10 pt-5">
             {paginaActual > 1 ? (
               <Link
                 href={enlacePagina(
                   paginaActual - 1
                 )}
-                className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10"
+                className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
               >
                 ← Anterior
               </Link>
             ) : (
-              <span className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-slate-600">
+              <span className="rounded-xl border border-[var(--ecf-border)] dark:border-white/10 px-4 py-2.5 text-sm text-slate-400 dark:text-slate-600">
                 ← Anterior
               </span>
             )}
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
               {paginaActual} / {totalPaginas}
             </p>
 
@@ -838,12 +844,12 @@ async function ContenidoUsuarios({
                 href={enlacePagina(
                   paginaActual + 1
                 )}
-                className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10"
+                className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
               >
                 Siguiente →
               </Link>
             ) : (
-              <span className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-slate-600">
+              <span className="rounded-xl border border-[var(--ecf-border)] dark:border-white/10 px-4 py-2.5 text-sm text-slate-400 dark:text-slate-600">
                 Siguiente →
               </span>
             )}
@@ -851,26 +857,26 @@ async function ContenidoUsuarios({
         </section>
 
         {/* SEGURIDAD */}
-        <section className="rounded-2xl border border-cyan-400/15 bg-gradient-to-r from-[#0f2a3c] to-[#1b1c39] p-6">
-          <h2 className="font-bold text-white">
+        <section className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-r from-[#e8f8fb] to-[#f0ebff] dark:from-[#0f2a3c] dark:to-[#1b1c39] p-6">
+          <h2 className="font-bold text-[var(--ecf-text)] dark:text-white">
             Seguridad de las cuentas
           </h2>
 
-          <p className="mt-3 text-sm leading-7 text-slate-300">
+          <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
             Esta herramienta solo permite consultar
             usuarios, roles y asignaciones.
             No modifica contraseñas, permisos ni
             información de los participantes.
           </p>
 
-          <p className="mt-3 text-xs text-amber-200">
+          <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
             La creación, edición y desactivación
             de cuentas requiere operaciones
             protegidas y auditoría.
           </p>
         </section>
 
-        <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border)] dark:border-white/10 py-6 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Gestión de usuarios
         </footer>
       </div>

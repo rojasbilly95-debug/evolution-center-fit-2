@@ -149,8 +149,8 @@ function InsigniaGrupo({
     <span
       className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${
         grupo === "GE"
-          ? "border-cyan-400/25 bg-cyan-400/10 text-cyan-200"
-          : "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+          ? "border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-200"
+          : "border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
       }`}
     >
       {grupo} ·{" "}
@@ -162,7 +162,7 @@ function InsigniaGrupo({
 // CABECERA RESPONSIVE
 function Cabecera() {
   return (
-    <header className="relative z-40 border-b border-white/10 bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
+    <header className="relative z-40 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/95 dark:bg-[#0c1526]/95 shadow-lg shadow-slate-950/5 dark:shadow-black/20 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link
           href="/entrenador"
@@ -175,11 +175,11 @@ function Cabecera() {
           <span className="min-w-0">
             <span className="block truncate text-xs font-black tracking-wide sm:text-sm">
               EVOLUTION CENTER FIT{" "}
-              <span className="text-cyan-300">
+              <span className="text-cyan-800 dark:text-cyan-300">
                 2.0
               </span>
             </span>
-            <span className="block text-[11px] text-slate-400">
+            <span className="block text-[11px] text-slate-600 dark:text-slate-400">
               Panel de investigación
             </span>
           </span>
@@ -201,8 +201,8 @@ function Cabecera() {
               }
               className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                 item.href === "/entrenador/investigacion"
-                  ? "bg-cyan-400/10 text-cyan-300"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {item.texto}
@@ -212,14 +212,14 @@ function Cabecera() {
 
         {/* NAVEGACION PARA CELULAR Y TABLET */}
         <details className="relative shrink-0 xl:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-slate-300/80 dark:border-white/15 bg-slate-100/80 dark:bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
             <Icono nombre="menu" />
             Menú
           </summary>
 
           <nav
             aria-label="Navegación móvil del entrenador"
-            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-slate-300/80 dark:border-white/15 bg-white dark:bg-[#101d31] p-2 shadow-2xl shadow-slate-950/10 dark:shadow-black/50"
           >
             {enlaces.map((item) => (
               <Link
@@ -232,8 +232,8 @@ function Cabecera() {
                 }
                 className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                   item.href === "/entrenador/investigacion"
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-200 hover:bg-white/10"
+                    ? "bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                    : "text-slate-800 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-white/10"
                 }`}
               >
                 {item.texto}
@@ -259,7 +259,7 @@ function TarjetaResumen({
   color: string;
 }) {
   return (
-    <article className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.19)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.27)] sm:p-6">
+    <article className="min-w-0 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#172a43] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.19)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.27)] sm:p-6">
       <div className="flex items-start justify-between gap-2">
         <span
           className={`flex h-11 w-11 items-center justify-center rounded-xl ${color}`}
@@ -274,7 +274,7 @@ function TarjetaResumen({
         {valor}
       </p>
 
-      <p className="mt-2 text-sm font-medium text-slate-300">
+      <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-300">
         {titulo}
       </p>
     </article>
@@ -449,9 +449,9 @@ export default function InvestigacionPage() {
 
   // ESTILO COMPARTIDO PARA FORMULARIOS
   const campo =
-    "min-h-12 w-full rounded-xl border border-white/15 " +
-    "bg-[#0b1628] px-4 py-3 text-sm text-white outline-none " +
-    "transition-colors focus:border-cyan-400/70 " +
+    "min-h-12 w-full rounded-xl border border-slate-300/80 dark:border-white/15 " +
+    "bg-white dark:bg-[#0b1628] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white outline-none " +
+    "transition-colors placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:border-cyan-400/70 " +
     "focus:ring-2 focus:ring-cyan-400/20 " +
     "disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -460,7 +460,7 @@ export default function InvestigacionPage() {
 
   // 5. INTERFAZ PRINCIPAL
   return (
-    <main className="relative min-h-screen bg-[#080d1a] text-white">
+    <main className="relative min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] text-[var(--ecf-text,#102238)] dark:text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-cyan-500/[0.06] to-transparent"
@@ -470,10 +470,10 @@ export default function InvestigacionPage() {
 
       <div className="relative mx-auto w-full max-w-7xl space-y-8 px-4 pb-20 pt-7 sm:px-6 lg:px-8">
         {/* BIENVENIDA */}
-        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-[#122b40] via-[#111d32] to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
+        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-[#eafaff] dark:from-[#122b40] via-white dark:via-[#111d32] to-[#f5f2ff] dark:to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-200">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-200">
                 <Icono
                   nombre="experimento"
                   className="h-4 w-4"
@@ -483,12 +483,12 @@ export default function InvestigacionPage() {
 
               <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
                 Panel de{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-800 dark:text-cyan-300">
                   investigación
                 </span>
               </h1>
 
-              <p className="mt-4 text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-4 text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base">
                 Administra la inscripción de participantes,
                 consulta sus grupos y mantén la separación
                 entre el procedimiento experimental y el
@@ -499,7 +499,7 @@ export default function InvestigacionPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/entrenador"
-                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100/80 dark:bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-slate-200/70 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
               >
                 Volver al panel
               </Link>
@@ -527,21 +527,21 @@ export default function InvestigacionPage() {
             titulo="Participantes registrados"
             valor={valorResumen(registrados.length)}
             icono="usuarios"
-            color="bg-cyan-400/10 text-cyan-300"
+            color="bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
           />
 
           <TarjetaResumen
             titulo="Grupo experimental (GE)"
             valor={valorResumen(totalGE)}
             icono="experimento"
-            color="bg-violet-400/10 text-violet-300"
+            color="bg-violet-50 dark:bg-violet-400/10 text-violet-800 dark:text-violet-300"
           />
 
           <TarjetaResumen
             titulo="Grupo control (GC)"
             valor={valorResumen(totalGC)}
             icono="escudo"
-            color="bg-emerald-400/10 text-emerald-300"
+            color="bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-300"
           />
         </section>
 
@@ -549,7 +549,7 @@ export default function InvestigacionPage() {
         {errorCarga && (
           <div
             role="alert"
-            className="rounded-2xl border border-red-400/25 bg-red-400/10 p-4 text-sm text-red-200"
+            className="rounded-2xl border border-red-400/25 bg-red-50 dark:bg-red-400/10 p-4 text-sm text-red-800 dark:text-red-200"
           >
             No se pudo actualizar el listado:{" "}
             {errorCarga}
@@ -567,7 +567,7 @@ export default function InvestigacionPage() {
         {error && (
           <div
             role="alert"
-            className="rounded-2xl border border-red-400/25 bg-red-400/10 p-4 text-sm text-red-200"
+            className="rounded-2xl border border-red-400/25 bg-red-50 dark:bg-red-400/10 p-4 text-sm text-red-800 dark:text-red-200"
           >
             {error}
           </div>
@@ -576,7 +576,7 @@ export default function InvestigacionPage() {
         {exito && (
           <div
             role="status"
-            className="flex items-center gap-2 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-4 text-sm text-emerald-200"
+            className="flex items-center gap-2 rounded-2xl border border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 p-4 text-sm text-emerald-800 dark:text-emerald-200"
           >
             <Icono
               nombre="check"
@@ -589,11 +589,11 @@ export default function InvestigacionPage() {
         {/* REGISTRO DE PARTICIPANTES */}
         <section
           aria-labelledby="titulo-registro"
-          className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#15243a] to-[#101a2b] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.23)] sm:p-7"
+          className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#15243a] to-slate-50 dark:to-[#101a2b] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.23)] sm:p-7"
         >
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Inscripción controlada
               </p>
 
@@ -604,14 +604,14 @@ export default function InvestigacionPage() {
                 Registrar participante
               </h2>
 
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
                 Asigna un cliente a GE o GC.
                 El grupo no podrá modificarse
                 desde este formulario.
               </p>
             </div>
 
-            <span className="inline-flex self-start rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300">
+            <span className="inline-flex self-start rounded-full border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100/80 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
               {cargando
                 ? "Consultando..."
                 : `${disponibles.length} disponibles`}
@@ -626,7 +626,7 @@ export default function InvestigacionPage() {
             <div className="min-w-0 space-y-2">
               <label
                 htmlFor="cliente"
-                className="block text-sm font-semibold text-slate-200"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
               >
                 Cliente
               </label>
@@ -661,7 +661,7 @@ export default function InvestigacionPage() {
 
               {!cargando &&
                 disponibles.length === 0 && (
-                  <p className="text-xs text-amber-200">
+                  <p className="text-xs text-amber-800 dark:text-amber-200">
                     No hay clientes sin grupo disponibles
                     para registrar.
                   </p>
@@ -672,7 +672,7 @@ export default function InvestigacionPage() {
             <div className="min-w-0 space-y-2">
               <label
                 htmlFor="grupo"
-                className="block text-sm font-semibold text-slate-200"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
               >
                 Grupo de investigación
               </label>
@@ -699,7 +699,7 @@ export default function InvestigacionPage() {
             <div className="min-w-0 space-y-2">
               <label
                 htmlFor="fecha"
-                className="block text-sm font-semibold text-slate-200"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-200"
               >
                 Fecha de inicio del estudio
               </label>
@@ -713,10 +713,10 @@ export default function InvestigacionPage() {
                 }
                 required
                 disabled={cargando || guardando}
-                className={`${campo} [color-scheme:dark]`}
+                className={`${campo} dark:[color-scheme:dark]`}
               />
 
-              <p className="flex items-center gap-2 text-xs text-slate-400">
+              <p className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                 <Icono
                   nombre="calendario"
                   className="h-4 w-4"
@@ -763,36 +763,36 @@ export default function InvestigacionPage() {
           aria-label="Información metodológica"
           className="grid gap-4 md:grid-cols-2"
         >
-          <article className="rounded-2xl border border-violet-400/20 bg-violet-400/[0.07] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.13)] sm:p-6">
+          <article className="rounded-2xl border border-violet-400/20 bg-violet-50 dark:bg-violet-400/[0.07] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.13)] sm:p-6">
             <div className="flex items-center gap-3">
-              <span className="rounded-xl bg-violet-400/15 p-2.5 text-violet-200">
+              <span className="rounded-xl bg-violet-400/15 p-2.5 text-violet-800 dark:text-violet-200">
                 <Icono nombre="experimento" />
               </span>
 
-              <h3 className="font-bold text-violet-100">
+              <h3 className="font-bold text-violet-900 dark:text-violet-100">
                 Grupo experimental (GE)
               </h3>
             </div>
 
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
               Recibe recomendaciones inteligentes
               supervisadas durante la intervención,
               después del pretest.
             </p>
           </article>
 
-          <article className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.07] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.13)] sm:p-6">
+          <article className="rounded-2xl border border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/[0.07] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.13)] sm:p-6">
             <div className="flex items-center gap-3">
-              <span className="rounded-xl bg-emerald-400/15 p-2.5 text-emerald-200">
+              <span className="rounded-xl bg-emerald-400/15 p-2.5 text-emerald-800 dark:text-emerald-200">
                 <Icono nombre="escudo" />
               </span>
 
-              <h3 className="font-bold text-emerald-100">
+              <h3 className="font-bold text-emerald-900 dark:text-emerald-100">
                 Grupo control (GC)
               </h3>
             </div>
 
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
               Continúa con la asignación habitual
               de rutinas sin utilizar el motor
               inteligente durante el estudio.
@@ -803,11 +803,11 @@ export default function InvestigacionPage() {
         {/* DIRECTORIO DE PARTICIPANTES */}
         <section
           aria-labelledby="titulo-participantes"
-          className="overflow-hidden rounded-3xl border border-white/10 bg-[#111d31] shadow-[0_18px_48px_rgba(0,0,0,0.2)]"
+          className="overflow-hidden rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#111d31] shadow-[0_18px_48px_rgba(0,0,0,0.2)]"
         >
-          <div className="flex flex-col justify-between gap-4 border-b border-white/10 p-5 sm:flex-row sm:items-center sm:p-6">
+          <div className="flex flex-col justify-between gap-4 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 p-5 sm:flex-row sm:items-center sm:p-6">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                 Directorio del estudio
               </p>
 
@@ -818,7 +818,7 @@ export default function InvestigacionPage() {
                 Participantes registrados
               </h2>
 
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                 Consulta los grupos y las fechas
                 registradas.
               </p>
@@ -828,7 +828,7 @@ export default function InvestigacionPage() {
               type="button"
               onClick={() => void cargarClientes()}
               disabled={cargando || guardando}
-              className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-slate-300/80 dark:border-white/15 bg-slate-100/80 dark:bg-white/5 px-4 py-2.5 text-sm font-semibold transition hover:bg-slate-200/70 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icono
                 nombre="actualizar"
@@ -839,7 +839,7 @@ export default function InvestigacionPage() {
           </div>
 
           {/* BUSCADOR Y FILTROS */}
-          <div className="grid gap-3 border-b border-white/10 p-5 sm:grid-cols-[minmax(0,1fr)_180px] sm:p-6">
+          <div className="grid gap-3 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 p-5 sm:grid-cols-[minmax(0,1fr)_180px] sm:p-6">
             <div className="relative min-w-0">
               <label
                 htmlFor="buscar-participante"
@@ -850,7 +850,7 @@ export default function InvestigacionPage() {
 
               <Icono
                 nombre="buscar"
-                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600 dark:text-slate-400"
               />
 
               <input
@@ -898,7 +898,7 @@ export default function InvestigacionPage() {
 
           <div
             role="status"
-            className="px-5 pt-4 text-xs text-slate-400 sm:px-6"
+            className="px-5 pt-4 text-xs text-slate-600 dark:text-slate-400 sm:px-6"
           >
             {cargando
               ? "Consultando participantes..."
@@ -914,7 +914,7 @@ export default function InvestigacionPage() {
               participantesVisibles.map((cliente) => (
                 <article
                   key={cliente.clienteId}
-                  className="rounded-2xl border border-white/10 bg-[#0c1729] p-4 shadow-lg shadow-black/10"
+                  className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50 dark:bg-[#0c1729] p-4 shadow-lg shadow-black/10"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <h3 className="break-words font-bold">
@@ -930,7 +930,7 @@ export default function InvestigacionPage() {
 
                   <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <dt className="text-xs text-slate-400">
+                      <dt className="text-xs text-slate-600 dark:text-slate-400">
                         Inicio
                       </dt>
                       <dd className="mt-1 font-semibold">
@@ -941,7 +941,7 @@ export default function InvestigacionPage() {
                     </div>
 
                     <div>
-                      <dt className="text-xs text-slate-400">
+                      <dt className="text-xs text-slate-600 dark:text-slate-400">
                         Fin
                       </dt>
                       <dd className="mt-1 font-semibold">
@@ -952,7 +952,7 @@ export default function InvestigacionPage() {
                     </div>
                   </dl>
 
-                  <p className="mt-4 border-t border-white/10 pt-3 text-xs font-semibold text-emerald-300">
+                  <p className="mt-4 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-3 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
                     Registrado
                   </p>
                 </article>
@@ -962,7 +962,7 @@ export default function InvestigacionPage() {
           {/* TABLA PARA TABLET Y PC */}
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-left text-sm">
-              <thead className="bg-white/[0.035] text-xs uppercase tracking-wider text-slate-400">
+              <thead className="bg-slate-100/90 dark:bg-white/[0.035] text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 <tr>
                   <th scope="col" className="px-6 py-4">
                     Cliente
@@ -989,9 +989,9 @@ export default function InvestigacionPage() {
                     (cliente) => (
                       <tr
                         key={cliente.clienteId}
-                        className="border-t border-white/[0.07] transition-colors hover:bg-white/[0.04]"
+                        className="border-t border-slate-200 dark:border-white/[0.07] transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.04]"
                       >
-                        <td className="px-6 py-4 font-semibold text-slate-100">
+                        <td className="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">
                           {cliente.nombre}
                         </td>
 
@@ -1003,20 +1003,20 @@ export default function InvestigacionPage() {
                           />
                         </td>
 
-                        <td className="whitespace-nowrap px-6 py-4 text-slate-300">
+                        <td className="whitespace-nowrap px-6 py-4 text-slate-700 dark:text-slate-300">
                           {fechaLegible(
                             cliente.fechaInicio
                           )}
                         </td>
 
-                        <td className="whitespace-nowrap px-6 py-4 text-slate-300">
+                        <td className="whitespace-nowrap px-6 py-4 text-slate-700 dark:text-slate-300">
                           {fechaLegible(
                             cliente.fechaFin
                           )}
                         </td>
 
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center gap-1.5 text-emerald-300">
+                          <span className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                             Registrado
                           </span>
@@ -1032,7 +1032,7 @@ export default function InvestigacionPage() {
           {!cargando &&
             !errorCarga &&
             participantesVisibles.length === 0 && (
-              <p className="px-5 pb-8 pt-5 text-center text-sm text-slate-400">
+              <p className="px-5 pb-8 pt-5 text-center text-sm text-slate-600 dark:text-slate-400">
                 {registrados.length === 0
                   ? "Todavía no hay participantes registrados."
                   : "No hay participantes que coincidan con los filtros."}
@@ -1040,13 +1040,13 @@ export default function InvestigacionPage() {
             )}
 
           {cargando && (
-            <p className="px-5 pb-8 pt-5 text-center text-sm text-slate-400">
+            <p className="px-5 pb-8 pt-5 text-center text-sm text-slate-600 dark:text-slate-400">
               Cargando participantes...
             </p>
           )}
         </section>
 
-        <footer className="pt-2 text-center text-xs text-slate-500">
+        <footer className="pt-2 text-center text-xs text-slate-600 dark:text-slate-500">
           Evolution Center Fit 2.0 · Investigación.
           Los registros demostrativos no constituyen
           resultados científicos.

@@ -107,7 +107,7 @@ const enlaces = [
 
 function Cabecera() {
   return (
-    <header className="relative z-40 border-b border-white/10 bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
+    <header className="relative z-40 border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white/95 dark:bg-[#0c1526]/95 shadow-lg shadow-black/20 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <Link
           href="/cliente"
@@ -120,12 +120,12 @@ function Cabecera() {
           <span className="min-w-0">
             <span className="block truncate text-xs font-black tracking-wide sm:text-sm">
               EVOLUTION CENTER FIT{" "}
-              <span className="text-cyan-300">
+              <span className="text-cyan-800 dark:text-cyan-300">
                 2.0
               </span>
             </span>
 
-            <span className="block text-[11px] text-slate-400">
+            <span className="block text-[11px] text-slate-600 dark:text-slate-400">
               Mi espacio de entrenamiento
             </span>
           </span>
@@ -149,8 +149,8 @@ function Cabecera() {
                   activo ? "page" : undefined
                 }
                 className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-cyan-300 ${activo
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                    ? "bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white"
                   }`}
               >
                 {enlace.texto}
@@ -161,7 +161,7 @@ function Cabecera() {
           <form action={cerrarSesion}>
             <button
               type="submit"
-              className="ml-1 min-h-11 rounded-xl border border-rose-400/20 px-3 py-2 text-sm font-semibold text-rose-300 transition hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
+              className="ml-1 min-h-11 rounded-xl border border-rose-200 dark:border-rose-400/20 px-3 py-2 text-sm font-semibold text-rose-700 dark:text-rose-300 transition hover:bg-rose-400/10 focus-visible:outline-2 focus-visible:outline-rose-300"
             >
               Cerrar sesión
             </button>
@@ -170,14 +170,14 @@ function Cabecera() {
 
         {/* MENU MOVIL */}
         <details className="relative shrink-0 lg:hidden">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-cyan-300 [&::-webkit-details-marker]:hidden">
             <Icon name="menu" />
             Menú
           </summary>
 
           <nav
             aria-label="Navegación móvil del cliente"
-            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-white/15 bg-[#101d31] p-2 shadow-2xl shadow-black/50"
+            className="absolute right-0 top-full z-50 mt-3 w-64 max-w-[calc(100vw-2rem)] space-y-1 rounded-2xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#101d31] p-2 shadow-2xl shadow-black/50"
           >
             {enlaces.map((enlace) => (
               <Link
@@ -191,8 +191,8 @@ function Cabecera() {
                 }
                 className={`block rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${enlace.href ===
                     "/cliente/mi-rutina"
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : "text-slate-200 hover:bg-white/10"
+                    ? "bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300"
+                    : "text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10"
                   }`}
               >
                 {enlace.texto}
@@ -201,11 +201,11 @@ function Cabecera() {
 
             <form
               action={cerrarSesion}
-              className="mt-2 border-t border-white/10 pt-2"
+              className="mt-2 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 pt-2"
             >
               <button
                 type="submit"
-                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-300 hover:bg-rose-400/10"
+                className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-400/10"
               >
                 Cerrar sesión
               </button>
@@ -220,10 +220,10 @@ function Cabecera() {
 // ESTADOS DE CARGA
 function PanelCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080d1a] px-5 text-white">
-      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#111d31] px-6 py-5 shadow-lg">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-300/20 border-t-cyan-300" />
-        <p className="text-sm text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-5 text-[var(--ecf-text,#102238)] dark:text-white">
+      <div className="flex items-center gap-3 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#111d31] px-6 py-5 shadow-lg">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-200 dark:border-cyan-300/20 border-t-cyan-300" />
+        <p className="text-sm text-cyan-800 dark:text-cyan-200">
           Cargando tu rutina personalizada...
         </p>
       </div>
@@ -240,25 +240,25 @@ function Mensaje({
   descripcion: string;
 }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-7 text-center shadow-[0_18px_48px_rgba(0,0,0,0.2)] sm:p-10">
-      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-300">
+    <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#172a43] to-slate-50 dark:to-[#101a2d] p-7 text-center shadow-[0_18px_48px_rgba(0,0,0,0.2)] sm:p-10">
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300">
         <Icon
           name="dumbbell"
           className="h-7 w-7"
         />
       </span>
 
-      <h2 className="mt-5 text-xl font-bold text-white">
+      <h2 className="mt-5 text-xl font-bold text-[var(--ecf-text,#102238)] dark:text-white">
         {titulo}
       </h2>
 
-      <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-400">
+      <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600 dark:text-slate-400">
         {descripcion}
       </p>
 
       <Link
         href="/cliente"
-        className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
+        className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 px-5 py-3 text-sm font-bold text-slate-800 dark:text-slate-200 transition hover:bg-slate-200 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300"
       >
         Volver al portal
       </Link>
@@ -277,16 +277,16 @@ function Indicador({
   valor: number;
 }) {
   return (
-    <article className="min-w-0 rounded-2xl border border-white/10 bg-gradient-to-br from-[#172a43] to-[#101a2d] p-5 shadow-[0_12px_34px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_18px_42px_rgba(0,0,0,0.26)]">
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+    <article className="min-w-0 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#172a43] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_12px_34px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_18px_42px_rgba(0,0,0,0.26)]">
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-300">
         <Icon name={icono} />
       </span>
 
-      <p className="mt-4 text-3xl font-extrabold tabular-nums text-white sm:text-4xl">
+      <p className="mt-4 text-3xl font-extrabold tabular-nums text-[var(--ecf-text,#102238)] dark:text-white sm:text-4xl">
         {valor}
       </p>
 
-      <p className="mt-2 text-sm font-semibold text-slate-300">
+      <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
         {titulo}
       </p>
     </article>
@@ -302,12 +302,12 @@ function DatoObjetivo({
   valor: string | number;
 }) {
   return (
-    <div className="min-w-0 rounded-xl border border-white/[0.07] bg-[#091628] p-3 sm:p-4">
-      <p className="text-xs text-slate-400">
+    <div className="min-w-0 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-[#091628] p-3 sm:p-4">
+      <p className="text-xs text-slate-600 dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-2 break-words text-base font-extrabold text-white">
+      <p className="mt-2 break-words text-base font-extrabold text-[var(--ecf-text,#102238)] dark:text-white">
         {valor}
       </p>
     </div>
@@ -340,7 +340,7 @@ async function ContenidoMiRutina() {
 
   if (rolError || rol?.rol !== "cliente") {
     return (
-      <main className="min-h-screen bg-[#080d1a] px-4 py-12 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] px-4 py-12 text-[var(--ecf-text,#102238)] dark:text-white">
         <div className="mx-auto max-w-xl">
           <Mensaje
             titulo="Acceso restringido"
@@ -466,7 +466,7 @@ async function ContenidoMiRutina() {
 
   // 5. INTERFAZ
   return (
-    <main className="relative min-h-screen bg-[#080d1a] text-white">
+    <main className="relative min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080d1a] text-[var(--ecf-text,#102238)] dark:text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-cyan-500/[0.06] to-transparent"
@@ -476,10 +476,10 @@ async function ContenidoMiRutina() {
 
       <div className="relative mx-auto w-full max-w-7xl space-y-8 px-4 pb-20 pt-7 sm:px-6 lg:px-8">
         {/* ENCABEZADO PRINCIPAL */}
-        <section className="overflow-hidden rounded-[28px] border border-cyan-400/15 bg-gradient-to-br from-[#122b40] via-[#111d32] to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
+        <section className="overflow-hidden rounded-[28px] border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#eef9fd] dark:from-[#122b40] via-white dark:via-[#111d32] to-[#f6f3ff] dark:to-[#1a1735] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.25)] sm:p-8 lg:p-10">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-200">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-200 dark:border-cyan-300/20 bg-cyan-50 dark:bg-cyan-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-200">
                 <Icon
                   name="dumbbell"
                   className="h-4 w-4"
@@ -489,12 +489,12 @@ async function ContenidoMiRutina() {
 
               <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
                 Mi rutina{" "}
-                <span className="text-cyan-300">
+                <span className="text-cyan-800 dark:text-cyan-300">
                   personalizada
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base">
                 Descubre los ejercicios preparados
                 para ti, consulta tus objetivos y
                 revisa las indicaciones de cada
@@ -504,7 +504,7 @@ async function ContenidoMiRutina() {
 
             <Link
               href="/cliente"
-              className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 lg:self-auto"
+              className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-white/5 px-5 py-3 text-sm font-semibold transition hover:bg-slate-200 dark:hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300 lg:self-auto"
             >
               Volver a mi panel
               <Icon
@@ -534,10 +534,10 @@ async function ContenidoMiRutina() {
         ) : (
           <>
             {/* PLAN ASIGNADO */}
-            <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#15283f] to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7">
+            <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#15283f] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+                  <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                     Plan asignado
                   </p>
 
@@ -545,15 +545,15 @@ async function ContenidoMiRutina() {
                     {nombreRutina}
                   </h2>
 
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
                     Asignación #{asignacion.id}
                   </p>
                 </div>
 
                 <span
                   className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold ${asignacion.estado === "activa"
-                      ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
-                      : "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
+                      ? "border-emerald-200 dark:border-emerald-400/30 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                      : "border-cyan-400/30 bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-200"
                     }`}
                 >
                   <span
@@ -589,7 +589,7 @@ async function ContenidoMiRutina() {
               className="space-y-5"
             >
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                   Preparación
                 </p>
 
@@ -600,7 +600,7 @@ async function ContenidoMiRutina() {
                   Ejercicios de mi rutina
                 </h2>
 
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
                   Selecciona cada ejercicio para
                   consultar las series, repeticiones,
                   duración y descanso establecidos
@@ -624,27 +624,27 @@ async function ContenidoMiRutina() {
                     return (
                       <details
                         key={`${fila.orden}-${fila.ejercicio_id}`}
-                        className="group min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#162840] to-[#101a2d] shadow-[0_16px_42px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_22px_50px_rgba(0,0,0,0.28)] open:border-cyan-400/35"
+                        className="group min-w-0 overflow-hidden rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#162840] to-slate-50 dark:to-[#101a2d] shadow-[0_16px_42px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_22px_50px_rgba(0,0,0,0.28)] open:border-cyan-400/35"
                       >
                         {/* CABECERA DESPLEGABLE */}
                         <summary className="flex cursor-pointer list-none items-start justify-between gap-3 p-5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-300 sm:p-6 [&::-webkit-details-marker]:hidden">
                           <div className="flex min-w-0 items-start gap-4">
-                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-sm font-black text-cyan-300">
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-sm font-black text-cyan-800 dark:text-cyan-300">
                               {fila.orden}
                             </span>
 
                             <div className="min-w-0">
-                              <p className="text-xs font-bold uppercase tracking-widest text-cyan-300">
+                              <p className="text-xs font-bold uppercase tracking-widest text-cyan-800 dark:text-cyan-300">
                                 Ejercicio {fila.orden}
                               </p>
 
-                              <h3 className="mt-2 break-words text-lg font-bold text-white">
+                              <h3 className="mt-2 break-words text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                                 {ejercicio?.nombre ??
                                   `Ejercicio #${fila.ejercicio_id}`}
                               </h3>
 
                               {ejercicio?.grupo_muscular && (
-                                <p className="mt-2 text-xs leading-5 text-slate-400">
+                                <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
                                   {ejercicio.grupo_muscular}
                                   {ejercicio.tipo
                                     ? ` · ${ejercicio.tipo}`
@@ -654,19 +654,19 @@ async function ContenidoMiRutina() {
 
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {fila.series != null && (
-                                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200">
+                                  <span className="rounded-full border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
                                     {fila.series} series
                                   </span>
                                 )}
 
                                 {fila.repeticiones != null && (
-                                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200">
+                                  <span className="rounded-full border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
                                     {fila.repeticiones} rep.
                                   </span>
                                 )}
 
                                 {fila.duracion_min != null && (
-                                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200">
+                                  <span className="rounded-full border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
                                     {fila.duracion_min} min
                                   </span>
                                 )}
@@ -674,7 +674,7 @@ async function ContenidoMiRutina() {
                             </div>
                           </div>
 
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-cyan-200 transition-transform duration-200 group-open:rotate-180">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-300 dark:border-white/15 bg-slate-100 dark:bg-white/5 text-cyan-800 dark:text-cyan-200 transition-transform duration-200 group-open:rotate-180">
                             <Icon
                               name="chevron"
                               className="h-4 w-4"
@@ -683,19 +683,19 @@ async function ContenidoMiRutina() {
                         </summary>
 
                         {/* INFORMACION DETALLADA */}
-                        <div className="border-t border-white/10 bg-[#0b1628]/60 p-5 sm:p-6">
+                        <div className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-50/80 dark:bg-[#0b1628]/60 p-5 sm:p-6">
                           {ejercicio?.descripcion ? (
-                            <div className="rounded-xl border border-cyan-400/15 bg-cyan-400/[0.04] p-4">
-                              <p className="text-xs font-bold uppercase tracking-wider text-cyan-300">
+                            <div className="rounded-xl border border-cyan-200 dark:border-cyan-400/15 bg-cyan-50 dark:bg-cyan-400/[0.04] p-4">
+                              <p className="text-xs font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-300">
                                 Descripción del ejercicio
                               </p>
 
-                              <p className="mt-2 text-sm leading-7 text-slate-300">
+                              <p className="mt-2 text-sm leading-7 text-slate-700 dark:text-slate-300">
                                 {ejercicio.descripcion}
                               </p>
                             </div>
                           ) : (
-                            <p className="text-sm text-slate-400">
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
                               No hay indicaciones
                               adicionales registradas
                               para este ejercicio.
@@ -737,13 +737,13 @@ async function ContenidoMiRutina() {
                             </div>
                           </div>
 
-                          <div className="mt-4 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                          <div className="mt-4 flex items-start gap-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/[0.03] p-3">
                             <Icon
                               name="shield"
-                              className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300"
+                              className="mt-0.5 h-5 w-5 shrink-0 text-cyan-800 dark:text-cyan-300"
                             />
 
-                            <p className="text-xs leading-6 text-slate-400">
+                            <p className="text-xs leading-6 text-slate-600 dark:text-slate-400">
                               Estos son los objetivos
                               preparados para tu sesión.
                               El registro del cumplimiento
@@ -760,18 +760,18 @@ async function ContenidoMiRutina() {
             </section>
 
             {/* MENSAJE METODOLOGICO */}
-            <section className="rounded-2xl border border-cyan-400/20 bg-gradient-to-r from-cyan-400/[0.08] to-violet-400/[0.06] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.13)] sm:p-6">
+            <section className="rounded-2xl border border-cyan-200 dark:border-cyan-400/20 bg-gradient-to-r from-cyan-50 dark:from-cyan-400/[0.08] to-violet-50 dark:to-violet-400/[0.06] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.13)] sm:p-6">
               <div className="flex items-start gap-3">
-                <span className="rounded-xl bg-cyan-400/10 p-3 text-cyan-300">
+                <span className="rounded-xl bg-cyan-50 dark:bg-cyan-400/10 p-3 text-cyan-800 dark:text-cyan-300">
                   <Icon name="shield" />
                 </span>
 
                 <div>
-                  <h2 className="font-bold text-white">
+                  <h2 className="font-bold text-[var(--ecf-text,#102238)] dark:text-white">
                     Tu entrenamiento está supervisado
                   </h2>
 
-                  <p className="mt-2 text-sm leading-7 text-slate-300">
+                  <p className="mt-2 text-sm leading-7 text-slate-700 dark:text-slate-300">
                     Esta página muestra los objetivos
                     de tu rutina. Los resultados reales
                     de cada entrenamiento se registran

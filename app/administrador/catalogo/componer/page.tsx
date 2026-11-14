@@ -325,7 +325,7 @@ async function publicarRutina(formData: FormData) {
 
 function Cargando() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080e1b] text-cyan-200">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
       Cargando editor de rutinas...
     </main>
   );
@@ -346,7 +346,7 @@ async function Contenido({
 
   if (!acceso) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <h1 className="text-xl font-bold">
           Configuración pendiente
         </h1>
@@ -358,7 +358,7 @@ async function Contenido({
 
         <Link
           href="/administrador"
-          className="mt-5 inline-block text-cyan-300"
+          className="mt-5 inline-block text-cyan-700 dark:text-cyan-300"
         >
           Volver al administrador
         </Link>
@@ -401,18 +401,18 @@ async function Contenido({
     respuestaEjercicios.error
   ) {
     return (
-      <main className="min-h-screen bg-[#080e1b] p-8 text-white">
+      <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] p-8 text-[var(--ecf-text,#102238)] dark:text-white">
         <h1 className="text-xl font-bold">
           No se pudo consultar el catálogo
         </h1>
 
-        <p className="mt-3 text-sm text-slate-300">
+        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
           Revisa la conexión con Supabase.
         </p>
 
         <Link
           href="/administrador/catalogo"
-          className="mt-5 inline-block text-cyan-300"
+          className="mt-5 inline-block text-cyan-700 dark:text-cyan-300"
         >
           Volver al catálogo
         </Link>
@@ -576,28 +576,28 @@ async function Contenido({
   // ==========================================
 
   return (
-    <main className="min-h-screen bg-[#080e1b] text-white">
+    <main className="min-h-screen bg-[var(--ecf-bg,#f4f8fc)] dark:bg-[#080e1b] text-[var(--ecf-text,#102238)] dark:text-white">
 
       {/* CABECERA */}
 
-      <header className="border-b border-white/10 bg-[#101d30]">
+      <header className="border-b border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#101d30]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 p-5">
           <div>
             <p className="font-black">
               EVOLUTION CENTER FIT{" "}
-              <span className="text-cyan-300">
+              <span className="text-cyan-700 dark:text-cyan-300">
                 2.0
               </span>
             </p>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Administración de rutinas
             </p>
           </div>
 
           <Link
             href="/administrador/catalogo"
-            className="rounded-xl border border-white/15 px-4 py-3 text-sm hover:bg-white/10"
+            className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 px-4 py-3 text-sm hover:bg-slate-100 dark:hover:bg-white/10"
           >
             ← Volver al catálogo
           </Link>
@@ -608,8 +608,8 @@ async function Contenido({
 
         {/* BIENVENIDA */}
 
-        <section className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-[#19384e] to-[#1b1e39] p-7 sm:p-9">
-          <p className="text-xs font-black uppercase tracking-widest text-cyan-300">
+        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/20 bg-gradient-to-br from-[#e6f8fc] dark:from-[#19384e] to-[#eef1ff] dark:to-[#1b1e39] p-7 sm:p-9">
+          <p className="text-xs font-black uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             FASE 111.14
           </p>
 
@@ -617,7 +617,7 @@ async function Contenido({
             Editor de rutinas
           </h1>
 
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-300">
             Selecciona una rutina en borrador,
             agrega ejercicios activos y configura
             su ejecución.
@@ -632,7 +632,7 @@ async function Contenido({
         {mensaje && (
           <div
             role="status"
-            className="rounded-xl border border-cyan-400/25 bg-cyan-400/10 p-4 text-sm text-cyan-100"
+            className="rounded-xl border border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 p-4 text-sm text-cyan-900 dark:text-cyan-100"
           >
             {mensaje}
           </div>
@@ -641,7 +641,7 @@ async function Contenido({
         {consultaParcial && (
           <div
             role="alert"
-            className="rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-200"
+            className="rounded-xl border border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200"
           >
             El catálogo supera el límite de
             consulta. Algunas opciones podrían
@@ -651,12 +651,12 @@ async function Contenido({
 
         {/* PASO 1: ELEGIR RUTINA */}
 
-        <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+        <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
           <h2 className="text-xl font-bold">
             1. Seleccionar rutina
           </h2>
 
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Hay {borradores.length} borrador(es)
             en los registros consultados.
           </p>
@@ -670,7 +670,7 @@ async function Contenido({
               name="rutina"
               aria-label="Rutina"
               defaultValue={rutina?.id ?? ""}
-              className="min-h-12 min-w-0 flex-1 rounded-xl border border-white/15 bg-[#081525] px-4 py-3 text-sm text-white"
+              className="min-h-12 min-w-0 flex-1 rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#081525] px-4 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white"
             >
               <option value="">
                 Selecciona una rutina
@@ -702,7 +702,7 @@ async function Contenido({
           </form>
 
           {borradores.length === 0 && (
-            <p className="mt-4 text-sm text-amber-200">
+            <p className="mt-4 text-sm text-amber-800 dark:text-amber-200">
               No hay borradores disponibles.
               Primero crea una rutina desde
               el catálogo administrativo.
@@ -714,14 +714,14 @@ async function Contenido({
 
         {rutina && (
           <>
-            <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+            <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-2xl font-bold">
                     {rutina.nombre}
                   </h2>
 
-                  <p className="mt-3 text-sm text-slate-400">
+                  <p className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {etiqueta(rutina.objetivo)}
                     {" · "}
                     {etiqueta(rutina.nivel)}
@@ -729,13 +729,13 @@ async function Contenido({
                     {etiqueta(rutina.lugar)}
                   </p>
 
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     {rutina.frecuencia_semanal} días
                     por semana · {rutina.duracion_min} minutos
                   </p>
                 </div>
 
-                <span className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-200">
+                <span className="rounded-full border border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-800 dark:text-cyan-200">
                   {rutina.estado}
                 </span>
               </div>
@@ -745,7 +745,7 @@ async function Contenido({
               </h3>
 
               {errorComposicion && (
-                <p className="mt-3 rounded-xl bg-amber-400/10 p-4 text-sm text-amber-200">
+                <p className="mt-3 rounded-xl bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200">
                   No se pudo verificar completamente
                   la composición. La publicación
                   está bloqueada.
@@ -754,7 +754,7 @@ async function Contenido({
 
               <div className="mt-4 space-y-3">
                 {componentes.length === 0 && (
-                  <p className="rounded-xl border border-white/10 bg-[#081525] p-5 text-sm text-slate-400">
+                  <p className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#081525] p-5 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Esta rutina todavía no
                     tiene ejercicios.
                   </p>
@@ -769,7 +769,7 @@ async function Contenido({
                   return (
                     <article
                       key={`${item.orden}-${item.ejercicio_id}`}
-                      className="rounded-xl border border-white/10 bg-[#081525] p-4"
+                      className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#081525] p-4"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <h4 className="font-bold">
@@ -785,8 +785,8 @@ async function Contenido({
                               rutina,
                               ejercicio
                             )
-                              ? "text-emerald-300"
-                              : "text-amber-300"
+                              ? "text-emerald-700 dark:text-emerald-300"
+                              : "text-amber-700 dark:text-amber-300"
                           }`}
                         >
                           {ejercicio &&
@@ -796,7 +796,7 @@ async function Contenido({
                         </span>
                       </div>
 
-                      <p className="mt-3 text-sm text-slate-400">
+                      <p className="mt-3 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         {item.series} series ·{" "}
                         {item.repeticiones !== null
                           ? `${item.repeticiones} repeticiones`
@@ -816,12 +816,12 @@ async function Contenido({
 
                 {/* PASO 2: AGREGAR EJERCICIO */}
 
-                <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+                <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
                   <h2 className="text-xl font-bold">
                     2. Agregar ejercicio
                   </h2>
 
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                     Solo se muestran ejercicios
                     activos y compatibles.
                   </p>
@@ -849,7 +849,7 @@ async function Contenido({
                         name="ejercicioId"
                         required
                         defaultValue=""
-                        className="w-full rounded-xl border border-white/15 bg-[#081525] px-3 py-3 text-sm"
+                        className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white px-3 py-3 text-sm"
                       >
                         <option value="" disabled>
                           Selecciona un ejercicio
@@ -883,7 +883,7 @@ async function Contenido({
                           max={10}
                           defaultValue={3}
                           required
-                          className="w-full rounded-xl border border-white/15 bg-[#081525] p-3"
+                          className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white p-3"
                         />
                       </div>
 
@@ -903,7 +903,7 @@ async function Contenido({
                           max={600}
                           defaultValue={60}
                           required
-                          className="w-full rounded-xl border border-white/15 bg-[#081525] p-3"
+                          className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white p-3"
                         />
                       </div>
 
@@ -922,7 +922,7 @@ async function Contenido({
                           min={1}
                           max={100}
                           placeholder="Ejemplo: 12"
-                          className="w-full rounded-xl border border-white/15 bg-[#081525] p-3"
+                          className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white p-3"
                         />
                       </div>
 
@@ -941,12 +941,12 @@ async function Contenido({
                           min={1}
                           max={240}
                           placeholder="Ejemplo: 10"
-                          className="w-full rounded-xl border border-white/15 bg-[#081525] p-3"
+                          className="w-full rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/15 bg-white dark:bg-[#081525] text-[var(--ecf-text,#102238)] dark:text-white p-3"
                         />
                       </div>
                     </div>
 
-                    <p className="text-xs text-amber-200">
+                    <p className="text-xs text-amber-800 dark:text-amber-200">
                       Completa repeticiones
                       o duración, no ambos.
                     </p>
@@ -966,12 +966,12 @@ async function Contenido({
 
                 {/* PASO 3: PUBLICAR */}
 
-                <section className="rounded-2xl border border-white/10 bg-[#112039] p-6">
+                <section className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
                   <h2 className="text-xl font-bold">
                     3. Publicar rutina
                   </h2>
 
-                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                  <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
                     Antes de publicar, comprueba
                     que la rutina tenga ejercicios,
                     que sean compatibles con
@@ -982,8 +982,8 @@ async function Contenido({
                   <div
                     className={`mt-5 rounded-xl border p-4 text-sm ${
                       composicionValida
-                        ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
-                        : "border-amber-400/25 bg-amber-400/10 text-amber-200"
+                        ? "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                        : "border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
                     }`}
                   >
                     {composicionValida
@@ -1001,7 +1001,7 @@ async function Contenido({
                       value={rutina.id}
                     />
 
-                    <label className="flex items-start gap-3 text-sm text-slate-300">
+                    <label className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
                       <input
                         type="checkbox"
                         name="confirmar"
@@ -1031,12 +1031,12 @@ async function Contenido({
 
         {/* SEGURIDAD */}
 
-        <section className="rounded-2xl border border-cyan-400/15 bg-[#112039] p-6">
+        <section className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-[var(--ecf-surface,#ffffff)] dark:bg-[#112039] p-6">
           <h2 className="font-bold">
             Seguridad administrativa
           </h2>
 
-          <p className="mt-3 text-sm leading-7 text-slate-300">
+          <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
             El acceso requiere una cuenta
             administradora autenticada.
 
@@ -1050,7 +1050,7 @@ async function Contenido({
           </p>
         </section>
 
-        <footer className="border-t border-white/10 py-5 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 py-5 text-center text-xs text-slate-500">
           Evolution Center Fit 2.0 · Editor de rutinas
         </footer>
 

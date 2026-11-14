@@ -82,11 +82,11 @@ const TITULOS: Record<Decision, string> = {
 
 const COLORES: Record<Decision, string> = {
   aprobada:
-    "border-emerald-400/25 bg-emerald-400/10 text-emerald-200",
+    "border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200",
   ajustes_solicitados:
-    "border-amber-400/25 bg-amber-400/10 text-amber-200",
+    "border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 text-amber-900 dark:text-amber-200",
   rechazada:
-    "border-rose-400/25 bg-rose-400/10 text-rose-200",
+    "border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 text-rose-800 dark:text-rose-200",
 };
 
 // ======================================
@@ -621,21 +621,21 @@ export default function RevisionRutina({
   return (
     <section
       aria-label={`Revisión profesional de ${rutinaNombre}`}
-      className="mt-5 rounded-xl border border-cyan-400/15 bg-slate-950/30 p-4 sm:p-5"
+      className="mt-5 rounded-2xl border border-cyan-200 bg-white p-4 shadow-sm dark:border-cyan-400/15 dark:bg-slate-950/30 dark:shadow-none sm:p-5"
     >
       {/* ENCABEZADO */}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-cyan-400">
+          <p className="text-xs font-semibold uppercase tracking-widest text-cyan-700 dark:text-cyan-400">
             Validación profesional
           </p>
 
-          <h6 className="mt-1 text-sm font-semibold text-white">
+          <h6 className="mt-1 text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
             Decisión del entrenador
           </h6>
 
-          <p className="mt-1 text-xs leading-5 text-slate-400">
+          <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             La aprobación no asigna automáticamente
             la rutina al cliente.
           </p>
@@ -655,7 +655,7 @@ export default function RevisionRutina({
       {cargandoHistorial && (
         <p
           role="status"
-          className="mt-4 text-sm text-slate-400"
+          className="mt-4 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
         >
           Consultando revisiones anteriores...
         </p>
@@ -664,10 +664,10 @@ export default function RevisionRutina({
       {/* ERROR DEL HISTORIAL */}
 
       {errorHistorial && (
-        <div className="mt-4 rounded-lg border border-rose-400/20 bg-rose-400/10 p-3">
+        <div className="mt-4 rounded-lg border border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-3">
           <p
             role="alert"
-            className="text-sm text-rose-200"
+            className="text-sm text-rose-800 dark:text-rose-200"
           >
             {errorHistorial}
           </p>
@@ -675,7 +675,7 @@ export default function RevisionRutina({
           <button
             type="button"
             onClick={actualizarHistorial}
-            className="mt-2 text-xs font-semibold text-cyan-300 underline underline-offset-4"
+            className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300 underline underline-offset-4"
           >
             Reintentar consulta
           </button>
@@ -695,7 +695,7 @@ export default function RevisionRutina({
               estadoAsignacion.estado ===
                 "cargando"
             }
-            className="text-xs font-medium text-cyan-300 hover:text-cyan-200 disabled:opacity-40"
+            className="text-xs font-medium text-cyan-700 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200 disabled:opacity-40"
           >
             Actualizar estado del plan
           </button>
@@ -704,7 +704,7 @@ export default function RevisionRutina({
             type="button"
             onClick={actualizarHistorial}
             disabled={guardando}
-            className="text-xs font-medium text-cyan-300 hover:text-cyan-200 disabled:opacity-40"
+            className="text-xs font-medium text-cyan-700 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200 disabled:opacity-40"
           >
             Actualizar historial
           </button>
@@ -714,8 +714,8 @@ export default function RevisionRutina({
       {/* ÚLTIMA DECISIÓN */}
 
       {historialDisponible && ultima && (
-        <div className="mt-3 rounded-lg border border-white/10 bg-slate-900/70 p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="mt-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/70 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             Última decisión registrada
           </p>
 
@@ -726,7 +726,7 @@ export default function RevisionRutina({
               {ETIQUETAS[ultima.decision]}
             </span>
 
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Registro #{ultima.id} ·{" "}
               {fechaLegible(
                 ultima.revisado_en
@@ -735,14 +735,14 @@ export default function RevisionRutina({
           </div>
 
           {ultima.observaciones && (
-            <p className="mt-2 whitespace-pre-wrap text-xs leading-5 text-slate-300">
+            <p className="mt-2 whitespace-pre-wrap text-xs leading-5 text-slate-700 dark:text-slate-300">
               {ultima.observaciones}
             </p>
           )}
 
           {ultima.puntaje_compatibilidad !=
             null && (
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               Compatibilidad al revisar:{" "}
               {ultima.puntaje_compatibilidad}
               /100
@@ -756,7 +756,7 @@ export default function RevisionRutina({
       {guardada && (
         <p
           role="status"
-          className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm font-medium text-emerald-200"
+          className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/10 p-3 text-sm font-medium text-emerald-800 dark:text-emerald-200"
         >
           Decisión registrada correctamente.
           Registro #{guardada.id}.
@@ -767,18 +767,18 @@ export default function RevisionRutina({
 
       {historialDisponible &&
         revisiones.length > 0 && (
-          <details className="mt-3 rounded-lg border border-white/10 bg-slate-900/40 p-3">
-            <summary className="cursor-pointer text-sm font-semibold text-cyan-200">
+          <details className="mt-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/40 p-3">
+            <summary className="cursor-pointer text-sm font-semibold text-cyan-800 dark:text-cyan-200">
               Ver historial de decisiones (
               {revisiones.length})
             </summary>
 
-            <ol className="mt-3 space-y-3 border-l border-white/10 pl-4">
+            <ol className="mt-3 space-y-3 border-l border-slate-200 dark:border-white/10 pl-4">
               {revisiones.map(
                 (revision) => (
                   <li
                     key={revision.id}
-                    className="text-xs text-slate-300"
+                    className="text-xs text-slate-700 dark:text-slate-300"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span
@@ -791,7 +791,7 @@ export default function RevisionRutina({
                         }
                       </span>
 
-                      <span className="text-slate-400">
+                      <span className="text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         #{revision.id} ·{" "}
                         {fechaLegible(
                           revision.revisado_en
@@ -809,7 +809,7 @@ export default function RevisionRutina({
 
                     {revision.puntaje_compatibilidad !=
                       null && (
-                      <p className="mt-1 text-slate-400">
+                      <p className="mt-1 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
                         Compatibilidad:{" "}
                         {
                           revision.puntaje_compatibilidad
@@ -819,7 +819,7 @@ export default function RevisionRutina({
                     )}
 
                     {revision.metodo_motor && (
-                      <p className="mt-1 break-words text-slate-500">
+                      <p className="mt-1 break-words text-slate-600 dark:text-slate-500">
                         Motor:{" "}
                         {
                           revision.metodo_motor
@@ -832,7 +832,7 @@ export default function RevisionRutina({
             </ol>
 
             {revisiones.length === 50 && (
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-xs text-slate-600 dark:text-slate-500">
                 Se muestran como máximo las
                 50 revisiones más recientes.
               </p>
@@ -856,7 +856,7 @@ export default function RevisionRutina({
       {/* SIN REVISIONES */}
 
       {historialDisponible && !ultima && (
-        <p className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Esta rutina aún no tiene
           revisiones registradas.
         </p>
@@ -866,12 +866,12 @@ export default function RevisionRutina({
 
       {planVigenteDeEstaRutina &&
         planVigente && (
-          <div className="mt-4 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3">
-            <p className="text-sm font-semibold text-emerald-200">
+          <div className="mt-4 rounded-lg border border-emerald-400/20 bg-emerald-50 dark:bg-emerald-400/10 p-3">
+            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
               Plan de entrenamiento vigente
             </p>
 
-            <p className="mt-1 text-xs leading-5 text-slate-300">
+            <p className="mt-1 text-xs leading-5 text-slate-700 dark:text-slate-300">
               Esta rutina ya está asignada al
               cliente (asignación #
               {planVigente.id}).
@@ -885,10 +885,10 @@ export default function RevisionRutina({
       {/* CONSULTA PENDIENTE O ERROR */}
 
       {!asignacionLista && (
-        <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-3">
+        <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-3">
           <p
             role="status"
-            className="text-xs text-amber-200"
+            className="text-xs text-amber-900 dark:text-amber-200"
           >
             {asignacionActual &&
             estadoAsignacion.estado === "error"
@@ -902,7 +902,7 @@ export default function RevisionRutina({
               <button
                 type="button"
                 onClick={actualizarEstadoAsignacion}
-                className="mt-2 text-xs font-semibold text-cyan-300 underline"
+                className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300 underline"
               >
                 Reintentar consulta
               </button>
@@ -915,7 +915,7 @@ export default function RevisionRutina({
       {errorGuardar && (
         <p
           role="alert"
-          className="mt-3 rounded-lg border border-rose-400/20 bg-rose-400/10 p-3 text-sm text-rose-200"
+          className="mt-3 rounded-lg border border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-3 text-sm text-rose-800 dark:text-rose-200"
         >
           {errorGuardar}
         </p>
@@ -937,7 +937,7 @@ export default function RevisionRutina({
               guardando ||
               ultima?.decision === "aprobada"
             }
-            className="min-h-11 rounded-lg border border-emerald-400/25 bg-emerald-400/10 px-3 py-2.5 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 rounded-lg border border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 px-3 py-2.5 text-sm font-semibold text-emerald-800 dark:text-emerald-200 transition hover:bg-emerald-400/20 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {ultima?.decision === "aprobada"
               ? "Ya aprobada"
@@ -958,7 +958,7 @@ export default function RevisionRutina({
               ultima?.decision ===
                 "ajustes_solicitados"
             }
-            className="min-h-11 rounded-lg border border-amber-400/25 bg-amber-400/10 px-3 py-2.5 text-sm font-semibold text-amber-200 transition hover:bg-amber-400/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 rounded-lg border border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 px-3 py-2.5 text-sm font-semibold text-amber-900 dark:text-amber-200 transition hover:bg-amber-400/20 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Solicitar ajustes
           </button>
@@ -974,7 +974,7 @@ export default function RevisionRutina({
               guardando ||
               ultima?.decision === "rechazada"
             }
-            className="min-h-11 rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2.5 text-sm font-semibold text-rose-200 transition hover:bg-rose-400/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 rounded-lg border border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 px-3 py-2.5 text-sm font-semibold text-rose-800 dark:text-rose-200 transition hover:bg-rose-400/20 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Rechazar
           </button>
@@ -984,20 +984,20 @@ export default function RevisionRutina({
       {/* FORMULARIO DE DECISIÓN */}
 
       {decision && !bloqueoRevision && (
-        <div className="mt-4 space-y-4 rounded-lg border border-white/10 bg-slate-900/80 p-4">
+        <div className="mt-4 space-y-4 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/80 p-4">
           <div>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
               {TITULOS[decision]}
             </p>
 
-            <p className="mt-1 text-xs leading-5 text-slate-400">
+            <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
               {decision === "aprobada"
                 ? "El servidor comprobará nuevamente la elegibilidad antes de aprobar."
                 : "Explica qué debe corregirse o por qué no se recomienda esta rutina."}
             </p>
 
             {ultima && (
-              <p className="mt-2 text-xs text-amber-200">
+              <p className="mt-2 text-xs text-amber-900 dark:text-amber-200">
                 Esta decisión quedará registrada
                 en el historial como la más
                 reciente.
@@ -1008,7 +1008,7 @@ export default function RevisionRutina({
           <div>
             <label
               htmlFor={`observaciones-${clienteId}-${rutinaId}`}
-              className="block text-xs font-medium text-slate-300"
+              className="block text-xs font-medium text-slate-700 dark:text-slate-300"
             >
               Observaciones{" "}
               {necesitaMotivo
@@ -1028,10 +1028,10 @@ export default function RevisionRutina({
               maxLength={1000}
               rows={3}
               placeholder="Escribe la justificación de tu decisión..."
-              className="mt-2 w-full resize-y rounded-lg border border-white/15 bg-slate-950 px-3 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none disabled:opacity-60"
+              className="mt-2 w-full resize-y rounded-lg border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-3 text-sm text-[var(--ecf-text,#102238)] dark:text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none disabled:opacity-60"
             />
 
-            <p className="mt-1 text-right text-xs text-slate-500">
+            <p className="mt-1 text-right text-xs text-slate-600 dark:text-slate-500">
               {observaciones.length}
               /1000 caracteres
             </p>
@@ -1059,7 +1059,7 @@ export default function RevisionRutina({
               type="button"
               onClick={cancelar}
               disabled={guardando}
-              className="min-h-11 rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 disabled:opacity-50"
+              className="min-h-11 rounded-lg border border-slate-300 dark:border-white/15 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-50"
             >
               Cancelar
             </button>

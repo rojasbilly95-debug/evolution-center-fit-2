@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -13,8 +12,8 @@ import CatalogoInteractivo, {
 
 function PantallaCarga() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-      <p className="text-slate-300">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg,#f4f8fc)] text-[var(--ecf-text,#102238)] dark:bg-slate-950 dark:text-white">
+      <p className="text-[var(--ecf-muted,#64748b)] dark:text-slate-300">
         Cargando catálogo de entrenamiento...
       </p>
     </main>
@@ -52,17 +51,17 @@ async function ContenidoCatalogo() {
     )
   ) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-slate-950 p-6 text-white">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[var(--ecf-bg,#f4f8fc)] p-6 text-[var(--ecf-text,#102238)] dark:bg-slate-950 dark:text-white">
         <h1 className="text-3xl font-bold">
           Acceso restringido
         </h1>
-        <p className="text-center text-slate-400">
+        <p className="text-center text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Este catálogo es exclusivo para
           entrenadores y administradores.
         </p>
         <Link
           href="/login"
-          className="text-cyan-400 hover:underline"
+          className="text-cyan-800 hover:underline dark:text-cyan-400"
         >
           Volver a mi sesión
         </Link>
@@ -111,17 +110,17 @@ async function ContenidoCatalogo() {
     });
 
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 p-6 text-white">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[var(--ecf-bg,#f4f8fc)] p-6 text-[var(--ecf-text,#102238)] dark:bg-slate-950 dark:text-white">
         <h1 className="text-2xl font-bold">
           No se pudo cargar el catálogo
         </h1>
-        <p className="text-center text-slate-400">
+        <p className="text-center text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
           Revisa los permisos y las políticas RLS
           de las tres tablas en Supabase.
         </p>
         <Link
           href="/login"
-          className="text-cyan-400"
+          className="text-cyan-800 dark:text-cyan-400"
         >
           Volver
         </Link>
