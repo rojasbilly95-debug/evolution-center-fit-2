@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
 
 import CalendarioCliente from "./calendario-cliente";
-
+import CentroEntrenamientoDia from "./centro-entrenamiento-dia";
 
 type Asignacion = {
   id: number;
@@ -709,6 +709,7 @@ async function ContenidoCliente() {
           >
             {[
               { href: "/cliente", texto: "Inicio" },
+              ...(asignacion ? [{ href: "#centro-hoy", texto: "Hoy" }] : []),
               { href: "/cliente/mi-rutina", texto: "Mi rutina" },
               { href: "#mi-calendario", texto: "Calendario" },
               { href: "#mi-progreso", texto: "Mi progreso" },
@@ -889,13 +890,41 @@ async function ContenidoCliente() {
           </div>
         </section>
 
+
+
+        {/* CENTRO DE ENTRENAMIENTO DEL DÍA */}
+
+        {asignacion && !errorAsignacion && (
+          <CentroEntrenamientoDia
+            hoy={hoy}
+            nombreRutina={nombreRutina}
+            estadoPlan={asignacion.estado}
+            sesiones={sesiones}
+            ejercicios={ejerciciosPreparados.map(
+              (ejercicio) => ({
+                ...ejercicio,
+                nombre:
+                  nombresEjercicios.get(
+                    ejercicio.ejercicio_id
+                  ) ??
+                  `Ejercicio #${ejercicio.ejercicio_id}`,
+              })
+            )}
+            errorSesiones={errorSesiones}
+            errorEjercicios={errorEjercicios}
+            asistenciaPct={asistenciaPct}
+            cumplimientoPct={cumplimientoPct}
+            continuidadTexto={continuidadTexto}
+          />
+        )}
+
         {/* NAVEGACIÓN INTERNA */}
         <nav
           aria-label="Secciones del portal"
           className="flex flex-wrap gap-2"
         >
           {[
-            ["Mi plan", "#mi-rutina"],
+            ["Mi plan", "#mi-rutina"],...(asignacion ? [["Centro de hoy", "#centro-hoy"]] : []),
             ["Calendario", "#mi-calendario"],
             ["Ejercicios", "#mis-ejercicios"],
             ["Progreso", "#mi-progreso"],
