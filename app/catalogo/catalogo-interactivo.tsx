@@ -50,166 +50,6 @@ type Props = {
 
 type Vista = "rutinas" | "ejercicios";
 
-// FOTOGRAFIAS ILUSTRATIVAS DEL CATALOGO
-// No modifican ni consultan Supabase.
-
-const fotosCatalogo = {
-  fuerza:
-    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1000&q=85",
-  cardio:
-    "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=1000&q=85",
-  general:
-    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1000&q=85",
-  casa:
-    "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1000&q=85",
-  inicio:
-    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1000&q=85",
-  gimnasio:
-    "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&q=85",
-} as const;
-
-function textoFoto(...partes: Array<string | null | undefined>) {
-  return partes
-    .filter(Boolean)
-    .join(" ")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
-
-function fotoDeRutina(rutina: Rutina): string {
-  const texto = textoFoto(rutina.nombre, rutina.objetivo);
-  const lugar = textoFoto(rutina.lugar);
-
-  if (/fuerza|hipertrofia|muscular|potencia/.test(texto)) {
-    return fotosCatalogo.fuerza;
-  }
-
-  if (/cardio|aerob|resistencia/.test(texto)) {
-    return fotosCatalogo.cardio;
-  }
-
-  if (/grasa|peso|adelgaza|definicion/.test(texto)) {
-    return fotosCatalogo.general;
-  }
-
-  if (/inicio|inicial|adaptacion|principiante/.test(texto)) {
-    return fotosCatalogo.inicio;
-  }
-
-  if (/bienestar|movilidad|flexibilidad|estiramiento/.test(texto)) {
-    return fotosCatalogo.casa;
-  }
-
-  if (lugar === "casa" || /bandas/.test(texto)) {
-    return fotosCatalogo.casa;
-  }
-
-  return fotosCatalogo.gimnasio;
-}
-
-function fotoDeEjercicio(ejercicio: Ejercicio): string {
-  const texto = textoFoto(
-    ejercicio.nombre,
-    ejercicio.grupo_muscular,
-    ejercicio.tipo
-  );
-
-  if (/cardio|aerob|correr|trote|resistencia/.test(texto)) {
-    return fotosCatalogo.cardio;
-  }
-
-  if (/movilidad|estiramiento|flexibilidad|yoga/.test(texto)) {
-    return fotosCatalogo.casa;
-  }
-
-  if (/pecho|espalda|hombro|biceps|triceps|brazo|fuerza/.test(texto)) {
-    return fotosCatalogo.fuerza;
-  }
-
-  if (/pierna|cuadriceps|gluteo|femoral|pantorrilla/.test(texto)) {
-    return fotosCatalogo.general;
-  }
-
-  if (/abdomen|abdominal|core|plancha/.test(texto)) {
-    return fotosCatalogo.inicio;
-  }
-
-  if (textoFoto(ejercicio.lugar) === "casa") {
-    return fotosCatalogo.casa;
-  }
-
-  return fotosCatalogo.gimnasio;
-}
-
-// IMAGEN PRINCIPAL DE CADA RUTINA
-
-function FotoRutinaCatalogo({
-  rutina,
-}: {
-  rutina: Rutina;
-}) {
-  return (
-    <div className="relative mb-5 h-44 overflow-hidden rounded-2xl bg-slate-800 sm:h-48">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 motion-safe:group-hover:scale-105"
-        style={{
-          backgroundImage: `url("${fotoDeRutina(rutina)}")`,
-        }}
-      />
-
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent" />
-
-      <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-slate-950/70 px-3 py-1.5 text-[11px] font-semibold text-white">
-        Fotografía ilustrativa
-      </span>
-    </div>
-  );
-}
-
-// IMAGEN DE EJERCICIOS Y MINIATURAS
-
-function FotoEjercicioCatalogo({
-  ejercicio,
-  mini = false,
-}: {
-  ejercicio: Ejercicio;
-  mini?: boolean;
-}) {
-  const foto = fotoDeEjercicio(ejercicio);
-
-  if (mini) {
-    return (
-      <div
-        aria-hidden="true"
-        className="h-12 w-12 shrink-0 rounded-xl border border-slate-200 bg-slate-800 bg-cover bg-center dark:border-white/10 sm:h-14 sm:w-14"
-        style={{
-          backgroundImage: `url("${foto}")`,
-        }}
-      />
-    );
-  }
-
-  return (
-    <div className="relative mb-5 h-40 overflow-hidden rounded-2xl bg-slate-800">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url("${foto}")`,
-        }}
-      />
-
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 to-transparent" />
-
-      <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-slate-950/70 px-3 py-1.5 text-[11px] font-semibold text-white">
-        Fotografía ilustrativa
-      </span>
-    </div>
-  );
-}
-
 type NombreIcono =
   | "dumbbell"
   | "layers"
@@ -309,6 +149,131 @@ function normalizar(valor: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+}
+
+// FOTOGRAFIAS ILUSTRATIVAS (sin cambios en Supabase).
+// Hasta 32 rutinas, cada una recibe una URL distinta.
+type CategoriaFoto = "fuerza" | "cardio" | "casa" | "general";
+
+const bancoFotos: Record<CategoriaFoto, readonly string[]> = {
+  fuerza: [
+    "photo-1517836357463-d25dfeac3438",
+    "photo-1541534741688-6078c6bfb5c5",
+    "photo-1526506118085-60ce8714f8c5",
+    "photo-1605296867304-46d5465a13f1",
+    "photo-1599058917212-d750089bc07e",
+    "photo-1581009146145-b5ef050c2e1e",
+    "photo-1571019614242-c5c5dee9f50b",
+    "photo-1598971639058-fab3c3109a00",
+    "photo-1517963879433-6ad2b056d712",
+    "photo-1583454110551-21f2fa2afe61",
+    "photo-1534438327276-14e5300c3a48",
+    "photo-1540497077202-7c8a3999166f",
+    "photo-1571902943202-507ec2618e8f",
+    "photo-1517838277536-f5f99be501cd",
+  ],
+  cardio: [
+    "photo-1538805060514-97d9cc17730c",
+    "photo-1648995361141-30676a75fd27",
+    "photo-1480179087180-d9f0ec044897",
+    "photo-1633394782240-f81aba3f850d",
+    "photo-1517649763962-0c623066013b",
+    "photo-1483721310020-03333e577078",
+    "photo-1549476464-37392f717541",
+  ],
+  casa: [
+    "photo-1518611012118-696072aa579a",
+    "photo-1594737625785-a6cbdabd333c",
+    "photo-1596727147705-61a532a659bd",
+    "photo-1758599880358-0661cbb1a595",
+    "photo-1534258936925-c58bed479fcb",
+  ],
+  general: [
+    "photo-1571019613454-1cb2f99b2d8b",
+    "photo-1591258370814-01609b341790",
+    "photo-1591311630200-ffa9120a540f",
+    "photo-1584735935682-2f2b69dff9d2",
+    "photo-1599058945522-28d584b6f0ff",
+    "photo-1566241142559-40e1dab266c6",
+  ],
+};
+
+const fotosDisponibles = Array.from(new Set(Object.values(bancoFotos).flat()));
+
+function urlFoto(id: string) {
+  return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1000&q=85`;
+}
+
+function categoriaDeRutina(rutina: Rutina): CategoriaFoto {
+  const texto = normalizar(`${rutina.nombre} ${rutina.objetivo}`);
+  const lugar = normalizar(rutina.lugar);
+
+  if (/fuerza|hipertrofia|muscular|potencia/.test(texto)) return "fuerza";
+  if (/cardio|aerob|resistencia|grasa|adelgaza|peso/.test(texto)) return "cardio";
+  if (/movilidad|flexibilidad|estiramiento|bienestar/.test(texto)) return "casa";
+  if (lugar === "casa" || /bandas/.test(texto)) return "casa";
+  return "general";
+}
+
+function fotosUnicasPorRutina(rutinas: Rutina[]): Map<number, string> {
+  const resultado = new Map<number, string>();
+  const utilizadas = new Set<string>();
+
+  // Ordenar por ID garantiza que los filtros no cambien las fotografias.
+  for (const rutina of [...rutinas].sort((a, b) => a.id - b.id)) {
+    const prioridad = bancoFotos[categoriaDeRutina(rutina)];
+    const candidatas = [...prioridad, ...fotosDisponibles];
+    const foto = candidatas.find((id) => !utilizadas.has(id));
+    const elegida = foto ?? fotosDisponibles[Math.abs(rutina.id) % fotosDisponibles.length];
+    utilizadas.add(elegida);
+    resultado.set(rutina.id, urlFoto(elegida));
+  }
+
+  return resultado;
+}
+
+function fotoDeEjercicio(ejercicio: Ejercicio): string {
+  const texto = normalizar(`${ejercicio.nombre} ${ejercicio.grupo_muscular} ${ejercicio.tipo}`);
+  const lugar = normalizar(ejercicio.lugar);
+  let categoria: CategoriaFoto = "general";
+
+  if (/cardio|aerob|correr|trote|resistencia/.test(texto)) categoria = "cardio";
+  else if (/movilidad|estiramiento|flexibilidad|yoga/.test(texto)) categoria = "casa";
+  else if (/pecho|espalda|hombro|biceps|triceps|brazo|fuerza|pierna|gluteo/.test(texto)) categoria = "fuerza";
+  else if (lugar === "casa") categoria = "casa";
+
+  const opciones = bancoFotos[categoria];
+  return urlFoto(opciones[Math.abs(ejercicio.id) % opciones.length]);
+}
+
+function FotoRutinaCatalogo({ foto }: { foto: string }) {
+  return (
+    <div className="relative mb-5 h-44 overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-950 via-slate-800 to-violet-950 sm:h-48">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 motion-safe:group-hover:scale-105"
+        style={{ backgroundImage: `url("${foto}")` }}
+      />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent" />
+      <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-slate-950/70 px-3 py-1.5 text-[11px] font-semibold text-white">
+        Fotografia ilustrativa
+      </span>
+    </div>
+  );
+}
+
+function FotoEjercicioCatalogo({ ejercicio, mini = false }: { ejercicio: Ejercicio; mini?: boolean }) {
+  const foto = fotoDeEjercicio(ejercicio);
+  if (mini) {
+    return (
+      <div
+        aria-hidden="true"
+        className="h-12 w-12 shrink-0 rounded-xl border border-slate-200 bg-slate-800 bg-cover bg-center dark:border-white/10 sm:h-14 sm:w-14"
+        style={{ backgroundImage: `url("${foto}")` }}
+      />
+    );
+  }
+  return <FotoRutinaCatalogo foto={foto} />;
 }
 
 function Etiqueta({
@@ -489,10 +454,12 @@ function TarjetaIndicador({
 // TARJETA DE RUTINA
 function TarjetaRutina({
   rutina,
+  foto,
   componentes,
   ejerciciosPorId,
 }: {
   rutina: Rutina;
+  foto: string;
   componentes: RutinaEjercicio[];
   ejerciciosPorId: Map<number, Ejercicio>;
 }) {
@@ -500,8 +467,7 @@ function TarjetaRutina({
 
   return (
     <article className="group min-w-0 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#152740] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 hover:shadow-[0_24px_55px_rgba(0,0,0,0.28)] sm:p-6">
-      <FotoRutinaCatalogo rutina={rutina} />
-
+      <FotoRutinaCatalogo foto={foto} />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-400/10 text-violet-800 dark:text-violet-200">
           <Icono
@@ -609,10 +575,7 @@ function TarjetaRutina({
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-xs font-bold text-cyan-700 dark:text-cyan-300">
                         {item.orden}
                       </span>
-
-                      {ejercicio && (
-                        <FotoEjercicioCatalogo ejercicio={ejercicio} mini />
-                      )}
+                      {ejercicio && <FotoEjercicioCatalogo ejercicio={ejercicio} mini />}
 
                       <div className="min-w-0">
                         <p className="break-words text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
@@ -659,7 +622,6 @@ function TarjetaEjercicio({
   return (
     <article className="min-w-0 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#152740] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
       <FotoEjercicioCatalogo ejercicio={ejercicio} />
-
       <div className="flex items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-700 dark:text-cyan-300">
           <Icono
@@ -746,6 +708,8 @@ export default function CatalogoInteractivo({
     rol === "administrador"
       ? "/administrador"
       : "/entrenador";
+
+  const fotosPorRutina = useMemo(() => fotosUnicasPorRutina(rutinas), [rutinas]);
 
   const ejerciciosPorId = useMemo(
     () =>
@@ -1114,6 +1078,7 @@ export default function CatalogoInteractivo({
                 <TarjetaRutina
                   key={rutina.id}
                   rutina={rutina}
+                  foto={fotosPorRutina.get(rutina.id) ?? urlFoto(bancoFotos.general[0])}
                   componentes={
                     relacionesPorRutina.get(
                       rutina.id
