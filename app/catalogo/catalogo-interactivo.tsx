@@ -50,6 +50,166 @@ type Props = {
 
 type Vista = "rutinas" | "ejercicios";
 
+// FOTOGRAFIAS ILUSTRATIVAS DEL CATALOGO
+// No modifican ni consultan Supabase.
+
+const fotosCatalogo = {
+  fuerza:
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1000&q=85",
+  cardio:
+    "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=1000&q=85",
+  general:
+    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1000&q=85",
+  casa:
+    "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1000&q=85",
+  inicio:
+    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1000&q=85",
+  gimnasio:
+    "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&q=85",
+} as const;
+
+function textoFoto(...partes: Array<string | null | undefined>) {
+  return partes
+    .filter(Boolean)
+    .join(" ")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function fotoDeRutina(rutina: Rutina): string {
+  const texto = textoFoto(rutina.nombre, rutina.objetivo);
+  const lugar = textoFoto(rutina.lugar);
+
+  if (/fuerza|hipertrofia|muscular|potencia/.test(texto)) {
+    return fotosCatalogo.fuerza;
+  }
+
+  if (/cardio|aerob|resistencia/.test(texto)) {
+    return fotosCatalogo.cardio;
+  }
+
+  if (/grasa|peso|adelgaza|definicion/.test(texto)) {
+    return fotosCatalogo.general;
+  }
+
+  if (/inicio|inicial|adaptacion|principiante/.test(texto)) {
+    return fotosCatalogo.inicio;
+  }
+
+  if (/bienestar|movilidad|flexibilidad|estiramiento/.test(texto)) {
+    return fotosCatalogo.casa;
+  }
+
+  if (lugar === "casa" || /bandas/.test(texto)) {
+    return fotosCatalogo.casa;
+  }
+
+  return fotosCatalogo.gimnasio;
+}
+
+function fotoDeEjercicio(ejercicio: Ejercicio): string {
+  const texto = textoFoto(
+    ejercicio.nombre,
+    ejercicio.grupo_muscular,
+    ejercicio.tipo
+  );
+
+  if (/cardio|aerob|correr|trote|resistencia/.test(texto)) {
+    return fotosCatalogo.cardio;
+  }
+
+  if (/movilidad|estiramiento|flexibilidad|yoga/.test(texto)) {
+    return fotosCatalogo.casa;
+  }
+
+  if (/pecho|espalda|hombro|biceps|triceps|brazo|fuerza/.test(texto)) {
+    return fotosCatalogo.fuerza;
+  }
+
+  if (/pierna|cuadriceps|gluteo|femoral|pantorrilla/.test(texto)) {
+    return fotosCatalogo.general;
+  }
+
+  if (/abdomen|abdominal|core|plancha/.test(texto)) {
+    return fotosCatalogo.inicio;
+  }
+
+  if (textoFoto(ejercicio.lugar) === "casa") {
+    return fotosCatalogo.casa;
+  }
+
+  return fotosCatalogo.gimnasio;
+}
+
+// IMAGEN PRINCIPAL DE CADA RUTINA
+
+function FotoRutinaCatalogo({
+  rutina,
+}: {
+  rutina: Rutina;
+}) {
+  return (
+    <div className="relative mb-5 h-44 overflow-hidden rounded-2xl bg-slate-800 sm:h-48">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 motion-safe:group-hover:scale-105"
+        style={{
+          backgroundImage: `url("${fotoDeRutina(rutina)}")`,
+        }}
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent" />
+
+      <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-slate-950/70 px-3 py-1.5 text-[11px] font-semibold text-white">
+        Fotografía ilustrativa
+      </span>
+    </div>
+  );
+}
+
+// IMAGEN DE EJERCICIOS Y MINIATURAS
+
+function FotoEjercicioCatalogo({
+  ejercicio,
+  mini = false,
+}: {
+  ejercicio: Ejercicio;
+  mini?: boolean;
+}) {
+  const foto = fotoDeEjercicio(ejercicio);
+
+  if (mini) {
+    return (
+      <div
+        aria-hidden="true"
+        className="h-12 w-12 shrink-0 rounded-xl border border-slate-200 bg-slate-800 bg-cover bg-center dark:border-white/10 sm:h-14 sm:w-14"
+        style={{
+          backgroundImage: `url("${foto}")`,
+        }}
+      />
+    );
+  }
+
+  return (
+    <div className="relative mb-5 h-40 overflow-hidden rounded-2xl bg-slate-800">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url("${foto}")`,
+        }}
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 to-transparent" />
+
+      <span className="absolute bottom-3 left-3 rounded-full border border-white/20 bg-slate-950/70 px-3 py-1.5 text-[11px] font-semibold text-white">
+        Fotografía ilustrativa
+      </span>
+    </div>
+  );
+}
+
 type NombreIcono =
   | "dumbbell"
   | "layers"
@@ -340,6 +500,8 @@ function TarjetaRutina({
 
   return (
     <article className="group min-w-0 rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#152740] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.20)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/30 hover:shadow-[0_24px_55px_rgba(0,0,0,0.28)] sm:p-6">
+      <FotoRutinaCatalogo rutina={rutina} />
+
       <div className="flex flex-wrap items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-400/10 text-violet-800 dark:text-violet-200">
           <Icono
@@ -448,6 +610,10 @@ function TarjetaRutina({
                         {item.orden}
                       </span>
 
+                      {ejercicio && (
+                        <FotoEjercicioCatalogo ejercicio={ejercicio} mini />
+                      )}
+
                       <div className="min-w-0">
                         <p className="break-words text-sm font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
                           {ejercicio?.nombre ??
@@ -492,6 +658,8 @@ function TarjetaEjercicio({
 }) {
   return (
     <article className="min-w-0 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#152740] to-slate-50 dark:to-[#101a2d] p-5 shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition-[transform,border-color,box-shadow] duration-200 motion-safe:hover:-translate-y-1 hover:border-cyan-400/25 hover:shadow-[0_20px_42px_rgba(0,0,0,0.26)] sm:p-6">
+      <FotoEjercicioCatalogo ejercicio={ejercicio} />
+
       <div className="flex items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-700 dark:text-cyan-300">
           <Icono
