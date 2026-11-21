@@ -12,6 +12,7 @@ import AccionesUsuario from "./acciones-usuario";
 type Parametros = {
   q?: string;
   rol?: string;
+  estado?: string;
   pagina?: string;
 };
 
@@ -38,15 +39,17 @@ type Asignacion = {
 };
 
 type Registro = Usuario & {
+  correo: string | null;
   rol: string;
   entrenador: string | null;
   asignacionActiva: boolean;
   clientesAsignados: number;
   suspendido: boolean | null;
+  archivado: boolean;
 };
 
 const LIMITE_CONSULTA = 500;
-const POR_PAGINA = 10;
+const POR_PAGINA = 12;
 
 function normalizar(texto: string) {
   return texto
@@ -104,15 +107,112 @@ function Resumen({
   valor: number;
 }) {
   return (
-    <article className="rounded-2xl border border-[var(--ecf-border)] bg-white p-5 shadow-lg shadow-slate-200/40 dark:border-white/10 dark:bg-[#14253d] dark:shadow-black/10">
-      <p className="text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
+    <article className="rounded-2xl border border-[var(--ecf-border)] bg-white p-4 dark:border-white/10 dark:bg-[#14253d]">
+      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums">
+      <p className="mt-2 text-2xl font-black tabular-nums">
         {new Intl.NumberFormat("es-PE").format(valor)}
       </p>
     </article>
+  );
+}
+
+function EtiquetaRol({ rol }: { rol: string }) {
+  return (
+    <span
+      className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold ${coloresRol(
+        rol
+      )}`}
+    >
+      {etiquetaRol(rol)}
+    </span>
+  );
+}
+
+function EtiquetaEstado({
+  usuario,
+}: {
+  usuario: Registro;
+}) {
+  let texto = "Estado no disponible";
+
+  let colores =
+    "border-slate-300 bg-slate-50 text-slate-600 dark:border-white/20 dark:bg-white/10 dark:text-slate-300";
+
+  if (usuario.archivado) {
+    texto = "Archivado";
+
+    colores =
+      "border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-400/30 dark:bg-violet-400/10 dark:text-violet-200";
+  } else if (usuario.suspendido === true) {
+    texto = "Suspendido";
+
+    colores =
+      "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200";
+  } else if (usuario.suspendido === false) {
+    texto = "Activo";
+
+    colores =
+      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200";
+  }
+
+  return (
+    <span
+      className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold ${colores}`}
+    >
+      {texto}
+    </span>
+  );
+}
+
+function InformacionAsignacion({
+  usuario,
+}: {
+  usuario: Registro;
+}) {
+  if (usuario.rol === "cliente") {
+    return (
+      <div className="text-sm">
+        <p className="font-semibold">
+          {usuario.entrenador ?? "Sin entrenador"}
+        </p>
+
+        {usuario.entrenador && (
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {usuario.asignacionActiva
+              ? "Asignación activa"
+              : "Asignación inactiva"}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (usuario.rol === "entrenador") {
+    return (
+      <p className="text-sm">
+        <span className="font-bold">
+          {usuario.clientesAsignados}
+        </span>{" "}
+        cliente(s) asignados
+      </p>
+    );
+  }
+
+  if (usuario.rol === "administrador") {
+    return (
+      <p className="text-xs font-semibold text-violet-700 dark:text-violet-300">
+        Cuenta protegida
+      </p>
+    );
+  }
+
+  return (
+    <span className="text-sm text-slate-400">
+      Sin información
+    </span>
   );
 }
 
@@ -124,7 +224,7 @@ function Mensaje({
   descripcion: string;
 }) {
   return (
-    <main className="min-h-screen bg-[var(--ecf-bg)] p-6 text-[var(--ecf-text)] dark:bg-[#080e1b] dark:text-white">
+    <main className="min-h-screen bg-[var(--ecf-bg)] p-6 dark:bg-[#080e1b]">
       <div className="mx-auto max-w-2xl">
         <Link
           href="/administrador"
@@ -133,7 +233,7 @@ function Mensaje({
           ← Volver al administrador
         </Link>
 
-        <section className="mt-8 rounded-2xl border border-amber-300 bg-amber-50 p-6 dark:border-amber-400/30 dark:bg-amber-400/10">
+        <section className="mt-8 rounded-2xl border border-amber-300 bg-amber-50 p-6 text-slate-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-white">
           <h1 className="text-xl font-bold">
             {titulo}
           </h1>
@@ -166,11 +266,25 @@ async function ContenidoUsuarios({
     "administrador",
   ];
 
+  const estadosPermitidos = [
+    "vigentes",
+    "activos",
+    "suspendidos",
+    "archivados",
+    "todos",
+  ];
+
   const filtroRol =
     typeof parametros.rol === "string" &&
     rolesPermitidos.includes(parametros.rol)
       ? parametros.rol
       : "todos";
+
+  const filtroEstado =
+    typeof parametros.estado === "string" &&
+    estadosPermitidos.includes(parametros.estado)
+      ? parametros.estado
+      : "vigentes";
 
   const numeroPagina = Number(parametros.pagina);
 
@@ -180,9 +294,7 @@ async function ContenidoUsuarios({
       ? Math.min(numeroPagina, 1000)
       : 1;
 
-  // =====================================
   // SEGURIDAD
-  // =====================================
 
   const supabase = await createClient();
 
@@ -206,7 +318,7 @@ async function ContenidoUsuarios({
     return (
       <Mensaje
         titulo="Acceso restringido"
-        descripcion="No tienes autorización para gestionar las cuentas del gimnasio."
+        descripcion="No tienes autorización para gestionar usuarios."
       />
     );
   }
@@ -218,7 +330,7 @@ async function ContenidoUsuarios({
     return (
       <Mensaje
         titulo="Configuración pendiente"
-        descripcion="Faltan las credenciales privadas de Supabase en el servidor."
+        descripcion="Faltan las credenciales privadas de Supabase."
       />
     );
   }
@@ -230,9 +342,7 @@ async function ContenidoUsuarios({
     },
   });
 
-  // =====================================
   // CONSULTAS
-  // =====================================
 
   const [
     respuestaUsuarios,
@@ -245,9 +355,7 @@ async function ContenidoUsuarios({
       .select("id,nombre_completo,creado_en", {
         count: "exact",
       })
-      .order("creado_en", {
-        ascending: false,
-      })
+      .order("creado_en", { ascending: false })
       .limit(LIMITE_CONSULTA),
 
     admin
@@ -260,9 +368,7 @@ async function ContenidoUsuarios({
       .select(
         "cliente_id,entrenador_id,activa,asignado_en"
       )
-      .order("asignado_en", {
-        ascending: false,
-      })
+      .order("asignado_en", { ascending: false })
       .limit(LIMITE_CONSULTA),
 
     admin.auth.admin.listUsers({
@@ -280,7 +386,7 @@ async function ContenidoUsuarios({
     return (
       <Mensaje
         titulo="No se pudieron cargar los usuarios"
-        descripcion="Revisa la conexión con Supabase, las credenciales del servidor y los permisos de lectura."
+        descripcion="Revisa Supabase, las credenciales del servidor y los permisos de consulta."
       />
     );
   }
@@ -297,9 +403,7 @@ async function ContenidoUsuarios({
   const authUsuarios =
     respuestaAuth.data?.users ?? [];
 
-  // =====================================
   // RELACIONES
-  // =====================================
 
   const nombres = new Map(
     usuarios.map((usuario) => [
@@ -315,14 +419,10 @@ async function ContenidoUsuarios({
     ])
   );
 
-  const estadosAuth = new Map(
+  const mapaAuth = new Map(
     authUsuarios.map((cuenta) => [
       cuenta.id,
-      Boolean(
-        cuenta.banned_until &&
-        new Date(cuenta.banned_until).getTime() >
-          Date.now()
-      ),
+      cuenta,
     ])
   );
 
@@ -362,8 +462,21 @@ async function ContenidoUsuarios({
       const relacion =
         asignacionesPorCliente.get(usuario.id);
 
+      const cuenta = mapaAuth.get(usuario.id);
+
+      const suspendido = cuenta
+        ? Boolean(
+            cuenta.banned_until &&
+              new Date(
+                cuenta.banned_until
+              ).getTime() > Date.now()
+          )
+        : null;
+
       return {
         ...usuario,
+
+        correo: cuenta?.email ?? null,
 
         rol:
           mapaRoles.get(usuario.id) ??
@@ -381,53 +494,83 @@ async function ContenidoUsuarios({
           clientesPorEntrenador.get(usuario.id) ??
           0,
 
-        suspendido: estadosAuth.has(usuario.id)
-          ? estadosAuth.get(usuario.id) ?? false
-          : null,
+        suspendido,
+
+        archivado:
+          cuenta?.app_metadata?.ecf_archivado ===
+          true,
       };
     }
   );
 
-  // =====================================
-  // ESTADÍSTICAS
-  // =====================================
+  // RESUMEN
 
   const totalRegistrado =
     respuestaUsuarios.count ?? usuarios.length;
 
   const totalClientes = registros.filter(
-    (registro) => registro.rol === "cliente"
+    (r) => r.rol === "cliente"
   ).length;
 
   const totalEntrenadores = registros.filter(
-    (registro) => registro.rol === "entrenador"
-  ).length;
-
-  const totalAdministradores = registros.filter(
-    (registro) =>
-      registro.rol === "administrador"
+    (r) => r.rol === "entrenador"
   ).length;
 
   const totalSuspendidos = registros.filter(
-    (registro) => registro.suspendido === true
+    (r) => r.suspendido === true && !r.archivado
   ).length;
 
-  // =====================================
-  // FILTROS Y PAGINACIÓN
-  // =====================================
+  const totalArchivados = registros.filter(
+    (r) => r.archivado
+  ).length;
+
+  // FILTROS
 
   const filtrados = registros.filter((registro) => {
-    const coincideNombre =
+    const texto = normalizar(
+      `${registro.nombre_completo} ${registro.correo ?? ""}`
+    );
+
+    const coincideBusqueda =
       !busqueda ||
-      normalizar(registro.nombre_completo).includes(
-        normalizar(busqueda)
-      );
+      texto.includes(normalizar(busqueda));
 
     const coincideRol =
       filtroRol === "todos" ||
       registro.rol === filtroRol;
 
-    return coincideNombre && coincideRol;
+    let coincideEstado = true;
+
+    switch (filtroEstado) {
+      case "vigentes":
+        coincideEstado = !registro.archivado;
+        break;
+
+      case "activos":
+        coincideEstado =
+          !registro.archivado &&
+          registro.suspendido === false;
+        break;
+
+      case "suspendidos":
+        coincideEstado =
+          !registro.archivado &&
+          registro.suspendido === true;
+        break;
+
+      case "archivados":
+        coincideEstado = registro.archivado;
+        break;
+
+      default:
+        coincideEstado = true;
+    }
+
+    return (
+      coincideBusqueda &&
+      coincideRol &&
+      coincideEstado
+    );
   });
 
   const totalPaginas = Math.max(
@@ -451,163 +594,96 @@ async function ContenidoUsuarios({
   function enlacePagina(pagina: number) {
     const params = new URLSearchParams();
 
-    if (busqueda) {
-      params.set("q", busqueda);
-    }
+    if (busqueda) params.set("q", busqueda);
 
     if (filtroRol !== "todos") {
       params.set("rol", filtroRol);
     }
 
+    if (filtroEstado !== "vigentes") {
+      params.set("estado", filtroEstado);
+    }
+
     params.set("pagina", String(pagina));
 
-    return (
-      "/administrador/usuarios?" +
-      params.toString()
-    );
+    return `/administrador/usuarios?${params.toString()}`;
   }
-
-  // =====================================
-  // INTERFAZ
-  // =====================================
 
   return (
     <main className="ecf-role-admin min-h-screen bg-[var(--ecf-bg)] text-[var(--ecf-text)] dark:bg-[#080e1b] dark:text-white">
-      <header className="border-b border-[var(--ecf-border)] bg-[var(--ecf-surface)] dark:border-white/10 dark:bg-[#101d31]">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
-          <Link
-            href="/administrador"
-            className="flex items-center gap-3"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400 text-xl font-black text-[#07121e]">
-              E
-            </span>
+      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
+        {/* ENCABEZADO */}
 
-            <span>
-              <span className="block text-sm font-black">
-                EVOLUTION CENTER FIT{" "}
-                <span className="text-cyan-700 dark:text-cyan-300">
-                  2.0
-                </span>
-              </span>
-
-              <span className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
-                Administración de usuarios
-              </span>
-            </span>
-          </Link>
-
-          <Link
-            href="/administrador"
-            className="rounded-xl border border-[var(--ecf-border)] px-4 py-2.5 text-sm font-semibold dark:border-white/15"
-          >
-            ← Volver al panel
-          </Link>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
-        <section className="rounded-3xl border border-cyan-200 bg-gradient-to-br from-[#e4f7fb] via-[#f8fbff] to-[#f0ecff] p-6 shadow-xl shadow-slate-200/50 dark:border-cyan-400/15 dark:from-[#17344a] dark:via-[#14263d] dark:to-[#201b3d] dark:shadow-black/20 sm:p-9">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
-            Gestión administrativa
-          </p>
-
-          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-            Gestión de usuarios
-          </h1>
-
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
-            Administra las cuentas del gimnasio.
-            Consulta los roles, actualiza nombres,
-            revisa asignaciones y suspende o reactiva
-            accesos cuando sea necesario.
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/administrador/usuarios/nuevo"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300"
-            >
-              + Invitar nuevo usuario
-            </Link>
-
-            <Link
-              href="/administrador/roles"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-300 px-5 py-3 text-sm font-bold text-cyan-900 hover:bg-white/50 dark:border-cyan-400/30 dark:text-cyan-200"
-            >
-              Gestionar roles
-            </Link>
-
-            <Link
-              href="/administrador/roles/historial"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-white/50 dark:border-white/20 dark:text-slate-200"
-            >
-              Historial de roles
-            </Link>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-extrabold">
-            Resumen de cuentas
-          </h2>
-
-          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
-            <Resumen
-              titulo="Usuarios registrados"
-              valor={totalRegistrado}
-            />
-
-            <Resumen
-              titulo="Clientes consultados"
-              valor={totalClientes}
-            />
-
-            <Resumen
-              titulo="Entrenadores consultados"
-              valor={totalEntrenadores}
-            />
-
-            <Resumen
-              titulo="Administradores consultados"
-              valor={totalAdministradores}
-            />
-
-            <Resumen
-              titulo="Suspendidos consultados"
-              valor={totalSuspendidos}
-            />
-          </div>
-
-          {totalRegistrado > LIMITE_CONSULTA && (
-            <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">
-              Hay más de {LIMITE_CONSULTA} usuarios.
-              Los filtros y recuentos por rol solo
-              incluyen los primeros registros consultados.
+        <header className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
+              Administración / Personas
             </p>
-          )}
+
+            <h1 className="mt-2 text-3xl font-black">
+              Gestión de usuarios
+            </h1>
+
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              Consulta y administra las cuentas del gimnasio.
+            </p>
+          </div>
+
+          <Link
+            href="/administrador/usuarios/nuevo"
+            className="inline-flex min-h-11 items-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300"
+          >
+            + Invitar usuario
+          </Link>
+        </header>
+
+        {/* ESTADÍSTICAS */}
+
+        <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <Resumen
+            titulo="Usuarios registrados"
+            valor={totalRegistrado}
+          />
+
+          <Resumen
+            titulo="Clientes consultados"
+            valor={totalClientes}
+          />
+
+          <Resumen
+            titulo="Entrenadores consultados"
+            valor={totalEntrenadores}
+          />
+
+          <Resumen
+            titulo="Suspendidos"
+            valor={totalSuspendidos}
+          />
+
+          <Resumen
+            titulo="Archivados"
+            valor={totalArchivados}
+          />
         </section>
 
-        <section className="rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 dark:border-white/10 dark:bg-[#112039] sm:p-7">
-          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
-            Directorio
-          </p>
+        {/* FILTROS */}
 
-          <h2 className="mt-2 text-2xl font-extrabold">
-            Buscar y filtrar usuarios
+        <section className="rounded-2xl border border-[var(--ecf-border)] bg-white p-5 dark:border-white/10 dark:bg-[#112039]">
+          <h2 className="font-bold">
+            Buscar usuarios
           </h2>
 
           <form
             action="/administrador/usuarios"
             method="get"
-            className="mt-6 grid gap-3 lg:grid-cols-[1fr_220px_auto_auto]"
+            className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_160px_170px_auto_auto]"
           >
             <div>
               <label
                 htmlFor="buscar-usuarios"
                 className="mb-2 block text-xs font-semibold"
               >
-                Nombre del usuario
+                Nombre o correo
               </label>
 
               <input
@@ -616,8 +692,8 @@ async function ContenidoUsuarios({
                 type="search"
                 maxLength={60}
                 defaultValue={busqueda}
-                placeholder="Buscar por nombre..."
-                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] bg-slate-50 px-4 py-3 text-sm outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#081526]"
+                placeholder="Buscar usuario..."
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#081526]"
               />
             </div>
 
@@ -626,59 +702,85 @@ async function ContenidoUsuarios({
                 htmlFor="rol-usuarios"
                 className="mb-2 block text-xs font-semibold"
               >
-                Filtrar por rol
+                Rol
               </label>
 
               <select
                 id="rol-usuarios"
                 name="rol"
                 defaultValue={filtroRol}
-                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] bg-slate-50 px-4 py-3 text-sm outline-none dark:border-white/15 dark:bg-[#081526]"
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm dark:border-white/15 dark:bg-[#081526]"
               >
-                <option value="todos">
-                  Todos los roles
-                </option>
-
-                <option value="cliente">
-                  Clientes
-                </option>
-
+                <option value="todos">Todos</option>
+                <option value="cliente">Clientes</option>
                 <option value="entrenador">
                   Entrenadores
                 </option>
-
                 <option value="administrador">
                   Administradores
                 </option>
               </select>
             </div>
 
+            <div>
+              <label
+                htmlFor="estado-usuarios"
+                className="mb-2 block text-xs font-semibold"
+              >
+                Estado
+              </label>
+
+              <select
+                id="estado-usuarios"
+                name="estado"
+                defaultValue={filtroEstado}
+                className="min-h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm dark:border-white/15 dark:bg-[#081526]"
+              >
+                <option value="vigentes">
+                  No archivados
+                </option>
+                <option value="activos">
+                  Activos
+                </option>
+                <option value="suspendidos">
+                  Suspendidos
+                </option>
+                <option value="archivados">
+                  Archivados
+                </option>
+                <option value="todos">
+                  Todos
+                </option>
+              </select>
+            </div>
+
             <button
               type="submit"
-              className="min-h-12 self-end rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300"
+              className="min-h-11 self-end rounded-xl bg-cyan-400 px-4 text-sm font-bold text-[#07121e] hover:bg-cyan-300"
             >
-              Aplicar filtros
+              Filtrar
             </button>
 
             <Link
               href="/administrador/usuarios"
-              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-[var(--ecf-border)] px-5 py-3 text-sm font-semibold dark:border-white/15"
+              className="inline-flex min-h-11 items-center justify-center self-end rounded-xl border border-slate-300 px-4 text-sm font-semibold dark:border-white/15"
             >
               Limpiar
             </Link>
           </form>
         </section>
 
-        <section className="rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 dark:border-white/10 dark:bg-[#112039] sm:p-7">
+        {/* TABLA */}
+
+        <section className="rounded-2xl border border-[var(--ecf-border)] bg-white p-4 dark:border-white/10 dark:bg-[#112039] sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-extrabold">
-                Cuentas encontradas
+                Directorio de usuarios
               </h2>
 
-              <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 {filtrados.length} resultado(s)
-                dentro de los registros consultados.
               </p>
             </div>
 
@@ -688,19 +790,100 @@ async function ContenidoUsuarios({
           </div>
 
           {registrosPagina.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-[var(--ecf-border)] bg-slate-50 p-8 text-center text-sm dark:border-white/10 dark:bg-[#091729]">
-              No se encontraron usuarios.
+            <div className="mt-5 rounded-xl bg-slate-50 p-8 text-center text-sm dark:bg-[#081526]">
+              No se encontraron usuarios con esos filtros.
             </div>
           ) : (
-            <div className="mt-6 grid gap-4">
-              {registrosPagina.map((usuario) => (
-                <article
-                  key={usuario.id}
-                  className="rounded-2xl border border-[var(--ecf-border)] bg-white p-5 transition hover:border-cyan-300 dark:border-white/10 dark:bg-gradient-to-r dark:from-[#152a44] dark:to-[#0a192b]"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-lg font-black text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300">
+            <>
+              {/* COMPUTADORAS */}
+
+              <div className="mt-5 hidden overflow-x-auto lg:block">
+                <table className="w-full min-w-[950px] border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:border-white/10 dark:bg-[#081526] dark:text-slate-400">
+                      <th className="p-4">Usuario</th>
+                      <th className="p-4">Rol</th>
+                      <th className="p-4">Estado</th>
+                      <th className="p-4">Asignación</th>
+                      <th className="p-4">Registro</th>
+                      <th className="p-4 text-right">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {registrosPagina.map((usuario) => (
+                      <tr
+                        key={usuario.id}
+                        className="border-b border-slate-100 transition hover:bg-cyan-50/40 dark:border-white/10 dark:hover:bg-white/5"
+                      >
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-50 font-black text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300">
+                              {usuario.nombre_completo
+                                .trim()
+                                .charAt(0)
+                                .toUpperCase() || "U"}
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="max-w-[230px] break-words text-sm font-bold">
+                                {usuario.nombre_completo}
+                              </p>
+
+                              <p className="mt-1 max-w-[230px] break-all text-xs text-slate-500 dark:text-slate-400">
+                                {usuario.correo ??
+                                  "Sin correo disponible"}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="p-4">
+                          <EtiquetaRol rol={usuario.rol} />
+                        </td>
+
+                        <td className="p-4">
+                          <EtiquetaEstado usuario={usuario} />
+                        </td>
+
+                        <td className="p-4">
+                          <InformacionAsignacion
+                            usuario={usuario}
+                          />
+                        </td>
+
+                        <td className="p-4 text-xs text-slate-500 dark:text-slate-400">
+                          {formatoFecha(usuario.creado_en)}
+                        </td>
+
+                        <td className="p-4 text-right">
+                          <AccionesUsuario
+                            usuarioId={usuario.id}
+                            nombre={usuario.nombre_completo}
+                            rol={usuario.rol}
+                            suspendido={usuario.suspendido}
+                            archivado={usuario.archivado}
+                            esMiCuenta={usuario.id === user.id}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* CELULARES Y TABLETAS */}
+
+              <div className="mt-5 grid gap-3 lg:hidden">
+                {registrosPagina.map((usuario) => (
+                  <article
+                    key={usuario.id}
+                    className="rounded-xl border border-slate-200 p-4 dark:border-white/10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-50 font-black text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300">
                         {usuario.nombre_completo
                           .trim()
                           .charAt(0)
@@ -708,102 +891,57 @@ async function ContenidoUsuarios({
                       </div>
 
                       <div className="min-w-0">
-                        <h3 className="break-words text-base font-bold">
+                        <h3 className="break-words font-bold">
                           {usuario.nombre_completo}
                         </h3>
 
-                        <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
-                          Registrado el{" "}
-                          {formatoFecha(usuario.creado_en)}
+                        <p className="break-all text-xs text-slate-500 dark:text-slate-400">
+                          {usuario.correo ??
+                            "Sin correo disponible"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      <span
-                        className={`rounded-full border px-3 py-1.5 text-xs font-bold ${coloresRol(
-                          usuario.rol
-                        )}`}
-                      >
-                        {etiquetaRol(usuario.rol)}
-                      </span>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <EtiquetaRol rol={usuario.rol} />
 
-                      <span
-                        className={`rounded-full border px-3 py-1.5 text-xs font-bold ${
-                          usuario.suspendido === true
-                            ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200"
-                            : usuario.suspendido === false
-                              ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200"
-                              : "border-slate-300 bg-slate-50 text-slate-600 dark:border-white/20 dark:bg-white/10 dark:text-slate-300"
-                        }`}
-                      >
-                        {usuario.suspendido === true
-                          ? "Cuenta suspendida"
-                          : usuario.suspendido === false
-                            ? "Sin suspensión"
-                            : "Estado no disponible"}
-                      </span>
+                      <EtiquetaEstado usuario={usuario} />
                     </div>
-                  </div>
 
-                  {usuario.rol === "cliente" && (
-                    <div className="mt-4 rounded-xl border border-[var(--ecf-border)] bg-slate-50 p-4 dark:border-white/10 dark:bg-[#081526]">
-                      <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
-                        Entrenador asignado
-                      </p>
+                    <div className="mt-3 rounded-xl bg-slate-50 p-3 dark:bg-[#081526]">
+                      <InformacionAsignacion
+                        usuario={usuario}
+                      />
 
-                      <p className="mt-1 text-sm font-semibold">
-                        {usuario.entrenador ??
-                          "Sin entrenador asignado"}
-                      </p>
-
-                      {usuario.entrenador && (
-                        <p className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300">
-                          {usuario.asignacionActiva
-                            ? "● Asignación activa"
-                            : "● Asignación inactiva"}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {usuario.rol === "entrenador" && (
-                    <div className="mt-4 rounded-xl border border-[var(--ecf-border)] bg-slate-50 p-4 dark:border-white/10 dark:bg-[#081526]">
-                      <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
-                        Clientes asignados actualmente
-                      </p>
-
-                      <p className="mt-1 text-lg font-bold text-cyan-700 dark:text-cyan-300">
-                        {usuario.clientesAsignados}
+                      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                        Registrado:{" "}
+                        {formatoFecha(usuario.creado_en)}
                       </p>
                     </div>
-                  )}
 
-                  {usuario.rol === "administrador" && (
-                    <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50 p-4 dark:border-violet-400/15 dark:bg-violet-400/5">
-                      <p className="text-xs font-semibold text-violet-700 dark:text-violet-200">
-                        Cuenta administrativa protegida
-                      </p>
+                    <div className="mt-3">
+                      <AccionesUsuario
+                        usuarioId={usuario.id}
+                        nombre={usuario.nombre_completo}
+                        rol={usuario.rol}
+                        suspendido={usuario.suspendido}
+                        archivado={usuario.archivado}
+                        esMiCuenta={usuario.id === user.id}
+                      />
                     </div>
-                  )}
-
-                  <AccionesUsuario
-                    usuarioId={usuario.id}
-                    nombre={usuario.nombre_completo}
-                    rol={usuario.rol}
-                    suspendido={usuario.suspendido}
-                    esMiCuenta={usuario.id === user.id}
-                  />
-                </article>
-              ))}
-            </div>
+                  </article>
+                ))}
+              </div>
+            </>
           )}
 
-          <div className="mt-6 flex items-center justify-between gap-3 border-t border-[var(--ecf-border)] pt-5 dark:border-white/10">
+          {/* PAGINACIÓN */}
+
+          <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200 pt-5 dark:border-white/10">
             {paginaActual > 1 ? (
               <Link
                 href={enlacePagina(paginaActual - 1)}
-                className="rounded-xl border border-[var(--ecf-border)] px-4 py-2.5 text-sm font-semibold dark:border-white/15"
+                className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold dark:border-white/15"
               >
                 ← Anterior
               </Link>
@@ -813,14 +951,14 @@ async function ContenidoUsuarios({
               </span>
             )}
 
-            <span className="text-sm">
+            <span className="text-sm font-semibold">
               {paginaActual} / {totalPaginas}
             </span>
 
             {paginaActual < totalPaginas ? (
               <Link
                 href={enlacePagina(paginaActual + 1)}
-                className="rounded-xl border border-[var(--ecf-border)] px-4 py-2.5 text-sm font-semibold dark:border-white/15"
+                className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold dark:border-white/15"
               >
                 Siguiente →
               </Link>
@@ -832,30 +970,16 @@ async function ContenidoUsuarios({
           </div>
         </section>
 
-        <section className="rounded-2xl border border-cyan-200 bg-gradient-to-r from-[#e8f8fb] to-[#f0ebff] p-6 dark:border-cyan-400/15 dark:from-[#0f2a3c] dark:to-[#1b1c39]">
-          <h2 className="font-bold">
-            Seguridad e historial
-          </h2>
-
-          <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
-            Las modificaciones de nombres y los
-            cambios de suspensión se registran
-            en la auditoría administrativa.
-            Suspender una cuenta no elimina
-            rutinas, sesiones ni historiales
-            de investigación.
+        {totalRegistrado > LIMITE_CONSULTA && (
+          <p className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
+            Hay más de {LIMITE_CONSULTA} usuarios.
+            Los filtros y recuentos abarcan únicamente
+            los primeros registros consultados.
           </p>
+        )}
 
-          <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
-            Importante: los tokens de sesión ya
-            emitidos pueden seguir vigentes hasta
-            su expiración. Deben revisarse las
-            protecciones de acceso del sistema.
-          </p>
-        </section>
-
-        <footer className="border-t border-[var(--ecf-border)] py-6 text-center text-xs text-slate-500 dark:border-white/10">
-          Evolution Center Fit 2.0 · Gestión de usuarios
+        <footer className="py-4 text-center text-xs text-slate-500">
+          Evolution Center Fit 2.0 · Administración de usuarios
         </footer>
       </div>
     </main>
@@ -865,7 +989,7 @@ async function ContenidoUsuarios({
 function EstadoCarga() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] text-cyan-800 dark:bg-[#080e1b] dark:text-cyan-200">
-      Cargando gestión de usuarios...
+      Cargando usuarios...
     </main>
   );
 }

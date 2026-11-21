@@ -297,6 +297,13 @@ export async function cambiarEstadoUsuario(
       );
     }
 
+    if (cuenta.user.app_metadata?.ecf_archivado === true) {
+  return resultado(
+    false,
+    "Esta cuenta está archivada. Debes restaurarla antes de cambiar su suspensión."
+  );
+}
+
     const suspendidoActualmente =
       Boolean(
         cuenta.user.banned_until &&
@@ -361,6 +368,235 @@ export async function cambiarEstadoUsuario(
       error instanceof Error
         ? error.message
         : "No se pudo cambiar el estado."
+    );
+  }
+}
+
+// ======================================
+// ARCHIVAR O RESTAURAR USUARIO
+// ======================================
+
+export async function gestionarArchivadoUsuario(
+  _anterior: ResultadoAccion,
+  formulario: FormData
+): Promise<ResultadoAccion> {
+  const id = String(
+    formulario.get("usuarioId") ?? ""
+  );
+
+  const operacion = String(
+    formulario.get("operacion") ?? ""
+  );
+
+  if (!UUID.test(id)) {
+    return resultado(
+      false,
+      "Identificador inválido."
+    );
+  }
+
+  if (
+    operacion !== "archivar" &&
+    operacion !== "restaurar"
+  ) {
+    return resultado(
+      false,
+      "Operación no permitida."
+    );
+  }
+
+  try {
+    const { admin, responsableId } =
+      await comprobarAdministrador();
+
+    // Impedir acciones sobre la propia cuenta.
+
+    if (id === responsableId) {
+      return resultado(
+        false,
+        "No puedes archivar ni restaurar tu propia cuenta."
+      );
+    }
+
+    // Verificar el rol real en la base de datos.
+
+    const {
+      data: rolObjetivo,
+      error: errorRol,
+    } = await admin
+      .from("usuario_roles")
+      .select("rol")
+      .eq("usuario_id", id)
+      .maybeSingle();
+
+    if (errorRol) {
+      return resultado(
+        false,
+        "No se pudo verificar el rol del usuario."
+      );
+    }
+
+    if (
+      rolObjetivo?.rol !== "cliente" &&
+      rolObjetivo?.rol !== "entrenador"
+    ) {
+      return resultado(
+        false,
+        "Solo pueden archivarse clientes y entrenadores desde esta pantalla."
+      );
+    }
+
+    // Consultar el usuario en Supabase Auth.
+
+    const {
+      data: cuenta,
+      error: errorCuenta,
+    } = await admin.auth.admin.getUserById(id);
+
+    if (errorCuenta || !cuenta.user) {
+      return resultado(
+        false,
+        "No se encontró la cuenta en Supabase Auth."
+      );
+    }
+
+    const metadatos =
+      cuenta.user.app_metadata ?? {};
+
+    const archivadoActualmente =
+      metadatos.ecf_archivado === true;
+
+    const suspendidoActualmente = Boolean(
+      cuenta.user.banned_until &&
+        new Date(
+          cuenta.user.banned_until
+        ).getTime() > Date.now()
+    );
+
+    // Evitar operaciones repetidas.
+
+    if (
+      operacion === "archivar" &&
+      archivadoActualmente
+    ) {
+      return resultado(
+        true,
+        "La cuenta ya está archivada."
+      );
+    }
+
+    if (
+      operacion === "restaurar" &&
+      !archivadoActualmente
+    ) {
+      return resultado(
+        true,
+        "La cuenta no está archivada."
+      );
+    }
+
+    // Conservar el estado de suspensión anterior.
+    // Si ya estaba suspendida, restaurar no la
+    // convierte automáticamente en una cuenta activa.
+
+    const suspendidoAntesDelArchivo =
+      metadatos.ecf_suspendido_al_archivar === true;
+
+    const nuevosMetadatos =
+      operacion === "archivar"
+        ? {
+            ...metadatos,
+            ecf_archivado: true,
+            ecf_archivado_en:
+              new Date().toISOString(),
+            ecf_archivado_por: responsableId,
+            ecf_suspendido_al_archivar:
+              suspendidoActualmente,
+          }
+        : {
+            ...metadatos,
+            ecf_archivado: false,
+            ecf_archivado_en: null,
+            ecf_archivado_por: null,
+            ecf_suspendido_al_archivar: null,
+          };
+
+    const duracionSuspension =
+      operacion === "archivar"
+        ? "876000h"
+        : suspendidoAntesDelArchivo
+          ? "876000h"
+          : "none";
+
+    // Registrar la operación antes de modificar Auth.
+    // Se utilizan las acciones existentes en auditoría;
+    // el tipo específico queda en el campo datos.
+
+    const auditoriaId = await iniciarAuditoria(
+      admin,
+      responsableId,
+      id,
+      operacion === "archivar"
+        ? "suspender"
+        : "reactivar",
+      {
+        operacion_administrativa: operacion,
+        archivado_antes: archivadoActualmente,
+        suspendido_antes: suspendidoActualmente,
+        conservar_historial: true,
+      }
+    );
+
+    // Actualización administrativa.
+
+    const { error: errorActualizacion } =
+      await admin.auth.admin.updateUserById(
+        id,
+        {
+          app_metadata: nuevosMetadatos,
+          ban_duration: duracionSuspension,
+        }
+      );
+
+    await terminarAuditoria(
+      admin,
+      auditoriaId,
+      !errorActualizacion
+    );
+
+    if (errorActualizacion) {
+      console.error(
+        "Error gestionando archivo de usuario:",
+        errorActualizacion.message
+      );
+
+      return resultado(
+        false,
+        "No se pudo cambiar el estado de archivado."
+      );
+    }
+
+    revalidatePath(RUTA);
+
+    if (operacion === "archivar") {
+      return resultado(
+        true,
+        "Usuario archivado correctamente. Su acceso quedó bloqueado y su historial se conserva."
+      );
+    }
+
+    return resultado(
+      true,
+      suspendidoAntesDelArchivo
+        ? "Usuario restaurado. Su cuenta continúa suspendida, como estaba antes de archivarse."
+        : "Usuario restaurado correctamente. Su cuenta está activa."
+    );
+  } catch (error) {
+    return resultado(
+      false,
+      error instanceof Error
+        ? error.message
+        : "No se pudo completar el archivado."
     );
   }
 }
