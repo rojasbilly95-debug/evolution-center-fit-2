@@ -1,21 +1,13 @@
-
 import "server-only";
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import {
-  createClient as crearClientePrivilegiado,
-} from "@supabase/supabase-js";
+import { createClient as crearAdmin } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
-
-// ================================================
-// EVOLUTION CENTER FIT 2.0
-// FASE 111.9 - GESTION DE USUARIOS
-// Consulta segura, filtros y asignaciones.
-// ================================================
+import AccionesUsuario from "./acciones-usuario";
 
 type Parametros = {
   q?: string;
@@ -50,14 +42,11 @@ type Registro = Usuario & {
   entrenador: string | null;
   asignacionActiva: boolean;
   clientesAsignados: number;
+  suspendido: boolean | null;
 };
 
 const LIMITE_CONSULTA = 500;
 const POR_PAGINA = 10;
-
-// ================================================
-// FUNCIONES AUXILIARES
-// ================================================
 
 function normalizar(texto: string) {
   return texto
@@ -73,7 +62,23 @@ function etiquetaRol(rol: string) {
     administrador: "Administrador",
   };
 
-  return etiquetas[rol] || "Sin rol";
+  return etiquetas[rol] ?? "Sin rol";
+}
+
+function coloresRol(rol: string) {
+  switch (rol) {
+    case "administrador":
+      return "border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-400/30 dark:bg-violet-400/10 dark:text-violet-200";
+
+    case "entrenador":
+      return "border-cyan-300 bg-cyan-50 text-cyan-800 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-200";
+
+    case "cliente":
+      return "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200";
+
+    default:
+      return "border-slate-300 bg-slate-100 text-slate-600 dark:border-white/20 dark:bg-white/10 dark:text-slate-300";
+  }
 }
 
 function formatoFecha(fecha: string) {
@@ -91,19 +96,6 @@ function formatoFecha(fecha: string) {
   });
 }
 
-function coloresRol(rol: string) {
-  switch (rol) {
-    case "administrador":
-      return "border-violet-200 dark:border-violet-400/25 bg-violet-50 dark:bg-violet-400/10 text-violet-700 dark:text-violet-200";
-    case "entrenador":
-      return "border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 text-cyan-800 dark:text-cyan-200";
-    case "cliente":
-      return "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-200";
-    default:
-      return "border-[var(--ecf-border)] dark:border-white/15 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300";
-  }
-}
-
 function Resumen({
   titulo,
   valor,
@@ -112,43 +104,60 @@ function Resumen({
   valor: number;
 }) {
   return (
-    <article className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-[#1a304b] dark:to-[#101d31] p-5 shadow-lg shadow-slate-200/70 dark:shadow-black/10">
+    <article className="rounded-2xl border border-[var(--ecf-border)] bg-white p-5 shadow-lg shadow-slate-200/40 dark:border-white/10 dark:bg-[#14253d] dark:shadow-black/10">
       <p className="text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
         {titulo}
       </p>
 
-      <p className="mt-3 text-3xl font-black tabular-nums text-[var(--ecf-text)] dark:text-white">
+      <p className="mt-3 text-3xl font-black tabular-nums">
         {new Intl.NumberFormat("es-PE").format(valor)}
       </p>
     </article>
   );
 }
 
-function EstadoCarga() {
+function Mensaje({
+  titulo,
+  descripcion,
+}: {
+  titulo: string;
+  descripcion: string;
+}) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] text-cyan-800 dark:text-cyan-200">
-      Cargando gestión de usuarios...
+    <main className="min-h-screen bg-[var(--ecf-bg)] p-6 text-[var(--ecf-text)] dark:bg-[#080e1b] dark:text-white">
+      <div className="mx-auto max-w-2xl">
+        <Link
+          href="/administrador"
+          className="font-semibold text-cyan-700 dark:text-cyan-300"
+        >
+          ← Volver al administrador
+        </Link>
+
+        <section className="mt-8 rounded-2xl border border-amber-300 bg-amber-50 p-6 dark:border-amber-400/30 dark:bg-amber-400/10">
+          <h1 className="text-xl font-bold">
+            {titulo}
+          </h1>
+
+          <p className="mt-3 text-sm leading-7">
+            {descripcion}
+          </p>
+        </section>
+      </div>
     </main>
   );
 }
 
-// ================================================
-// CONTENIDO PROTEGIDO
-// ================================================
-
 async function ContenidoUsuarios({
   searchParams,
 }: Props) {
-  // Datos dinamicos dentro de Suspense.
   await connection();
 
   const parametros = await searchParams;
 
-  const busqueda = (
+  const busqueda =
     typeof parametros.q === "string"
-      ? parametros.q
-      : ""
-  ).trim().slice(0, 60);
+      ? parametros.q.trim().slice(0, 60)
+      : "";
 
   const rolesPermitidos = [
     "todos",
@@ -157,16 +166,11 @@ async function ContenidoUsuarios({
     "administrador",
   ];
 
-  const rolSolicitado =
-    typeof parametros.rol === "string"
+  const filtroRol =
+    typeof parametros.rol === "string" &&
+    rolesPermitidos.includes(parametros.rol)
       ? parametros.rol
       : "todos";
-
-  const filtroRol = rolesPermitidos.includes(
-    rolSolicitado
-  )
-    ? rolSolicitado
-    : "todos";
 
   const numeroPagina = Number(parametros.pagina);
 
@@ -176,119 +180,71 @@ async function ContenidoUsuarios({
       ? Math.min(numeroPagina, 1000)
       : 1;
 
-  // ==============================================
-  // 1. VERIFICAR SESION
-  // ==============================================
+  // =====================================
+  // SEGURIDAD
+  // =====================================
 
   const supabase = await createClient();
 
-  const { data: identidad, error: errorIdentidad } =
-    await supabase.auth.getClaims();
+  const {
+    data: { user },
+    error: errorSesion,
+  } = await supabase.auth.getUser();
 
-  const usuarioId = identidad?.claims?.sub;
-
-  if (errorIdentidad || !usuarioId) {
+  if (errorSesion || !user) {
     redirect("/login");
   }
-
-  // ==============================================
-  // 2. VERIFICAR ROL ADMINISTRADOR
-  // ==============================================
 
   const { data: rolActual, error: errorRol } =
     await supabase
       .from("usuario_roles")
       .select("rol")
-      .eq("usuario_id", usuarioId)
+      .eq("usuario_id", user.id)
       .maybeSingle();
 
-  if (
-    errorRol ||
-    rolActual?.rol !== "administrador"
-  ) {
+  if (errorRol || rolActual?.rol !== "administrador") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
-        <section className="max-w-md rounded-2xl border border-rose-200 dark:border-rose-400/20 bg-rose-50 dark:bg-rose-400/10 p-8 text-center">
-          <h1 className="text-2xl font-bold">
-            Acceso restringido
-          </h1>
-
-          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            No tienes autorización para consultar
-            las cuentas del gimnasio.
-          </p>
-
-          <Link
-            href="/login"
-            className="mt-5 inline-block font-semibold text-cyan-700 dark:text-cyan-300"
-          >
-            Volver al inicio
-          </Link>
-        </section>
-      </main>
+      <Mensaje
+        titulo="Acceso restringido"
+        descripcion="No tienes autorización para gestionar las cuentas del gimnasio."
+      />
     );
   }
-
-  // ==============================================
-  // 3. CONFIGURACION PRIVADA DEL SERVIDOR
-  // ==============================================
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const clave = process.env.SUPABASE_SECRET_KEY;
 
   if (!url || !clave) {
     return (
-      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
-        <Link
-          href="/administrador"
-          className="text-sm font-bold text-cyan-700 dark:text-cyan-300"
-        >
-          ← Volver al administrador
-        </Link>
-
-        <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-6">
-          <h1 className="text-xl font-bold">
-            Configuración pendiente
-          </h1>
-
-          <p className="mt-3 text-sm leading-6 text-amber-900 dark:text-amber-100">
-            No están disponibles las credenciales
-            privadas de consulta en el servidor.
-            No se mostrarán datos ficticios.
-          </p>
-        </div>
-      </main>
+      <Mensaje
+        titulo="Configuración pendiente"
+        descripcion="Faltan las credenciales privadas de Supabase en el servidor."
+      />
     );
   }
 
-  // Nunca se utiliza este cliente en el navegador.
-  // La autorizacion se verifico previamente.
-  const admin = crearClientePrivilegiado(
-    url,
-    clave,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  );
+  const admin = crearAdmin(url, clave, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 
-  // ==============================================
-  // 4. CONSULTAS REALES
-  // ==============================================
+  // =====================================
+  // CONSULTAS
+  // =====================================
 
   const [
     respuestaUsuarios,
     respuestaRoles,
     respuestaAsignaciones,
+    respuestaAuth,
   ] = await Promise.all([
     admin
       .from("usuarios")
-      .select(
-        "id,nombre_completo,creado_en",
-        { count: "exact" }
-      )
+      .select("id,nombre_completo,creado_en", {
+        count: "exact",
+      })
       .order("creado_en", {
         ascending: false,
       })
@@ -304,41 +260,28 @@ async function ContenidoUsuarios({
       .select(
         "cliente_id,entrenador_id,activa,asignado_en"
       )
+      .order("asignado_en", {
+        ascending: false,
+      })
       .limit(LIMITE_CONSULTA),
+
+    admin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    }),
   ]);
 
-  const errorConsulta = Boolean(
+  if (
     respuestaUsuarios.error ||
     respuestaRoles.error ||
-    respuestaAsignaciones.error
-  );
-
-  if (errorConsulta) {
+    respuestaAsignaciones.error ||
+    respuestaAuth.error
+  ) {
     return (
-      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] p-6 text-[var(--ecf-text)] dark:text-white">
-        <div className="mx-auto max-w-4xl">
-          <Link
-            href="/administrador"
-            className="text-sm font-bold text-cyan-700 dark:text-cyan-300"
-          >
-            ← Volver al administrador
-          </Link>
-
-          <div
-            role="alert"
-            className="mt-8 rounded-2xl border border-rose-200 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-400/10 p-6"
-          >
-            <h1 className="text-xl font-bold">
-              No se pudieron cargar los usuarios
-            </h1>
-
-            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Revisa la conexión y los permisos
-              del servidor de Supabase.
-            </p>
-          </div>
-        </div>
-      </main>
+      <Mensaje
+        titulo="No se pudieron cargar los usuarios"
+        descripcion="Revisa la conexión con Supabase, las credenciales del servidor y los permisos de lectura."
+      />
     );
   }
 
@@ -351,9 +294,12 @@ async function ContenidoUsuarios({
   const asignaciones =
     (respuestaAsignaciones.data ?? []) as Asignacion[];
 
-  // ==============================================
-  // 5. RELACIONAR USUARIOS Y ROLES
-  // ==============================================
+  const authUsuarios =
+    respuestaAuth.data?.users ?? [];
+
+  // =====================================
+  // RELACIONES
+  // =====================================
 
   const nombres = new Map(
     usuarios.map((usuario) => [
@@ -369,102 +315,124 @@ async function ContenidoUsuarios({
     ])
   );
 
-  const asignacionesPorCliente = new Map(
-    asignaciones.map((asignacion) => [
-      asignacion.cliente_id,
-      asignacion,
+  const estadosAuth = new Map(
+    authUsuarios.map((cuenta) => [
+      cuenta.id,
+      Boolean(
+        cuenta.banned_until &&
+        new Date(cuenta.banned_until).getTime() >
+          Date.now()
+      ),
     ])
   );
+
+  const asignacionesPorCliente =
+    new Map<string, Asignacion>();
 
   const clientesPorEntrenador =
     new Map<string, number>();
 
   for (const asignacion of asignaciones) {
-    if (!asignacion.activa) continue;
+    if (
+      !asignacionesPorCliente.has(
+        asignacion.cliente_id
+      )
+    ) {
+      asignacionesPorCliente.set(
+        asignacion.cliente_id,
+        asignacion
+      );
+    }
 
-    const anterior =
-      clientesPorEntrenador.get(
-        asignacion.entrenador_id
-      ) ?? 0;
+    if (asignacion.activa) {
+      const total =
+        clientesPorEntrenador.get(
+          asignacion.entrenador_id
+        ) ?? 0;
 
-    clientesPorEntrenador.set(
-      asignacion.entrenador_id,
-      anterior + 1
-    );
+      clientesPorEntrenador.set(
+        asignacion.entrenador_id,
+        total + 1
+      );
+    }
   }
 
-  const registros: Registro[] =
-    usuarios.map((usuario) => {
-      const rol =
-        mapaRoles.get(usuario.id) ??
-        "sin_rol";
-
+  const registros: Registro[] = usuarios.map(
+    (usuario) => {
       const relacion =
         asignacionesPorCliente.get(usuario.id);
 
-      const entrenador =
-        relacion
-          ? nombres.get(
-              relacion.entrenador_id
-            ) ?? "Entrenador no disponible"
-          : null;
-
       return {
         ...usuario,
-        rol,
-        entrenador,
+
+        rol:
+          mapaRoles.get(usuario.id) ??
+          "sin_rol",
+
+        entrenador: relacion
+          ? nombres.get(relacion.entrenador_id) ??
+            "Entrenador no disponible"
+          : null,
+
         asignacionActiva:
           relacion?.activa ?? false,
-        clientesAsignados:
-          clientesPorEntrenador.get(
-            usuario.id
-          ) ?? 0,
-      };
-    });
 
-  // ==============================================
-  // 6. RESUMEN DE USUARIOS
-  // ==============================================
+        clientesAsignados:
+          clientesPorEntrenador.get(usuario.id) ??
+          0,
+
+        suspendido: estadosAuth.has(usuario.id)
+          ? estadosAuth.get(usuario.id) ?? false
+          : null,
+      };
+    }
+  );
+
+  // =====================================
+  // ESTADÍSTICAS
+  // =====================================
 
   const totalRegistrado =
     respuestaUsuarios.count ?? usuarios.length;
 
   const totalClientes = registros.filter(
-    (usuario) => usuario.rol === "cliente"
+    (registro) => registro.rol === "cliente"
   ).length;
 
   const totalEntrenadores = registros.filter(
-    (usuario) => usuario.rol === "entrenador"
+    (registro) => registro.rol === "entrenador"
   ).length;
 
   const totalAdministradores = registros.filter(
-    (usuario) => usuario.rol === "administrador"
+    (registro) =>
+      registro.rol === "administrador"
   ).length;
 
-  // ==============================================
-  // 7. BUSQUEDA Y FILTROS
-  // ==============================================
+  const totalSuspendidos = registros.filter(
+    (registro) => registro.suspendido === true
+  ).length;
 
-  const registrosFiltrados =
-    registros.filter((usuario) => {
-      const coincideNombre =
-        !busqueda ||
-        normalizar(
-          usuario.nombre_completo
-        ).includes(normalizar(busqueda));
+  // =====================================
+  // FILTROS Y PAGINACIÓN
+  // =====================================
 
-      const coincideRol =
-        filtroRol === "todos" ||
-        usuario.rol === filtroRol;
+  const filtrados = registros.filter((registro) => {
+    const coincideNombre =
+      !busqueda ||
+      normalizar(registro.nombre_completo).includes(
+        normalizar(busqueda)
+      );
 
-      return coincideNombre && coincideRol;
-    });
+    const coincideRol =
+      filtroRol === "todos" ||
+      registro.rol === filtroRol;
+
+    return coincideNombre && coincideRol;
+  });
 
   const totalPaginas = Math.max(
     1,
-    Math.ceil(
-      registrosFiltrados.length / POR_PAGINA
-    )
+    Math.ceil(filtrados.length / POR_PAGINA)
   );
 
   const paginaActual = Math.min(
@@ -475,11 +443,10 @@ async function ContenidoUsuarios({
   const inicio =
     (paginaActual - 1) * POR_PAGINA;
 
-  const registrosPagina =
-    registrosFiltrados.slice(
-      inicio,
-      inicio + POR_PAGINA
-    );
+  const registrosPagina = filtrados.slice(
+    inicio,
+    inicio + POR_PAGINA
+  );
 
   function enlacePagina(pagina: number) {
     const params = new URLSearchParams();
@@ -500,17 +467,13 @@ async function ContenidoUsuarios({
     );
   }
 
-  const vistaParcial =
-    totalRegistrado > LIMITE_CONSULTA;
-
-  // ==============================================
-  // 8. INTERFAZ
-  // ==============================================
+  // =====================================
+  // INTERFAZ
+  // =====================================
 
   return (
-    <main className="ecf-role-admin min-h-screen bg-[var(--ecf-bg)] dark:bg-[#080e1b] text-[var(--ecf-text)] dark:text-white">
-      {/* CABECERA */}
-      <header className="border-b border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#101d31]">
+    <main className="ecf-role-admin min-h-screen bg-[var(--ecf-bg)] text-[var(--ecf-text)] dark:bg-[#080e1b] dark:text-white">
+      <header className="border-b border-[var(--ecf-border)] bg-[var(--ecf-surface)] dark:border-white/10 dark:bg-[#101d31]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <Link
             href="/administrador"
@@ -536,7 +499,7 @@ async function ContenidoUsuarios({
 
           <Link
             href="/administrador"
-            className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-white/10"
+            className="rounded-xl border border-[var(--ecf-border)] px-4 py-2.5 text-sm font-semibold dark:border-white/15"
           >
             ← Volver al panel
           </Link>
@@ -544,8 +507,7 @@ async function ContenidoUsuarios({
       </header>
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
-        {/* PRESENTACION */}
-        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#e4f7fb] via-[#f8fbff] to-[#f0ecff] dark:from-[#17344a] dark:via-[#14263d] dark:to-[#201b3d] p-6 shadow-xl shadow-slate-200/70 dark:shadow-black/20 sm:p-9">
+        <section className="rounded-3xl border border-cyan-200 bg-gradient-to-br from-[#e4f7fb] via-[#f8fbff] to-[#f0ecff] p-6 shadow-xl shadow-slate-200/50 dark:border-cyan-400/15 dark:from-[#17344a] dark:via-[#14263d] dark:to-[#201b3d] dark:shadow-black/20 sm:p-9">
           <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
             Gestión administrativa
           </p>
@@ -555,29 +517,42 @@ async function ContenidoUsuarios({
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
-            Consulta las cuentas del gimnasio,
-            identifica sus roles y revisa las
-            relaciones con los entrenadores.
+            Administra las cuentas del gimnasio.
+            Consulta los roles, actualiza nombres,
+            revisa asignaciones y suspende o reactiva
+            accesos cuando sea necesario.
           </p>
 
-          <span className="mt-5 inline-flex rounded-full border border-cyan-200 dark:border-cyan-400/25 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-800 dark:text-cyan-200">
-            Consulta autorizada · Solo lectura
-          </span>
-          <Link
-            href="/administrador/usuarios/nuevo"
-            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] transition hover:bg-cyan-300"
-          >
-            + Invitar nuevo usuario
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/administrador/usuarios/nuevo"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300"
+            >
+              + Invitar nuevo usuario
+            </Link>
+
+            <Link
+              href="/administrador/roles"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-300 px-5 py-3 text-sm font-bold text-cyan-900 hover:bg-white/50 dark:border-cyan-400/30 dark:text-cyan-200"
+            >
+              Gestionar roles
+            </Link>
+
+            <Link
+              href="/administrador/roles/historial"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-white/50 dark:border-white/20 dark:text-slate-200"
+            >
+              Historial de roles
+            </Link>
+          </div>
         </section>
 
-        {/* ESTADISTICAS */}
         <section>
           <h2 className="text-xl font-extrabold">
             Resumen de cuentas
           </h2>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
             <Resumen
               titulo="Usuarios registrados"
               valor={totalRegistrado}
@@ -597,35 +572,30 @@ async function ContenidoUsuarios({
               titulo="Administradores consultados"
               valor={totalAdministradores}
             />
+
+            <Resumen
+              titulo="Suspendidos consultados"
+              valor={totalSuspendidos}
+            />
           </div>
 
-          {vistaParcial && (
-            <p className="mt-3 rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-xs text-amber-800 dark:text-amber-200">
+          {totalRegistrado > LIMITE_CONSULTA && (
+            <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">
               Hay más de {LIMITE_CONSULTA} usuarios.
               Los filtros y recuentos por rol solo
               incluyen los primeros registros consultados.
-              Se requiere paginación de base de datos
-              para mostrar todos.
             </p>
           )}
         </section>
 
-        {/* BUSQUEDA Y FILTROS */}
-        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-5 sm:p-7">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
-              Directorio
-            </p>
+        <section className="rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 dark:border-white/10 dark:bg-[#112039] sm:p-7">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
+            Directorio
+          </p>
 
-            <h2 className="mt-2 text-2xl font-extrabold">
-              Buscar y filtrar usuarios
-            </h2>
-
-            <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
-              Encuentra las cuentas registradas
-              y revisa sus funciones.
-            </p>
-          </div>
+          <h2 className="mt-2 text-2xl font-extrabold">
+            Buscar y filtrar usuarios
+          </h2>
 
           <form
             action="/administrador/usuarios"
@@ -635,7 +605,7 @@ async function ContenidoUsuarios({
             <div>
               <label
                 htmlFor="buscar-usuarios"
-                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
+                className="mb-2 block text-xs font-semibold"
               >
                 Nombre del usuario
               </label>
@@ -646,15 +616,15 @@ async function ContenidoUsuarios({
                 type="search"
                 maxLength={60}
                 defaultValue={busqueda}
-                placeholder="Escribe un nombre..."
-                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-slate-50 dark:bg-[#081526] px-4 py-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15 dark:placeholder:text-slate-500"
+                placeholder="Buscar por nombre..."
+                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] bg-slate-50 px-4 py-3 text-sm outline-none focus:border-cyan-500 dark:border-white/15 dark:bg-[#081526]"
               />
             </div>
 
             <div>
               <label
                 htmlFor="rol-usuarios"
-                className="mb-2 block text-xs font-semibold text-slate-600 dark:text-slate-300"
+                className="mb-2 block text-xs font-semibold"
               >
                 Filtrar por rol
               </label>
@@ -663,7 +633,7 @@ async function ContenidoUsuarios({
                 id="rol-usuarios"
                 name="rol"
                 defaultValue={filtroRol}
-                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-slate-50 dark:bg-[#081526] px-4 py-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/15"
+                className="min-h-12 w-full rounded-xl border border-[var(--ecf-border)] bg-slate-50 px-4 py-3 text-sm outline-none dark:border-white/15 dark:bg-[#081526]"
               >
                 <option value="todos">
                   Todos los roles
@@ -685,22 +655,21 @@ async function ContenidoUsuarios({
 
             <button
               type="submit"
-              className="min-h-12 self-end rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] transition hover:bg-cyan-300"
+              className="min-h-12 self-end rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300"
             >
               Aplicar filtros
             </button>
 
             <Link
               href="/administrador/usuarios"
-              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-white/10"
+              className="inline-flex min-h-12 items-center justify-center self-end rounded-xl border border-[var(--ecf-border)] px-5 py-3 text-sm font-semibold dark:border-white/15"
             >
               Limpiar
             </Link>
           </form>
         </section>
 
-        {/* RESULTADOS */}
-        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-5 sm:p-7">
+        <section className="rounded-3xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 dark:border-white/10 dark:bg-[#112039] sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-extrabold">
@@ -708,31 +677,30 @@ async function ContenidoUsuarios({
               </h2>
 
               <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
-                {registrosFiltrados.length} resultado(s)
+                {filtrados.length} resultado(s)
                 dentro de los registros consultados.
               </p>
             </div>
 
-            <span className="rounded-full border border-cyan-200 dark:border-cyan-400/20 bg-cyan-50 dark:bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-800 dark:text-cyan-200">
+            <span className="rounded-full border border-cyan-300 bg-cyan-50 px-3 py-2 text-xs font-bold text-cyan-800 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
               Página {paginaActual} de {totalPaginas}
             </span>
           </div>
 
           {registrosPagina.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-slate-50 dark:bg-[#091729] p-8 text-center text-sm text-[var(--ecf-muted)] dark:text-slate-400">
-              No se encontraron usuarios con
-              los filtros seleccionados.
+            <div className="mt-6 rounded-2xl border border-[var(--ecf-border)] bg-slate-50 p-8 text-center text-sm dark:border-white/10 dark:bg-[#091729]">
+              No se encontraron usuarios.
             </div>
           ) : (
-            <div className="mt-6 grid gap-3">
+            <div className="mt-6 grid gap-4">
               {registrosPagina.map((usuario) => (
                 <article
                   key={usuario.id}
-                  className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-white dark:bg-gradient-to-r dark:from-[#152a44] dark:to-[#0a192b] p-5 transition-[border-color,transform] duration-200 motion-safe:hover:-translate-y-0.5 hover:border-cyan-400/25"
+                  className="rounded-2xl border border-[var(--ecf-border)] bg-white p-5 transition hover:border-cyan-300 dark:border-white/10 dark:bg-gradient-to-r dark:from-[#152a44] dark:to-[#0a192b]"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex min-w-0 items-start gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-50 dark:bg-cyan-400/10 text-lg font-black text-cyan-700 dark:text-cyan-300">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-lg font-black text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300">
                         {usuario.nombre_completo
                           .trim()
                           .charAt(0)
@@ -740,47 +708,57 @@ async function ContenidoUsuarios({
                       </div>
 
                       <div className="min-w-0">
-                        <h3 className="break-words text-base font-bold text-[var(--ecf-text)] dark:text-white">
+                        <h3 className="break-words text-base font-bold">
                           {usuario.nombre_completo}
                         </h3>
 
                         <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                           Registrado el{" "}
-                          {formatoFecha(
-                            usuario.creado_en
-                          )}
+                          {formatoFecha(usuario.creado_en)}
                         </p>
                       </div>
                     </div>
 
-                    <span
-                      className={`rounded-full border px-3 py-1.5 text-xs font-bold ${coloresRol(
-                        usuario.rol
-                      )}`}
-                    >
-                      {etiquetaRol(usuario.rol)}
-                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      <span
+                        className={`rounded-full border px-3 py-1.5 text-xs font-bold ${coloresRol(
+                          usuario.rol
+                        )}`}
+                      >
+                        {etiquetaRol(usuario.rol)}
+                      </span>
+
+                      <span
+                        className={`rounded-full border px-3 py-1.5 text-xs font-bold ${
+                          usuario.suspendido === true
+                            ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200"
+                            : usuario.suspendido === false
+                              ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200"
+                              : "border-slate-300 bg-slate-50 text-slate-600 dark:border-white/20 dark:bg-white/10 dark:text-slate-300"
+                        }`}
+                      >
+                        {usuario.suspendido === true
+                          ? "Cuenta suspendida"
+                          : usuario.suspendido === false
+                            ? "Sin suspensión"
+                            : "Estado no disponible"}
+                      </span>
+                    </div>
                   </div>
 
                   {usuario.rol === "cliente" && (
-                    <div className="mt-5 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-slate-50 dark:bg-[#081526] p-4">
+                    <div className="mt-4 rounded-xl border border-[var(--ecf-border)] bg-slate-50 p-4 dark:border-white/10 dark:bg-[#081526]">
                       <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Entrenador asignado
                       </p>
 
-                      <p className="mt-1 text-sm font-semibold text-[var(--ecf-text)] dark:text-white">
+                      <p className="mt-1 text-sm font-semibold">
                         {usuario.entrenador ??
                           "Sin entrenador asignado"}
                       </p>
 
                       {usuario.entrenador && (
-                        <p
-                          className={`mt-2 text-xs font-semibold ${
-                            usuario.asignacionActiva
-                              ? "text-emerald-700 dark:text-emerald-300"
-                              : "text-amber-300"
-                          }`}
-                        >
+                        <p className="mt-2 text-xs font-semibold text-cyan-700 dark:text-cyan-300">
                           {usuario.asignacionActiva
                             ? "● Asignación activa"
                             : "● Asignación inactiva"}
@@ -790,7 +768,7 @@ async function ContenidoUsuarios({
                   )}
 
                   {usuario.rol === "entrenador" && (
-                    <div className="mt-5 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-slate-50 dark:bg-[#081526] p-4">
+                    <div className="mt-4 rounded-xl border border-[var(--ecf-border)] bg-slate-50 p-4 dark:border-white/10 dark:bg-[#081526]">
                       <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                         Clientes asignados actualmente
                       </p>
@@ -802,81 +780,81 @@ async function ContenidoUsuarios({
                   )}
 
                   {usuario.rol === "administrador" && (
-                    <div className="mt-5 rounded-xl border border-violet-200 dark:border-violet-400/15 bg-violet-50 dark:bg-violet-400/5 p-4">
+                    <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50 p-4 dark:border-violet-400/15 dark:bg-violet-400/5">
                       <p className="text-xs font-semibold text-violet-700 dark:text-violet-200">
-                        Cuenta administrativa
-                      </p>
-
-                      <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
-                        Acceso sujeto a verificación
-                        de identidad y permisos.
+                        Cuenta administrativa protegida
                       </p>
                     </div>
                   )}
+
+                  <AccionesUsuario
+                    usuarioId={usuario.id}
+                    nombre={usuario.nombre_completo}
+                    rol={usuario.rol}
+                    suspendido={usuario.suspendido}
+                    esMiCuenta={usuario.id === user.id}
+                  />
                 </article>
               ))}
             </div>
           )}
 
-          {/* PAGINACION */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--ecf-border)] dark:border-white/10 pt-5">
+          <div className="mt-6 flex items-center justify-between gap-3 border-t border-[var(--ecf-border)] pt-5 dark:border-white/10">
             {paginaActual > 1 ? (
               <Link
-                href={enlacePagina(
-                  paginaActual - 1
-                )}
-                className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
+                href={enlacePagina(paginaActual - 1)}
+                className="rounded-xl border border-[var(--ecf-border)] px-4 py-2.5 text-sm font-semibold dark:border-white/15"
               >
                 ← Anterior
               </Link>
             ) : (
-              <span className="rounded-xl border border-[var(--ecf-border)] dark:border-white/10 px-4 py-2.5 text-sm text-slate-400 dark:text-slate-600">
+              <span className="text-sm text-slate-400">
                 ← Anterior
               </span>
             )}
 
-            <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
+            <span className="text-sm">
               {paginaActual} / {totalPaginas}
-            </p>
+            </span>
 
             {paginaActual < totalPaginas ? (
               <Link
-                href={enlacePagina(
-                  paginaActual + 1
-                )}
-                className="rounded-xl border border-[var(--ecf-border)] dark:border-white/15 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10"
+                href={enlacePagina(paginaActual + 1)}
+                className="rounded-xl border border-[var(--ecf-border)] px-4 py-2.5 text-sm font-semibold dark:border-white/15"
               >
                 Siguiente →
               </Link>
             ) : (
-              <span className="rounded-xl border border-[var(--ecf-border)] dark:border-white/10 px-4 py-2.5 text-sm text-slate-400 dark:text-slate-600">
+              <span className="text-sm text-slate-400">
                 Siguiente →
               </span>
             )}
           </div>
         </section>
 
-        {/* SEGURIDAD */}
-        <section className="rounded-2xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-r from-[#e8f8fb] to-[#f0ebff] dark:from-[#0f2a3c] dark:to-[#1b1c39] p-6">
-          <h2 className="font-bold text-[var(--ecf-text)] dark:text-white">
-            Seguridad de las cuentas
+        <section className="rounded-2xl border border-cyan-200 bg-gradient-to-r from-[#e8f8fb] to-[#f0ebff] p-6 dark:border-cyan-400/15 dark:from-[#0f2a3c] dark:to-[#1b1c39]">
+          <h2 className="font-bold">
+            Seguridad e historial
           </h2>
 
           <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
-            Esta herramienta solo permite consultar
-            usuarios, roles y asignaciones.
-            No modifica contraseñas, permisos ni
-            información de los participantes.
+            Las modificaciones de nombres y los
+            cambios de suspensión se registran
+            en la auditoría administrativa.
+            Suspender una cuenta no elimina
+            rutinas, sesiones ni historiales
+            de investigación.
           </p>
 
           <p className="mt-3 text-xs text-amber-800 dark:text-amber-200">
-            La creación, edición y desactivación
-            de cuentas requiere operaciones
-            protegidas y auditoría.
+            Importante: los tokens de sesión ya
+            emitidos pueden seguir vigentes hasta
+            su expiración. Deben revisarse las
+            protecciones de acceso del sistema.
           </p>
         </section>
 
-        <footer className="border-t border-[var(--ecf-border)] dark:border-white/10 py-6 text-center text-xs text-slate-500">
+        <footer className="border-t border-[var(--ecf-border)] py-6 text-center text-xs text-slate-500 dark:border-white/10">
           Evolution Center Fit 2.0 · Gestión de usuarios
         </footer>
       </div>
@@ -884,9 +862,13 @@ async function ContenidoUsuarios({
   );
 }
 
-// ================================================
-// PAGINA PRINCIPAL
-// ================================================
+function EstadoCarga() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] text-cyan-800 dark:bg-[#080e1b] dark:text-cyan-200">
+      Cargando gestión de usuarios...
+    </main>
+  );
+}
 
 export default function UsuariosPage({
   searchParams,
