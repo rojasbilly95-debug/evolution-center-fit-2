@@ -242,11 +242,11 @@ export default function ControlAsistencia({
     }
 
     if (
-      accion === "cancelar" &&
+      (accion === "cancelar" || accion === "marcar_ausente") &&
       observaciones.trim().length < 10
     ) {
       setError(
-        "Indica un motivo de cancelación de al menos 10 caracteres."
+        "Indica un motivo verificado de al menos 10 caracteres."
       );
       return;
     }
@@ -368,9 +368,10 @@ export default function ControlAsistencia({
         programada &&
         esPasada && (
           <p className="mt-3 text-xs text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
-            La fecha ya pasó. Puedes
-            registrar la ausencia si
-            el cliente no asistió.
+            Esta sesión venció sin un resultado registrado.
+            Marca ausencia únicamente si verificaste que el
+            cliente no asistió; de lo contrario, conserva el
+            registro pendiente.
           </p>
         )}
 
@@ -472,6 +473,14 @@ export default function ControlAsistencia({
                 : "¿Confirmas la cancelación de esta sesión?"}
           </p>
 
+          {confirmacion === "marcar_ausente" && (
+            <p className="text-xs leading-5 text-amber-900 dark:text-amber-200">
+              Confirma la falta solo después de verificar lo ocurrido.
+              Si hubo asistencia sin registro oportuno, no la marques
+              como ausencia: solicita una revisión autorizada.
+            </p>
+          )}
+
           {/* OBSERVACIONES */}
 
           <div>
@@ -479,14 +488,21 @@ export default function ControlAsistencia({
               htmlFor={`observaciones-${sesion.id}`}
               className="block text-xs text-slate-700 dark:text-slate-300"
             >
-              {confirmacion === "cancelar"
-                ? "Motivo obligatorio (mínimo 10 caracteres)"
+              {confirmacion === "cancelar" ||
+              confirmacion === "marcar_ausente"
+                ? "Motivo verificado (mínimo 10 caracteres)"
                 : "Observaciones (opcional)"}
             </label>
 
             <textarea
               id={`observaciones-${sesion.id}`}
               rows={2}
+              minLength={
+                confirmacion === "cancelar" ||
+                confirmacion === "marcar_ausente"
+                  ? 10
+                  : undefined
+              }
               maxLength={1000}
               value={observaciones}
               onChange={(evento) =>
@@ -497,7 +513,9 @@ export default function ControlAsistencia({
               placeholder={
                 confirmacion === "cancelar"
                   ? "Explica por qué se cancela la sesión"
-                  : "Observaciones del entrenador"
+                  : confirmacion === "marcar_ausente"
+                    ? "Indica cómo confirmaste que no hubo asistencia"
+                    : "Observaciones del entrenador"
               }
               className="mt-2 w-full resize-y rounded-lg border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-[var(--ecf-text,#102238)] dark:text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
             />
@@ -511,8 +529,8 @@ export default function ControlAsistencia({
               disabled={
                 procesando ||
                 (
-                  confirmacion ===
-                  "cancelar" &&
+                  (confirmacion === "cancelar" ||
+                   confirmacion === "marcar_ausente") &&
                   observaciones.trim()
                     .length < 10
                 )

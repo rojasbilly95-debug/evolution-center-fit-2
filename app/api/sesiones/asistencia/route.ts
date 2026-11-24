@@ -200,11 +200,13 @@ export async function POST(
     }
 
     if (
-      accion === "cancelar" &&
+      (accion === "cancelar" || accion === "marcar_ausente") &&
       textoObservaciones.length < 10
     ) {
       return errorJson(
-        "Para cancelar debes indicar un motivo de al menos 10 caracteres.",
+        accion === "cancelar"
+          ? "Para cancelar debes indicar un motivo de al menos 10 caracteres."
+          : "Para registrar una ausencia debes indicar un motivo verificado de al menos 10 caracteres.",
         400
       );
     }
