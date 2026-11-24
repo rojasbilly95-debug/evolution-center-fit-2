@@ -23,6 +23,12 @@ type Resumen = {
   seriesRegistradas: number;
   seriesCompletadas: number;
 
+  seriesConMetaRegistrada: number;
+  seriesMetaAlcanzada: number;
+  seriesMetaParcial: number;
+  seriesMetaPendiente: number;
+  metaAlcanzadaPct: number | null;
+
   coberturaPct: number | null;
   avancePct: number | null;
   cumplimientoFinalPct: number | null;
@@ -218,7 +224,7 @@ export default function ResumenCumplimiento({
               : medicion === "en_curso"
                 ? "Avance provisional. Los valores pueden cambiar hasta finalizar el entrenamiento."
                 : medicion === "verificada"
-                  ? "Sesión finalizada con todas las series registradas. El cumplimiento es verificable."
+                  ? "Sesión finalizada con todas las series registradas. La ejecución real de las metas se muestra por separado."
                   : "";
 
   // ==========================================
@@ -312,7 +318,7 @@ export default function ResumenCumplimiento({
                     resumen.seriesRegistradas,
                 },
                 {
-                  nombre: "Series completadas",
+                  nombre: "Series marcadas completas",
                   valor:
                     resumen.seriesCompletadas,
                 },
@@ -377,12 +383,84 @@ export default function ResumenCumplimiento({
               </div>
             )}
 
+            {/* EVIDENCIA REAL FRENTE A LA META */}
+
+            {(
+              medicion === "en_curso" ||
+              medicion === "incompleta" ||
+              medicion === "sin_evidencia" ||
+              medicion === "verificada"
+            ) && (
+              <div className="rounded-xl border border-cyan-200/70 bg-cyan-50/60 p-4 dark:border-cyan-400/20 dark:bg-cyan-400/5">
+                <h6 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Resultado real frente al objetivo
+                </h6>
+
+                <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                  Se comparan las repeticiones y/o la duración registradas
+                  con las metas de cada serie. No se altera el historial.
+                </p>
+
+                <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {[
+                    {
+                      nombre: "Meta alcanzada",
+                      cantidad: resumen.seriesMetaAlcanzada
+                    },
+                    {
+                      nombre: "Actividad parcial",
+                      cantidad: resumen.seriesMetaParcial
+                    },
+                    {
+                      nombre: "Sin confirmar o sin evidencia",
+                      cantidad: resumen.seriesMetaPendiente
+                    },
+                  ].map((dato) => (
+                    <div
+                      key={dato.nombre}
+                      className="rounded-lg border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-900/70"
+                    >
+                      <dt className="text-xs text-slate-600 dark:text-slate-300">
+                        {dato.nombre}
+                      </dt>
+
+                      <dd className="mt-1 text-xl font-bold text-slate-900 dark:text-white">
+                        {dato.cantidad}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <p className="mt-3 text-xs text-slate-600 dark:text-slate-300">
+                  {resumen.seriesConMetaRegistrada} series registradas
+                  con objetivo de repeticiones o duración.
+                  Las series sin registro siguen pendientes y no se cuentan
+                  automáticamente como incumplimiento.
+                </p>
+
+                {resumen.metaAlcanzadaPct !== null ? (
+                  <div className="mt-3">
+                    <Barra
+                      etiqueta="Metas de ejecución alcanzadas (resultado verificable)"
+                      valor={resumen.metaAlcanzadaPct}
+                    />
+                  </div>
+                ) : (
+                  <p className="mt-2 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                    El porcentaje final de metas estará disponible
+                    cuando concluya la sesión y sus registros estén completos
+                    y confirmados.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* CUMPLIMIENTO FINAL */}
 
             {resumen.cumplimientoFinalPct !==
               null && (
               <p className="rounded-lg border border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 p-3 text-sm font-semibold text-emerald-800 dark:text-emerald-200">
-                Cumplimiento final de series:{" "}
+                Series marcadas como completadas (registro operativo):{" "}
                 {
                   resumen.cumplimientoFinalPct
                 }
