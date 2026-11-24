@@ -437,6 +437,75 @@ function FilaSerie({
   // ==========================================
   // 4. INTERFAZ DE LA SERIE
   // ==========================================
+  // Vista compacta de solo lectura.
+  // No mostramos formularios cuando la sesión
+  // no permite registrar o editar series.
+
+  if (!editable) {
+    if (!registro) {
+      return null;
+    }
+
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-slate-950/40">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-bold text-slate-900 dark:text-white">
+            Serie {numeroSerie}
+          </p>
+
+          <span
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+              registro.completada
+                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200"
+                : "bg-slate-200 text-slate-700 dark:bg-white/10 dark:text-slate-300"
+            }`}
+          >
+            {registro.completada
+              ? "Completada"
+              : "Registro parcial"}
+          </span>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-700 dark:text-slate-300">
+          {registro.repeticiones_realizadas !== null && (
+            <p>
+              <span className="font-semibold">
+                Repeticiones:
+              </span>{" "}
+              {registro.repeticiones_realizadas}
+            </p>
+          )}
+
+          {registro.duracion_real_seg !== null && (
+            <p>
+              <span className="font-semibold">
+                Duración:
+              </span>{" "}
+              {registro.duracion_real_seg} s
+            </p>
+          )}
+
+          {registro.peso_kg !== null && (
+            <p>
+              <span className="font-semibold">
+                Peso:
+              </span>{" "}
+              {registro.peso_kg} kg
+            </p>
+          )}
+        </div>
+
+        {registro.observaciones?.trim() && (
+          <p className="mt-3 border-t border-slate-200 pt-3 text-sm text-slate-600 dark:border-white/10 dark:text-slate-400">
+            <span className="font-semibold">
+              Observaciones:
+            </span>{" "}
+            {registro.observaciones}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="ecf-series-card rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#0d192b] p-4">
