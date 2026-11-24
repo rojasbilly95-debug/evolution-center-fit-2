@@ -12,6 +12,7 @@ import ControlAsistencia, {
 } from "./control-asistencia";
 
 import RegistroEjercicios from "./registro-ejercicios";
+import ReprogramarSesion from "./reprogramar-sesion";
 import ResumenCumplimiento from "./resumen-cumplimiento";
 import ResumenAdherencia from "./resumen-adherencia";
 import GestionPendientes, { fechaHoyLima } from "./gestion-pendientes";
@@ -788,7 +789,7 @@ body: JSON.stringify({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
                     {estado.sesiones.length}{" "}
-                    sesiones registradas
+                    sesiones en el calendario
                   </p>
 
                   <span className="rounded-full border border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 px-3 py-1 text-xs text-emerald-800 dark:text-emerald-200">
@@ -937,6 +938,19 @@ body: JSON.stringify({
                             actualizar();
                           }}
                         />
+
+{/* REPROGRAMACIÓN AUDITADA DE LA SESIÓN */}
+
+<ReprogramarSesion
+  sesion={sesion}
+  estadoPlan={plan.estado}
+  fechaInicio={plan.fechaInicio}
+  fechaFin={plan.fechaFin}
+  onActualizada={(nuevoMensaje) => {
+    setMensaje(nuevoMensaje);
+    actualizar();
+  }}
+/>
 
                         {/* EJERCICIOS EN LA MISMA TARJETA */}
 
