@@ -14,6 +14,7 @@ import ControlAsistencia, {
 import RegistroEjercicios from "./registro-ejercicios";
 import ResumenCumplimiento from "./resumen-cumplimiento";
 import ResumenAdherencia from "./resumen-adherencia";
+import GestionPendientes, { fechaHoyLima } from "./gestion-pendientes";
 
 // ============================================
 // EVOLUTION CENTER FIT 2.0
@@ -225,6 +226,7 @@ export default function ProgramarSesiones({
 
   type FiltroSesion =
     | "todas"
+    | "pendientes"
     | "programada"
     | "en_curso"
     | "realizada"
@@ -507,16 +509,46 @@ body: JSON.stringify({
     );
   }
 
+  function mostrarPendientes() {
+    setFiltroSesion("pendientes");
+    setMostrarTodas(true);
+
+    window.requestAnimationFrame(() => {
+      document
+        .getElementById("listado-sesiones")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+    });
+  }
+
   // ==========================================
   // 11. RESUMEN DE ASISTENCIA
   // ==========================================
 
 
-  const sesionesFiltradas = estado.sesiones.filter(
-    (sesion) =>
-      filtroSesion === "todas" ||
-      sesion.estado === filtroSesion
-  );
+  const hoyLima = fechaHoyLima();
+
+  const pendientesVencidas = estado.sesiones
+    .filter(
+      (sesion) =>
+        sesion.estado === "programada" &&
+        sesion.fechaProgramada < hoyLima
+    )
+    .sort((a, b) =>
+      a.fechaProgramada.localeCompare(b.fechaProgramada) ||
+      a.numeroSesion - b.numeroSesion
+    );
+
+  const sesionesFiltradas =
+    filtroSesion === "pendientes"
+      ? pendientesVencidas
+      : estado.sesiones.filter(
+          (sesion) =>
+            filtroSesion === "todas" ||
+            sesion.estado === filtroSesion
+        );
 
   const sesionesVisibles = mostrarTodas
     ? sesionesFiltradas
@@ -736,6 +768,11 @@ body: JSON.stringify({
                     RESUMEN DE ADHERENCIA
                 ======================== */}
 
+                <GestionPendientes
+                  sesiones={estado.sesiones}
+                  onVerPendientes={mostrarPendientes}
+                />
+
                 <ResumenAdherencia
                   asignacionId={asignacionId}
                   revision={consulta}
@@ -750,7 +787,7 @@ body: JSON.stringify({
     FILTROS DE SESIONES
 ======================================== */}
 
-                <div className="mt-7 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#101d31] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
+                <div id="listado-sesiones" className="mt-7 scroll-mt-24 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-white dark:bg-[#101d31] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.16)] sm:p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h3 className="text-lg font-bold text-[var(--ecf-text,#102238)] dark:text-white">
@@ -776,6 +813,7 @@ body: JSON.stringify({
                     {(
                       [
                         { valor: "todas", texto: "Todas" },
+                        { valor: "pendientes", texto: `Pendientes (${pendientesVencidas.length})` },
                         { valor: "programada", texto: "Programadas" },
                         { valor: "en_curso", texto: "En curso" },
                         { valor: "realizada", texto: "Realizadas" },
