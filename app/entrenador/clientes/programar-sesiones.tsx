@@ -226,7 +226,9 @@ export default function ProgramarSesiones({
 
   type FiltroSesion =
     | "todas"
+    | "hoy"
     | "pendientes"
+    | "proximas"
     | "programada"
     | "en_curso"
     | "realizada"
@@ -509,8 +511,8 @@ body: JSON.stringify({
     );
   }
 
-  function mostrarPendientes() {
-    setFiltroSesion("pendientes");
+  function irASesiones(filtro: FiltroSesion) {
+    setFiltroSesion(filtro);
     setMostrarTodas(true);
 
     window.requestAnimationFrame(() => {
@@ -518,7 +520,7 @@ body: JSON.stringify({
         .getElementById("listado-sesiones")
         ?.scrollIntoView({
           behavior: "smooth",
-          block: "start"
+          block: "start",
         });
     });
   }
@@ -541,18 +543,85 @@ body: JSON.stringify({
       a.numeroSesion - b.numeroSesion
     );
 
+  const sesionesHoy = estado.sesiones.filter(
+    (sesion) =>
+      sesion.fechaProgramada === hoyLima &&
+      sesion.estado !== "cancelada"
+  );
+
+  const sesionesProximas = estado.sesiones.filter(
+    (sesion) =>
+      sesion.estado === "programada" &&
+      sesion.fechaProgramada > hoyLima
+  );
+
   const sesionesFiltradas =
     filtroSesion === "pendientes"
       ? pendientesVencidas
-      : estado.sesiones.filter(
-          (sesion) =>
-            filtroSesion === "todas" ||
-            sesion.estado === filtroSesion
-        );
+      : filtroSesion === "hoy"
+        ? sesionesHoy
+        : filtroSesion === "proximas"
+          ? sesionesProximas
+          : estado.sesiones.filter(
+              (sesion) =>
+                filtroSesion === "todas" ||
+                sesion.estado === filtroSesion
+            );
+
+  // Orden visual por prioridad.
+  // No modifica los estados de las sesiones.
+
+  const prioridad = (
+    sesion: SesionResumen
+  ): number => {
+    if (sesion.estado === "en_curso") {
+      return 0;
+    }
+
+    if (
+      sesion.estado === "programada" &&
+      sesion.fechaProgramada === hoyLima
+    ) {
+      return 1;
+    }
+
+    if (
+      sesion.estado === "programada" &&
+      sesion.fechaProgramada < hoyLima
+    ) {
+      return 2;
+    }
+
+    if (sesion.estado === "programada") {
+      return 3;
+    }
+
+    return 4;
+  };
+
+  const sesionesOrdenadas = [
+    ...sesionesFiltradas
+  ].sort((a, b) => {
+    if (filtroSesion === "todas") {
+      const diferencia =
+        prioridad(a) - prioridad(b);
+
+      if (diferencia !== 0) {
+        return diferencia;
+      }
+    }
+
+    return (
+      a.fechaProgramada.localeCompare(
+        b.fechaProgramada
+      ) ||
+      a.numeroSesion - b.numeroSesion
+    );
+  });
 
   const sesionesVisibles = mostrarTodas
-    ? sesionesFiltradas
-    : sesionesFiltradas.slice(0, 8);
+    ? sesionesOrdenadas
+    : sesionesOrdenadas.slice(0, 8);
 
 
   const realizadas =
@@ -770,13 +839,12 @@ body: JSON.stringify({
 
                 <GestionPendientes
                   sesiones={estado.sesiones}
-                  onVerPendientes={mostrarPendientes}
+                  onVerHoy={() => irASesiones("hoy")}
+                  onVerPendientes={() => irASesiones("pendientes")}
+                  onVerProximas={() => irASesiones("proximas")}
                 />
 
-                <ResumenAdherencia
-                  asignacionId={asignacionId}
-                  revision={consulta}
-                />
+
 
                 {/* ========================
                     SESIONES Y ASISTENCIA
@@ -795,7 +863,7 @@ body: JSON.stringify({
                       </h3>
 
                       <p className="mt-1 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
-                        Filtra las sesiones según su estado.
+                        Primero aparecen las sesiones que requieren una acción. Filtra por fecha o estado.
                       </p>
                     </div>
 
@@ -807,13 +875,15 @@ body: JSON.stringify({
 
                   <div
                     role="group"
-                    aria-label="Filtrar sesiones por estado"
+                    aria-label="Filtrar sesiones por fecha y estado"
                     className="mt-4 flex flex-wrap gap-2"
                   >
                     {(
                       [
                         { valor: "todas", texto: "Todas" },
-                        { valor: "pendientes", texto: `Pendientes (${pendientesVencidas.length})` },
+                        { valor: "hoy", texto: `Hoy (${sesionesHoy.length})` },
+                        { valor: "pendientes", texto: `Vencidas (${pendientesVencidas.length})` },
+                        { valor: "proximas", texto: `Próximas (${sesionesProximas.length})` },
                         { valor: "programada", texto: "Programadas" },
                         { valor: "en_curso", texto: "En curso" },
                         { valor: "realizada", texto: "Realizadas" },
@@ -844,7 +914,7 @@ body: JSON.stringify({
     LISTADO RESPONSIVE DE SESIONES
 ======================================== */}
 
-                <ol className="mt-5 grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
+                <ol className="mt-4 grid grid-cols-1 items-start gap-3 xl:grid-cols-2">
                   {sesionesVisibles.map((sesion) => {
                     const ejerciciosAbiertos =
                       sesionAbierta === sesion.id;
@@ -878,8 +948,8 @@ body: JSON.stringify({
                               </p>
 
                               <p className="mt-1 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
-                                Consulta los objetivos y registra
-                                las series realizadas durante esta sesión.
+                                Consulta objetivos y registros. Las series solo se
+                                registran mientras la sesión está en curso.
                               </p>
                             </div>
 
@@ -897,7 +967,10 @@ body: JSON.stringify({
                             >
                               {ejerciciosAbiertos
                                 ? "Ocultar ejercicios"
-                                : "Ver ejercicios"}
+                                : sesion.estado === "programada" &&
+                                    sesion.fechaProgramada < hoyLima
+                                  ? "Consultar objetivos"
+                                  : "Ver ejercicios"}
 
                               <svg
                                 aria-hidden="true"
@@ -946,7 +1019,7 @@ body: JSON.stringify({
                 {sesionesFiltradas.length === 0 && (
                   <div className="mt-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-[#111d31] p-7 text-center">
                     <p className="font-semibold text-[var(--ecf-text,#102238)] dark:text-white">
-                      No hay sesiones en este estado
+                      No hay sesiones en esta categoría
                     </p>
 
                     <p className="mt-2 text-sm text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
@@ -976,6 +1049,41 @@ body: JSON.stringify({
                       : "Ver todas las sesiones"}
                   </button>
                 )}
+
+                <details
+                  id="analisis-adherencia"
+                  className="group mt-6 overflow-hidden rounded-2xl border border-cyan-200 bg-white shadow-sm dark:border-cyan-400/20 dark:bg-[#13243a]"
+                >
+                  <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 sm:p-5 [&::-webkit-details-marker]:hidden">
+                    <span>
+                      <span className="block text-xs font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
+                        Consulta y reportes
+                      </span>
+
+                      <span className="mt-1 block text-base font-extrabold text-slate-900 dark:text-white">
+                        Ver análisis de adherencia
+                      </span>
+
+                      <span className="mt-1 block text-xs leading-5 text-slate-600 dark:text-slate-300">
+                        Asistencia, cumplimiento, continuidad y exportaciones CSV.
+                      </span>
+                    </span>
+
+                    <span
+                      aria-hidden="true"
+                      className="text-xl text-cyan-700 transition-transform group-open:rotate-180 dark:text-cyan-300"
+                    >
+                      ⌄
+                    </span>
+                  </summary>
+
+                  <div className="border-t border-slate-200 px-3 pb-4 dark:border-white/10 sm:px-4">
+                    <ResumenAdherencia
+                      asignacionId={asignacionId}
+                      revision={consulta}
+                    />
+                  </div>
+                </details>
 
                 {/* ========================
                     INFORMACION DEL MODULO
