@@ -408,6 +408,12 @@ export async function GET(request: Request) {
     let seriesRegistradas = 0;
     let seriesCompletadas = 0;
 
+    // Indicadores complementarios de ejecución real.
+    let seriesConMetaRegistrada = 0;
+    let seriesMetaAlcanzada = 0;
+    let seriesMetaParcial = 0;
+    let seriesMetaPendiente = 0;
+
     let ejerciciosConRegistro = 0;
     let ejerciciosCompletados = 0;
 
@@ -451,6 +457,10 @@ export async function GET(request: Request) {
       duracionObjetivoSeg +=
         metaSegundos * metaSeries;
 
+      // Solo se evalúan metas realmente configuradas.
+      const tieneMetaDeEjecucion =
+        metaReps > 0 || metaSegundos > 0;
+
       const registros =
         new Map<number, Serie>();
 
@@ -483,6 +493,36 @@ export async function GET(request: Request) {
       let completadasEnEjercicio = 0;
 
       for (const registro of registros.values()) {
+        if (tieneMetaDeEjecucion) {
+          seriesConMetaRegistrada += 1;
+
+          const repsReales = Math.max(
+            0,
+            registro.repeticiones_realizadas ?? 0
+          );
+
+          const segundosReales = Math.max(
+            0,
+            registro.duracion_real_seg ?? 0
+          );
+
+          const alcanzoMeta =
+            (metaReps === 0 || repsReales >= metaReps) &&
+            (metaSegundos === 0 || segundosReales >= metaSegundos);
+
+          const tuvoActividad =
+            repsReales > 0 || segundosReales > 0;
+
+          if (registro.completada && alcanzoMeta) {
+            seriesMetaAlcanzada += 1;
+          } else if (tuvoActividad && !alcanzoMeta) {
+            seriesMetaParcial += 1;
+          } else {
+            // Faltan datos o confirmación de finalización.
+            seriesMetaPendiente += 1;
+          }
+        }
+
         if (registro.completada) {
           seriesCompletadas += 1;
           completadasEnEjercicio += 1;
@@ -533,6 +573,20 @@ export async function GET(request: Request) {
           seriesObjetivo
         )
       : null;
+
+    // Este indicador no modifica el cumplimiento histórico.
+    // Solo se presenta como final con registros completos.
+    const metaAlcanzadaPct =
+      sesion.estado === "realizada" &&
+      seriesObjetivo > 0 &&
+      seriesRegistradas === seriesObjetivo &&
+      seriesConMetaRegistrada > 0 &&
+      seriesMetaPendiente === 0
+        ? porcentaje(
+            seriesMetaAlcanzada,
+            seriesConMetaRegistrada
+          )
+        : null;
 
     // El porcentaje final requiere:
     // - Sesión realizada
@@ -616,6 +670,12 @@ export async function GET(request: Request) {
           seriesObjetivo,
           seriesRegistradas,
           seriesCompletadas,
+
+          seriesConMetaRegistrada,
+          seriesMetaAlcanzada,
+          seriesMetaParcial,
+          seriesMetaPendiente,
+          metaAlcanzadaPct,
 
           coberturaPct,
           avancePct,
