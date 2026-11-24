@@ -5,29 +5,35 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { revalidatePath } from "next/cache";
 import { Suspense } from "react";
-import {
-  createClient as createAdmin,
-} from "@supabase/supabase-js";
+import { createClient as createAdmin } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/server";
 
 // EVOLUTION CENTER FIT 2.0
-// FASE 111.12 - ASIGNACION DE ENTRENADORES
+// Gestión administrativa de asignaciones.
+
+const RUTA = "/administrador/entrenadores/asignar";
+
+const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+type Modo = "asignar" | "cambiar";
 
 type Props = {
   searchParams: Promise<{
     estado?: string;
+    modo?: string;
   }>;
-};
-
-type Rol = {
-  usuario_id: string;
-  rol: string;
 };
 
 type Usuario = {
   id: string;
   nombre_completo: string | null;
+};
+
+type Rol = {
+  usuario_id: string;
+  rol: string;
 };
 
 type Relacion = {
@@ -44,21 +50,34 @@ type Plan = {
   cliente_id: string;
 };
 
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+type Cliente = {
+  id: string;
+  nombre: string;
+  entrenadorActualId: string | null;
+  entrenadorActual: string;
+  protegido: boolean;
+  motivoProteccion: string;
+};
 
-// ================================================
+function obtenerModo(valor: unknown): Modo {
+  return valor === "cambiar" ? "cambiar" : "asignar";
+}
+
+function rutaConEstado(modo: Modo, estado: string) {
+  return `${RUTA}?modo=${modo}&estado=${estado}`;
+}
+
+// ============================================
 // CLIENTE PRIVILEGIADO DEL SERVIDOR
-// ================================================
+// ============================================
 
 function adminPrivado() {
-  const url =
-    process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY;
 
-  const key =
-    process.env.SUPABASE_SECRET_KEY;
-
-  if (!url || !key) return null;
+  if (!url || !key) {
+    return null;
+  }
 
   return createAdmin(url, key, {
     auth: {
@@ -68,14 +87,14 @@ function adminPrivado() {
   });
 }
 
-// ================================================
-// ACCION DE GUARDADO
-// ================================================
+// ============================================
+// ACCIÓN ADMINISTRATIVA
+// ============================================
 
-async function asignarEntrenador(
-  formData: FormData
-) {
+async function guardarAsignacion(formData: FormData) {
   "use server";
+
+  const modo = obtenerModo(formData.get("modo"));
 
   const clienteId = String(
     formData.get("clienteId") ?? ""
@@ -87,10 +106,9 @@ async function asignarEntrenador(
 
   const motivo = String(
     formData.get("motivo") ?? ""
-  ).trim();
-
-  const base =
-    "/administrador/entrenadores/asignar";
+  )
+    .trim()
+    .replace(/\s+/g, " ");
 
   if (
     !UUID.test(clienteId) ||
@@ -99,23 +117,25 @@ async function asignarEntrenador(
     motivo.length < 15 ||
     motivo.length > 500
   ) {
-    redirect(`${base}?estado=datos`);
+    redirect(rutaConEstado(modo, "datos"));
   }
 
-  // Verificar la identidad.
+  // Comprobar la identidad autenticada.
 
   const sesion = await createClient();
 
   const {
-    data: auth,
+    data: autenticacion,
     error: errorAuth,
   } = await sesion.auth.getUser();
 
-  if (errorAuth || !auth.user) {
+  if (errorAuth || !autenticacion.user) {
     redirect("/login");
   }
 
-  // Verificar permisos administrativos.
+  const responsableId = autenticacion.user.id;
+
+  // Comprobar el rol administrativo.
 
   const {
     data: rol,
@@ -123,7 +143,7 @@ async function asignarEntrenador(
   } = await sesion
     .from("usuario_roles")
     .select("rol")
-    .eq("usuario_id", auth.user.id)
+    .eq("usuario_id", responsableId)
     .maybeSingle();
 
   if (
@@ -136,17 +156,66 @@ async function asignarEntrenador(
   const admin = adminPrivado();
 
   if (!admin) {
-    redirect(
-      `${base}?estado=configuracion`
-    );
+    redirect(rutaConEstado(modo, "configuracion"));
   }
 
-  // Ejecutar el cambio atomico en PostgreSQL.
+  // Consultar el vínculo actual.
+  // Esta verificación mejora los mensajes del
+  // formulario. PostgreSQL vuelve a comprobar
+  // las reglas durante la operación definitiva.
+
+  const {
+    data: relacion,
+    error: errorRelacion,
+  } = await admin
+    .from("asignaciones_entrenadores")
+    .select("entrenador_id,activa")
+    .eq("cliente_id", clienteId)
+    .maybeSingle();
+
+  if (errorRelacion) {
+    console.error(
+      "Admin: error consultando asignación",
+      errorRelacion.code
+    );
+
+    redirect(rutaConEstado(modo, "rechazado"));
+  }
+
+  const tieneEntrenador =
+    relacion?.activa === true;
+
+  // Evitar utilizar la primera asignación
+  // sobre clientes que ya tienen entrenador.
+
+  if (modo === "asignar" && tieneEntrenador) {
+    redirect(rutaConEstado(modo, "ya_asignado"));
+  }
+
+  // Evitar utilizar la reasignación sobre
+  // clientes que no tienen entrenador activo.
+
+  if (modo === "cambiar" && !tieneEntrenador) {
+    redirect(rutaConEstado(modo, "sin_entrenador"));
+  }
+
+  // No permitir seleccionar el mismo
+  // entrenador cuando ya está asignado.
+
+  if (
+    tieneEntrenador &&
+    relacion?.entrenador_id === entrenadorId
+  ) {
+    redirect(rutaConEstado(modo, "mismo_entrenador"));
+  }
+
+  // La función PostgreSQL realiza la operación,
+  // comprueba restricciones y registra auditoría.
 
   const { error } = await admin.rpc(
     "admin_reasignar_entrenador",
     {
-      p_actor_id: auth.user.id,
+      p_actor_id: responsableId,
       p_cliente_id: clienteId,
       p_entrenador_id: entrenadorId,
       p_motivo: motivo,
@@ -155,64 +224,82 @@ async function asignarEntrenador(
 
   if (error) {
     console.error(
-      "Admin: reasignación rechazada",
+      "Admin: asignación rechazada",
       {
         code: error.code,
         message: error.message,
       }
     );
 
-    redirect(
-      `${base}?estado=rechazado`
-    );
+    redirect(rutaConEstado(modo, "rechazado"));
   }
 
-  // Actualizar vistas administrativas.
-
   revalidatePath("/administrador");
-  revalidatePath(
-    "/administrador/entrenadores"
-  );
-  revalidatePath(
-    "/administrador/usuarios"
-  );
+  revalidatePath("/administrador/entrenadores");
+  revalidatePath("/administrador/usuarios");
+  revalidatePath(RUTA);
 
-  redirect(
-    `${base}?estado=correcto`
-  );
+  redirect(rutaConEstado(modo, "correcto"));
 }
 
-// ================================================
-// CARGA
-// ================================================
+// ============================================
+// COMPONENTES VISUALES
+// ============================================
 
 function Cargando() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] dark:bg-[#08101f] text-cyan-800 dark:text-cyan-200">
-      Comprobando asignaciones...
+    <main className="flex min-h-screen items-center justify-center bg-[var(--ecf-bg)] p-8 text-cyan-800 dark:bg-[#08101f] dark:text-cyan-200">
+      Consultando asignaciones...
     </main>
   );
 }
 
-// ================================================
-// PANTALLA PROTEGIDA
-// ================================================
+function Indicador({
+  titulo,
+  valor,
+  descripcion,
+}: {
+  titulo: string;
+  valor: number | string;
+  descripcion: string;
+}) {
+  return (
+    <article className="rounded-2xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] p-5 shadow-sm dark:border-white/10 dark:bg-[#15263d]">
+      <p className="text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
+        {titulo}
+      </p>
 
-async function Contenido({
-  searchParams,
-}: Props) {
+      <p className="mt-3 text-3xl font-black tabular-nums">
+        {valor}
+      </p>
+
+      <p className="mt-2 text-xs leading-5 text-[var(--ecf-muted)] dark:text-slate-400">
+        {descripcion}
+      </p>
+    </article>
+  );
+}
+
+// ============================================
+// CONTENIDO PROTEGIDO
+// ============================================
+
+async function Contenido({ searchParams }: Props) {
   await connection();
 
-  const { estado } = await searchParams;
+  const parametros = await searchParams;
+
+  const modo = obtenerModo(parametros.modo);
+  const estado = parametros.estado;
 
   const sesion = await createClient();
 
   const {
-    data: auth,
+    data: autenticacion,
     error: errorAuth,
   } = await sesion.auth.getUser();
 
-  if (errorAuth || !auth.user) {
+  if (errorAuth || !autenticacion.user) {
     redirect("/login");
   }
 
@@ -222,7 +309,7 @@ async function Contenido({
   } = await sesion
     .from("usuario_roles")
     .select("rol")
-    .eq("usuario_id", auth.user.id)
+    .eq("usuario_id", autenticacion.user.id)
     .maybeSingle();
 
   if (
@@ -230,13 +317,20 @@ async function Contenido({
     rol?.rol !== "administrador"
   ) {
     return (
-      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#08101f] p-10 text-[var(--ecf-text)] dark:text-white">
-        <p>Acceso restringido al administrador.</p>
+      <main className="min-h-screen bg-[var(--ecf-bg)] p-10 text-[var(--ecf-text)] dark:bg-[#08101f] dark:text-white">
+        <h1 className="text-2xl font-bold">
+          Acceso restringido
+        </h1>
+
+        <p className="mt-3">
+          Esta sección es exclusiva del administrador.
+        </p>
+
         <Link
-          className="text-cyan-700 dark:text-cyan-300"
           href="/administrador"
+          className="mt-5 inline-block font-bold text-cyan-700 dark:text-cyan-300"
         >
-          Volver
+          Volver al panel
         </Link>
       </main>
     );
@@ -246,23 +340,22 @@ async function Contenido({
 
   if (!admin) {
     return (
-      <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#08101f] p-10 text-[var(--ecf-text)] dark:text-white">
-        <p>
-          Falta configurar la credencial privada
-          del servidor.
+      <main className="min-h-screen bg-[var(--ecf-bg)] p-10 text-[var(--ecf-text)] dark:bg-[#08101f] dark:text-white">
+        <h1 className="text-2xl font-bold">
+          Configuración pendiente
+        </h1>
+
+        <p className="mt-3">
+          No se pudo inicializar el cliente
+          administrativo de Supabase.
         </p>
-        <Link
-          className="text-cyan-700 dark:text-cyan-300"
-          href="/administrador"
-        >
-          Volver
-        </Link>
       </main>
     );
   }
 
-  // Consultas necesarias para verificar
-  // clientes, entrenadores y protecciones.
+  // ==========================================
+  // CONSULTAR INFORMACIÓN
+  // ==========================================
 
   const [
     usuariosResp,
@@ -273,55 +366,45 @@ async function Contenido({
   ] = await Promise.all([
     admin
       .from("usuarios")
-      .select(
-        "id,nombre_completo",
-        { count: "exact" }
-      )
+      .select("id,nombre_completo", {
+        count: "exact",
+      })
       .limit(1000),
 
     admin
       .from("usuario_roles")
-      .select(
-        "usuario_id,rol",
-        { count: "exact" }
-      )
-      .in(
-        "rol",
-        ["cliente", "entrenador"]
-      )
+      .select("usuario_id,rol", {
+        count: "exact",
+      })
+      .in("rol", ["cliente", "entrenador"])
       .limit(1000),
 
     admin
       .from("asignaciones_entrenadores")
-      .select(
-        "cliente_id,entrenador_id,activa",
-        { count: "exact" }
-      )
+      .select("cliente_id,entrenador_id,activa", {
+        count: "exact",
+      })
       .limit(1000),
 
     admin
       .from("participantes_estudio")
-      .select(
-        "cliente_id",
-        { count: "exact" }
-      )
+      .select("cliente_id", {
+        count: "exact",
+      })
       .limit(1000),
 
     admin
       .from("asignaciones_rutinas")
-      .select(
-        "cliente_id",
-        { count: "exact" }
-      )
-      .in(
-        "estado",
-        ["programada", "activa", "pausada"]
-      )
+      .select("cliente_id", {
+        count: "exact",
+      })
+      .in("estado", [
+        "programada",
+        "activa",
+        "pausada",
+      ])
       .limit(1000),
   ]);
-
-  // Si una consulta falla o llega incompleta,
-  // no permitir asignaciones.
 
   const respuestas = [
     usuariosResp,
@@ -332,11 +415,11 @@ async function Contenido({
   ];
 
   const fallo = respuestas.some(
-    (resultado) =>
-      Boolean(resultado.error) ||
-      resultado.count === null ||
-      resultado.count >
-        (resultado.data?.length ?? 0)
+    (respuesta) =>
+      Boolean(respuesta.error) ||
+      respuesta.count === null ||
+      respuesta.count >
+        (respuesta.data?.length ?? 0)
   );
 
   const usuarios =
@@ -357,13 +440,19 @@ async function Contenido({
   const nombres = new Map(
     usuarios.map((usuario) => [
       usuario.id,
-      usuario.nombre_completo?.trim() ||
-        "Sin nombre",
+      usuario.nombre_completo?.trim() || "Sin nombre",
     ])
   );
 
-  const asignados = new Map(
-    relaciones.map((relacion) => [
+  // Solo las relaciones activas determinan
+  // quién es el entrenador actual.
+
+  const relacionesActivas = relaciones.filter(
+    (relacion) => relacion.activa === true
+  );
+
+  const asignacionesActuales = new Map(
+    relacionesActivas.map((relacion) => [
       relacion.cliente_id,
       relacion,
     ])
@@ -371,14 +460,17 @@ async function Contenido({
 
   const enEstudio = new Set(
     participantes.map(
-      (participante) =>
-        participante.cliente_id
+      (participante) => participante.cliente_id
     )
   );
 
-  const planVigente = new Set(
+  const conPlanVigente = new Set(
     planes.map((plan) => plan.cliente_id)
   );
+
+  // ==========================================
+  // ENTRENADORES
+  // ==========================================
 
   const entrenadores = roles
     .filter(
@@ -389,147 +481,196 @@ async function Contenido({
     .map((registro) => ({
       id: registro.usuario_id,
       nombre:
-        nombres.get(registro.usuario_id)!,
+        nombres.get(registro.usuario_id) ?? "Sin nombre",
     }))
     .sort((a, b) =>
-      a.nombre.localeCompare(
-        b.nombre,
-        "es"
-      )
+      a.nombre.localeCompare(b.nombre, "es")
     );
 
-  const clientes = roles
+  // ==========================================
+  // CLIENTES Y RESTRICCIONES
+  // ==========================================
+
+  const clientes: Cliente[] = roles
     .filter(
       (registro) =>
         registro.rol === "cliente" &&
         nombres.has(registro.usuario_id)
     )
     .map((registro) => {
-      const vinculo = asignados.get(
+      const actual = asignacionesActuales.get(
         registro.usuario_id
       );
 
-      const protegido =
-        enEstudio.has(registro.usuario_id) ||
-        planVigente.has(registro.usuario_id);
+      const participaEstudio = enEstudio.has(
+        registro.usuario_id
+      );
+
+      const tienePlan = conPlanVigente.has(
+        registro.usuario_id
+      );
+
+      const motivos: string[] = [];
+
+      if (participaEstudio) {
+        motivos.push("Participa en el estudio");
+      }
+
+      if (tienePlan) {
+        motivos.push("Tiene un plan vigente");
+      }
 
       return {
         id: registro.usuario_id,
 
-        nombre: nombres.get(
-          registro.usuario_id
-        )!,
+        nombre:
+          nombres.get(registro.usuario_id) ??
+          "Sin nombre",
 
-        protegido,
+        entrenadorActualId:
+          actual?.entrenador_id ?? null,
 
-        motivo: enEstudio.has(
-          registro.usuario_id
-        )
-          ? "Participa en el estudio"
-          : planVigente.has(
-              registro.usuario_id
-            )
-            ? "Tiene un plan vigente"
-            : "Disponible",
-
-        actual: vinculo
-          ? nombres.get(
-              vinculo.entrenador_id
-            ) ?? "Desconocido"
+        entrenadorActual: actual
+          ? nombres.get(actual.entrenador_id) ??
+            "Entrenador no disponible"
           : "Sin entrenador",
+
+        protegido: motivos.length > 0,
+
+        motivoProteccion:
+          motivos.join(" · "),
       };
     })
     .sort((a, b) =>
-      a.nombre.localeCompare(
-        b.nombre,
-        "es"
-      )
+      a.nombre.localeCompare(b.nombre, "es")
     );
 
-  const disponibles = clientes.filter(
-    (cliente) => !cliente.protegido
+  // Primera asignación:
+  // clientes sin entrenador y sin bloqueos.
+
+  const clientesPorAsignar = clientes.filter(
+    (cliente) =>
+      !cliente.protegido &&
+      cliente.entrenadorActualId === null
   );
+
+  // Reasignación:
+  // clientes que ya tienen entrenador,
+  // siempre que no estén protegidos.
+
+  const clientesParaCambio = clientes.filter(
+    (cliente) =>
+      !cliente.protegido &&
+      cliente.entrenadorActualId !== null
+  );
+
+  const clientesProtegidos = clientes.filter(
+    (cliente) => cliente.protegido
+  );
+
+  const clientesConEntrenador = clientes.filter(
+    (cliente) =>
+      cliente.entrenadorActualId !== null
+  );
+
+  const clientesSinEntrenador = clientes.filter(
+    (cliente) =>
+      cliente.entrenadorActualId === null
+  );
+
+  const clientesDelModo =
+    modo === "asignar"
+      ? clientesPorAsignar
+      : clientesParaCambio;
 
   const permitirFormulario =
     !fallo &&
-    disponibles.length > 0 &&
+    clientesDelModo.length > 0 &&
     entrenadores.length > 0;
+
+  // ==========================================
+  // MENSAJES
+  // ==========================================
 
   const mensajes: Record<string, string> = {
     correcto:
-      "Asignación registrada y auditada correctamente.",
+      "La operación se registró correctamente y quedó auditada.",
 
     datos:
-      "Comprueba el cliente, el entrenador y el motivo (15 a 500 caracteres).",
+      "Comprueba el cliente, el entrenador y el motivo. Este último debe tener entre 15 y 500 caracteres.",
 
     configuracion:
-      "Falta configurar la credencial privada en el servidor.",
+      "No se pudo inicializar la conexión administrativa.",
+
+    ya_asignado:
+      "Este cliente ya tiene un entrenador activo. Utiliza la sección Cambiar entrenador.",
+
+    sin_entrenador:
+      "Este cliente no tiene un entrenador activo. Utiliza la sección Primera asignación.",
+
+    mismo_entrenador:
+      "El entrenador seleccionado ya es el responsable actual del cliente.",
 
     rechazado:
-      "El cambio fue rechazado. Puede existir un plan vigente, una inscripción al estudio o una restricción de la base de datos. Revisa los registros del servidor.",
+      "La operación fue rechazada por una validación del servidor o de la base de datos. Revisa los registros de Vercel.",
   };
 
-  // ==============================================
+  const claseCampo =
+    "min-h-12 w-full rounded-xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] px-4 py-3 text-sm text-[var(--ecf-text)] outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:bg-[#081526] dark:text-white";
+
+  const claseTarjeta =
+    "rounded-2xl border border-[var(--ecf-border)] bg-[var(--ecf-surface)] shadow-sm dark:border-white/10 dark:bg-[#13233a]";
+
+  // ==========================================
   // INTERFAZ
-  // ==============================================
+  // ==========================================
 
   return (
-    <main className="min-h-screen bg-[var(--ecf-bg)] dark:bg-[#08101f] text-[var(--ecf-text)] dark:text-white">
-      <header className="border-b border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#102038] px-5 py-5">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
+    <main className="min-h-screen bg-[var(--ecf-bg)] text-[var(--ecf-text)] dark:bg-[#08101f] dark:text-white">
+      <header className="border-b border-[var(--ecf-border)] bg-[var(--ecf-surface)] px-5 py-5 dark:border-white/10 dark:bg-[#102038]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <Link
             href="/administrador/entrenadores"
-            className="text-sm font-bold text-cyan-700 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200"
+            className="text-sm font-bold text-cyan-700 hover:underline dark:text-cyan-300"
           >
             ← Volver a entrenadores
           </Link>
 
-          <span className="text-xs font-semibold tracking-wide text-[var(--ecf-muted)] dark:text-slate-400">
+          <span className="text-xs font-semibold text-[var(--ecf-muted)] dark:text-slate-400">
             EVOLUTION CENTER FIT 2.0 · ADMINISTRACIÓN
           </span>
         </div>
       </header>
 
-      <div className="mx-auto max-w-5xl space-y-6 px-5 py-8">
-        {/* CABECERA */}
+      <div className="mx-auto max-w-6xl space-y-6 px-5 py-8">
+        {/* ENCABEZADO */}
 
-        <section className="rounded-3xl border border-cyan-200 dark:border-cyan-400/15 bg-gradient-to-br from-[#def5fc] dark:from-[#173a50] to-[#f0edff] dark:to-[#191e3e] p-7 sm:p-10">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-              Gestión de asignaciones
-            </p>
-
-            <Link
-              href="/administrador/entrenadores"
-              className="inline-flex min-h-10 items-center rounded-xl border border-cyan-200 bg-white/70 px-4 py-2 text-xs font-bold text-cyan-800 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-cyan-500 dark:border-cyan-400/25 dark:bg-white/5 dark:text-cyan-200 dark:hover:bg-white/10"
-            >
-              ← Volver a entrenadores
-            </Link>
-          </div>
+        <section className="rounded-3xl border border-cyan-200 bg-gradient-to-br from-cyan-50 to-indigo-50 p-7 dark:border-cyan-400/15 dark:from-[#173a50] dark:to-[#191e3e] sm:p-9">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+            Gestión administrativa
+          </p>
 
           <h1 className="mt-3 text-3xl font-black sm:text-4xl">
-            Asignar un entrenador
+            Asignaciones de entrenadores
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
-            Asigna o cambia el entrenador de un
-            cliente que no participa en el estudio
-            y que no tiene planes vigentes.
-
-            Cada cambio requiere un motivo y se
-            registra en la auditoría.
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-300">
+            Vincula clientes con entrenadores, consulta
+            sus responsables actuales y gestiona cambios
+            autorizados sin alterar los registros de
+            entrenamiento.
           </p>
         </section>
 
-        {/* MENSAJES */}
+        {/* AVISOS */}
 
         {estado && mensajes[estado] && (
           <div
             role="status"
-            className={`rounded-2xl border p-5 text-sm ${
+            className={`rounded-2xl border p-5 text-sm font-medium ${
               estado === "correcto"
-                ? "border-emerald-200 dark:border-emerald-400/25 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
-                : "border-amber-200 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 text-amber-800 dark:text-amber-200"
+                ? "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-200"
+                : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-200"
             }`}
           >
             {mensajes[estado]}
@@ -539,68 +680,173 @@ async function Contenido({
         {fallo && (
           <div
             role="alert"
-            className="rounded-2xl border border-rose-200 dark:border-rose-400/30 bg-rose-50 dark:bg-rose-400/10 p-5 text-sm leading-6 text-rose-800 dark:text-rose-200"
+            className="rounded-2xl border border-rose-300 bg-rose-50 p-5 text-sm text-rose-800 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200"
           >
-            No se pudo verificar completamente la
-            información o el número de registros
-            supera el límite de consulta.
+            No se pudo consultar toda la información
+            necesaria o se alcanzó el límite de registros.
 
-            Las reasignaciones permanecen
-            bloqueadas por seguridad.
+            Las operaciones permanecen bloqueadas
+            para evitar cambios incorrectos.
           </div>
         )}
 
         {/* INDICADORES */}
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              titulo: "Clientes consultados",
-              valor: clientes.length,
-            },
-            {
-              titulo: "Clientes disponibles",
-              valor: disponibles.length,
-            },
-            {
-              titulo: "Entrenadores",
-              valor: entrenadores.length,
-            },
-          ].map((item) => (
-            <article
-              key={item.titulo}
-              className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#15263d] p-5 shadow-sm dark:shadow-none"
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Indicador
+            titulo="Clientes sin entrenador"
+            valor={
+              fallo
+                ? "—"
+                : clientesSinEntrenador.length
+            }
+            descripcion="Relaciones activas pendientes"
+          />
+
+          <Indicador
+            titulo="Clientes con entrenador"
+            valor={
+              fallo
+                ? "—"
+                : clientesConEntrenador.length
+            }
+            descripcion="Clientes vinculados actualmente"
+          />
+
+          <Indicador
+            titulo="Clientes protegidos"
+            valor={
+              fallo
+                ? "—"
+                : clientesProtegidos.length
+            }
+            descripcion="Con restricciones de asignación"
+          />
+
+          <Indicador
+            titulo="Entrenadores registrados"
+            valor={
+              fallo
+                ? "—"
+                : entrenadores.length
+            }
+            descripcion="Cuentas con rol entrenador"
+          />
+        </section>
+
+        {/* SELECTOR DE OPERACIÓN */}
+
+        <section className={claseTarjeta + " p-5 sm:p-7"}>
+          <h2 className="text-lg font-extrabold">
+            ¿Qué deseas realizar?
+          </h2>
+
+          <p className="mt-2 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
+            Selecciona el tipo de operación administrativa.
+          </p>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <Link
+              href={`${RUTA}?modo=asignar`}
+              aria-current={
+                modo === "asignar" ? "page" : undefined
+              }
+              className={`rounded-2xl border p-5 transition ${
+                modo === "asignar"
+                  ? "border-cyan-400 bg-cyan-50 text-cyan-900 dark:bg-cyan-400/10 dark:text-cyan-200"
+                  : "border-[var(--ecf-border)] hover:border-cyan-400 dark:border-white/15"
+              }`}
             >
-              <p className="text-xs text-[var(--ecf-muted)] dark:text-slate-400">
-                {item.titulo}
+              <p className="font-black">
+                1. Primera asignación
               </p>
 
-              <p className="mt-3 text-3xl font-black tabular-nums">
-                {fallo ? "—" : item.valor}
+              <p className="mt-2 text-sm opacity-80">
+                Asignar entrenador a un cliente que
+                todavía no tiene uno activo.
               </p>
-            </article>
-          ))}
-        </div>
+
+              <p className="mt-3 text-xs font-bold">
+                {fallo
+                  ? "—"
+                  : clientesPorAsignar.length}{" "}
+                clientes elegibles
+              </p>
+            </Link>
+
+            <Link
+              href={`${RUTA}?modo=cambiar`}
+              aria-current={
+                modo === "cambiar" ? "page" : undefined
+              }
+              className={`rounded-2xl border p-5 transition ${
+                modo === "cambiar"
+                  ? "border-cyan-400 bg-cyan-50 text-cyan-900 dark:bg-cyan-400/10 dark:text-cyan-200"
+                  : "border-[var(--ecf-border)] hover:border-cyan-400 dark:border-white/15"
+              }`}
+            >
+              <p className="font-black">
+                2. Cambiar entrenador
+              </p>
+
+              <p className="mt-2 text-sm opacity-80">
+                Reasignar un cliente que ya cuenta
+                con un entrenador responsable.
+              </p>
+
+              <p className="mt-3 text-xs font-bold">
+                {fallo
+                  ? "—"
+                  : clientesParaCambio.length}{" "}
+                clientes elegibles
+              </p>
+            </Link>
+          </div>
+        </section>
 
         {/* FORMULARIO */}
 
-        <section className="rounded-3xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#13233a] p-6 shadow-sm dark:shadow-none sm:p-8">
-          <h2 className="text-xl font-extrabold">
-            Datos de la asignación
-          </h2>
+        <section className={claseTarjeta + " p-6 sm:p-8"}>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
+                {modo === "asignar"
+                  ? "Nueva relación"
+                  : "Reasignación supervisada"}
+              </p>
 
-          <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
-            Los clientes protegidos no pueden
-            seleccionarse.
+              <h2 className="mt-2 text-2xl font-black">
+                {modo === "asignar"
+                  ? "Asignar entrenador"
+                  : "Cambiar entrenador responsable"}
+              </h2>
+            </div>
 
-            El servidor comprobará nuevamente
-            todas las reglas al guardar.
+            <span className="rounded-full border border-cyan-300 px-3 py-1 text-xs font-bold text-cyan-800 dark:border-cyan-400/30 dark:text-cyan-200">
+              {fallo
+                ? "—"
+                : clientesDelModo.length}{" "}
+              disponibles
+            </span>
+          </div>
+
+          <p className="mt-3 text-sm leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
+            {modo === "asignar"
+              ? "Selecciona un cliente sin entrenador activo y establece su responsable."
+              : "Selecciona un cliente con entrenador activo y registra el motivo del cambio."}
           </p>
 
           <form
-            action={asignarEntrenador}
+            key={modo}
+            action={guardarAsignacion}
             className="mt-6 space-y-5"
           >
+            <input
+              type="hidden"
+              name="modo"
+              value={modo}
+            />
+
             {/* CLIENTE */}
 
             <div>
@@ -614,25 +860,23 @@ async function Contenido({
               <select
                 id="clienteId"
                 name="clienteId"
-                required
                 defaultValue=""
+                required
                 disabled={!permitirFormulario}
-                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] p-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className={claseCampo}
               >
                 <option value="" disabled>
                   Selecciona un cliente
                 </option>
 
-                {clientes.map((cliente) => (
+                {clientesDelModo.map((cliente) => (
                   <option
                     key={cliente.id}
                     value={cliente.id}
-                    disabled={cliente.protegido}
                   >
-                    {cliente.nombre} · {cliente.actual}
-                    {cliente.protegido
-                      ? ` · Bloqueado: ${cliente.motivo}`
-                      : ""}
+                    {modo === "cambiar"
+                      ? `${cliente.nombre} · Actual: ${cliente.entrenadorActual}`
+                      : cliente.nombre}
                   </option>
                 ))}
               </select>
@@ -645,42 +889,44 @@ async function Contenido({
                 htmlFor="entrenadorId"
                 className="mb-2 block text-sm font-bold"
               >
-                Entrenador responsable
+                {modo === "asignar"
+                  ? "Entrenador responsable"
+                  : "Nuevo entrenador responsable"}
               </label>
 
               <select
                 id="entrenadorId"
                 name="entrenadorId"
-                required
                 defaultValue=""
+                required
                 disabled={!permitirFormulario}
-                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] p-3 text-sm text-[var(--ecf-text)] dark:text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className={claseCampo}
               >
                 <option value="" disabled>
                   Selecciona un entrenador
                 </option>
 
-                {entrenadores.map(
-                  (entrenador) => (
-                    <option
-                      key={entrenador.id}
-                      value={entrenador.id}
-                    >
-                      {entrenador.nombre}
-                    </option>
-                  )
-                )}
+                {entrenadores.map((entrenador) => (
+                  <option
+                    key={entrenador.id}
+                    value={entrenador.id}
+                  >
+                    {entrenador.nombre}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* MOTIVO */}
+            {/* JUSTIFICACIÓN */}
 
             <div>
               <label
                 htmlFor="motivo"
                 className="mb-2 block text-sm font-bold"
               >
-                Motivo del cambio
+                {modo === "asignar"
+                  ? "Motivo de la asignación"
+                  : "Justificación del cambio"}
               </label>
 
               <textarea
@@ -691,94 +937,180 @@ async function Contenido({
                 maxLength={500}
                 rows={4}
                 disabled={!permitirFormulario}
-                placeholder="Ejemplo: El cliente solicitó el cambio por disponibilidad de horarios."
-                className="w-full rounded-xl border border-[var(--ecf-border)] dark:border-white/15 bg-[var(--ecf-surface)] dark:bg-[#081526] p-3 text-sm text-[var(--ecf-text)] dark:text-white placeholder:text-slate-500 outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder={
+                  modo === "asignar"
+                    ? "Ejemplo: Se designa al entrenador responsable del seguimiento inicial del cliente."
+                    : "Ejemplo: El cliente solicita un cambio de entrenador por disponibilidad de horarios."
+                }
+                className={claseCampo}
               />
 
               <p className="mt-2 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
                 Entre 15 y 500 caracteres.
-                El motivo quedará registrado.
+                La justificación se conservará
+                en la auditoría.
               </p>
             </div>
 
             <button
               type="submit"
               disabled={!permitirFormulario}
-              className="min-h-12 w-full rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-12 w-full rounded-xl bg-cyan-400 px-5 py-3 text-sm font-black text-[#07121e] transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Confirmar asignación
+              {modo === "asignar"
+                ? "Confirmar asignación"
+                : "Confirmar cambio de entrenador"}
             </button>
           </form>
 
           {!permitirFormulario && !fallo && (
-            <p className="mt-5 rounded-xl border border-amber-200 dark:border-amber-400/20 bg-amber-50 dark:bg-amber-400/10 p-4 text-sm text-amber-800 dark:text-amber-200">
-              No hay clientes elegibles o entrenadores
-              disponibles. Los clientes del estudio
-              se mantienen protegidos.
+            <p className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200">
+              No hay clientes elegibles para esta
+              operación o no existen entrenadores
+              disponibles.
             </p>
           )}
         </section>
 
-        {/* CLIENTES PROTEGIDOS */}
+        {/* ASIGNACIONES ACTUALES */}
 
-        <section className="rounded-2xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface)] dark:bg-[#112039] p-6 shadow-sm dark:shadow-none">
-          <h2 className="text-lg font-bold">
-            Clientes protegidos
-          </h2>
+        <section className={claseTarjeta + " p-6"}>
+          <details>
+            <summary className="cursor-pointer text-lg font-extrabold">
+              Consultar asignaciones actuales
+            </summary>
 
-          <div className="mt-4 space-y-2">
-            {clientes
-              .filter(
-                (cliente) => cliente.protegido
-              )
-              .map((cliente) => (
-                <div
-                  key={cliente.id}
-                  className="flex flex-wrap justify-between gap-3 rounded-xl border border-[var(--ecf-border)] dark:border-white/10 bg-[var(--ecf-surface-soft)] dark:bg-[#0b192c] p-3 text-sm"
-                >
-                  <span className="font-semibold">
-                    {cliente.nombre}
-                  </span>
+            <p className="mt-3 text-sm text-[var(--ecf-muted)] dark:text-slate-400">
+              Relaciones activas registradas en
+              el sistema.
+            </p>
 
-                  <span className="text-amber-800 dark:text-amber-200">
-                    {cliente.motivo}
-                  </span>
-                </div>
-              ))}
+            <div className="mt-5 overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--ecf-border)] dark:border-white/10">
+                    <th className="px-3 py-3">
+                      Cliente
+                    </th>
 
-            {clientes.every(
-              (cliente) => !cliente.protegido
-            ) && (
-              <p className="text-sm text-[var(--ecf-muted)] dark:text-slate-400">
-                No hay clientes protegidos entre
-                los registros consultados.
-              </p>
-            )}
-          </div>
+                    <th className="px-3 py-3">
+                      Entrenador
+                    </th>
+
+                    <th className="px-3 py-3">
+                      Estado
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {clientesConEntrenador.map((cliente) => (
+                    <tr
+                      key={cliente.id}
+                      className="border-b border-[var(--ecf-border)] dark:border-white/10"
+                    >
+                      <td className="px-3 py-3 font-semibold">
+                        {cliente.nombre}
+                      </td>
+
+                      <td className="px-3 py-3">
+                        {cliente.entrenadorActual}
+                      </td>
+
+                      <td className="px-3 py-3">
+                        {cliente.protegido
+                          ? "Protegido"
+                          : "Activa"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {clientesConEntrenador.length === 0 && (
+                <p className="py-5 text-sm text-[var(--ecf-muted)]">
+                  No hay asignaciones activas.
+                </p>
+              )}
+            </div>
+          </details>
         </section>
 
+        {/* CLIENTES PROTEGIDOS */}
+
+        <section className={claseTarjeta + " p-6"}>
+          <details>
+            <summary className="cursor-pointer text-lg font-extrabold">
+              Clientes con restricciones
+              {!fallo &&
+                ` (${clientesProtegidos.length})`}
+            </summary>
+
+            <p className="mt-3 text-sm leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
+              Estos clientes no pueden cambiar
+              de entrenador desde esta pantalla,
+              debido a las reglas actuales del
+              estudio o de sus planes vigentes.
+            </p>
+
+            <div className="mt-5 space-y-3">
+              {clientesProtegidos.map((cliente) => (
+                <article
+                  key={cliente.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm dark:border-amber-400/20 dark:bg-amber-400/10"
+                >
+                  <div>
+                    <p className="font-bold">
+                      {cliente.nombre}
+                    </p>
+
+                    <p className="mt-1 text-xs text-[var(--ecf-muted)] dark:text-slate-400">
+                      {cliente.entrenadorActual}
+                    </p>
+                  </div>
+
+                  <span className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                    {cliente.motivoProteccion}
+                  </span>
+                </article>
+              ))}
+
+              {clientesProtegidos.length === 0 && (
+                <p className="text-sm text-[var(--ecf-muted)]">
+                  No existen clientes protegidos
+                  entre los registros consultados.
+                </p>
+              )}
+            </div>
+          </details>
+        </section>
+
+        {/* INFORMACIÓN */}
+
         <p className="pb-5 text-xs leading-6 text-[var(--ecf-muted)] dark:text-slate-400">
-          Esta operación no modifica planes,
-          sesiones, grupos de investigación ni
-          recomendaciones de IA.
+          Las operaciones de asignación se validan
+          nuevamente en PostgreSQL y se registran
+          mediante auditoría.
+
+          Esta pantalla no modifica directamente
+          planes, sesiones, grupos de investigación
+          ni recomendaciones inteligentes.
         </p>
       </div>
     </main>
   );
 }
 
-// ================================================
-// PAGINA PRINCIPAL
-// ================================================
+// ============================================
+// PÁGINA
+// ============================================
 
 export default function AsignarEntrenadorPage({
   searchParams,
 }: Props) {
   return (
     <Suspense fallback={<Cargando />}>
-      <Contenido
-        searchParams={searchParams}
-      />
+      <Contenido searchParams={searchParams} />
     </Suspense>
   );
 }
