@@ -10,6 +10,7 @@ import { cerrarSesion } from "@/lib/actions/auth";
 import CalendarioCliente from "./calendario-cliente";
 import CentroEntrenamientoDia from "./centro-entrenamiento-dia";
 import EscuchaSesionesRealtime from "./escucha-sesiones-realtime";
+import ProgresoSemanal from "./progreso-semanal";
 
 type Asignacion = {
   id: number;
@@ -411,10 +412,10 @@ async function ContenidoCliente() {
         .maybeSingle(),
 
       supabase
-.from("sesiones_entrenamiento")
-.select(
-  "id, numero_sesion, fecha_programada, hora_programada, estado"
-)
+        .from("sesiones_entrenamiento")
+        .select(
+          "id, numero_sesion, fecha_programada, hora_programada, estado"
+        )
         .eq("asignacion_id", asignacion.id)
         .order("numero_sesion", {
           ascending: true,
@@ -605,15 +606,15 @@ async function ContenidoCliente() {
       (serie) => serie.completada
     ).length;
 
-  const cumplimientoPct =
-    !errorEjercicios &&
-      !errorSeries &&
-      seriesObjetivo > 0
-      ? Math.round(
-        (seriesCompletadas / seriesObjetivo) *
-        100
+const cumplimientoPct =
+  !errorEjercicios &&
+  !errorSeries &&
+  seriesObjetivo > 0 &&
+  seriesRegistradas.length === seriesObjetivo
+    ? Math.round(
+        (seriesCompletadas / seriesObjetivo) * 100
       )
-      : null;
+    : null;
 
   // ============================================
   // 5. CALENDARIO, HISTORIAL Y EJERCICIOS
@@ -895,11 +896,11 @@ async function ContenidoCliente() {
 
         {/* CENTRO DE ENTRENAMIENTO DEL DÍA */}
 
-{asignacion && !errorAsignacion && (
-  <EscuchaSesionesRealtime
-    asignacionId={Number(asignacion.id)}
-  />
-)}
+        {asignacion && !errorAsignacion && (
+          <EscuchaSesionesRealtime
+            asignacionId={Number(asignacion.id)}
+          />
+        )}
 
         {asignacion && !errorAsignacion && (
           <CentroEntrenamientoDia
@@ -931,7 +932,7 @@ async function ContenidoCliente() {
           className="flex flex-wrap gap-2"
         >
           {[
-            ["Mi plan", "#mi-rutina"],...(asignacion ? [["Centro de hoy", "#centro-hoy"]] : []),
+            ["Mi plan", "#mi-rutina"], ...(asignacion ? [["Centro de hoy", "#centro-hoy"]] : []),
             ["Calendario", "#mi-calendario"],
             ["Ejercicios", "#mis-ejercicios"],
             ["Progreso", "#mi-progreso"],
@@ -1392,8 +1393,8 @@ async function ContenidoCliente() {
 
                         <span
                           className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${porcentaje === null
-                              ? "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
-                              : "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                            ? "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
+                            : "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
                             }`}
                         >
                           {porcentaje === null
@@ -1478,8 +1479,8 @@ async function ContenidoCliente() {
 
                     <span
                       className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${continuidadTexto === "Sin datos"
-                          ? "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
-                          : "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
+                        ? "border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-slate-100 dark:bg-white/5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400"
+                        : "border-emerald-400/25 bg-emerald-400/10 text-emerald-800 dark:text-emerald-200"
                         }`}
                     >
                       {continuidadTexto === "Sin datos"
@@ -1507,9 +1508,9 @@ async function ContenidoCliente() {
                       <span
                         key={indice}
                         className={`h-2.5 min-w-0 flex-1 rounded-full ${continuidadTexto !== "Sin datos" &&
-                            indice < semanasConAsistencia
-                            ? "bg-emerald-400"
-                            : "bg-slate-100 dark:bg-white/10"
+                          indice < semanasConAsistencia
+                          ? "bg-emerald-400"
+                          : "bg-slate-100 dark:bg-white/10"
                           }`}
                       />
                     ))}
@@ -1524,6 +1525,17 @@ async function ContenidoCliente() {
                   </div>
                 </article>
               </div>
+
+              {/* EVOLUCIÓN SEMANAL DEL CLIENTE */}
+
+              <ProgresoSemanal
+                sesiones={sesiones}
+                ejercicios={ejerciciosPreparados}
+                series={seriesRegistradas}
+                errorSesiones={errorSesiones}
+                errorEjercicios={errorEjercicios}
+                errorSeries={errorSeries}
+              />
 
               {/* EVIDENCIAS DEL ENTRENAMIENTO */}
               <div className="mt-6 rounded-2xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-r from-white dark:from-[#14273e] to-cyan-50 dark:to-[#101a2e] p-5 shadow-[0_12px_32px_rgba(0,0,0,0.15)] sm:p-6">
