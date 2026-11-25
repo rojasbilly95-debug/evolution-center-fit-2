@@ -291,7 +291,14 @@ export default function ReporteInvestigacionPage() {
                     nombre="descarga"
                     className="h-4 w-4"
                   />
-                  Descargar CSV
+                  CSV por participante
+                </a>
+
+                <a
+                  href="/api/investigacion/exportar?tipo=grupos"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-500/40 bg-cyan-400/10 px-5 py-3 text-sm font-bold text-cyan-800 transition hover:bg-cyan-400/20 focus-visible:outline-2 focus-visible:outline-cyan-300 dark:text-cyan-200"
+                >
+                  Comparar GE y GC (CSV)
                 </a>
               </div>
             </div>
@@ -480,7 +487,14 @@ export default function ReporteInvestigacionPage() {
                 nombre="descarga"
                 className="h-5 w-5 transition-transform group-hover:translate-y-0.5"
               />
-              Descargar resultados CSV para Jamovi
+              Descargar resultados por participante (CSV)
+            </a>
+
+            <a
+              href="/api/investigacion/exportar?tipo=grupos"
+              className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-2xl border border-cyan-500/40 bg-cyan-400/10 px-6 py-3 text-center text-sm font-bold text-cyan-800 transition hover:bg-cyan-400/20 focus-visible:outline-2 focus-visible:outline-cyan-300 dark:text-cyan-200"
+            >
+              Descargar comparación GE frente a GC (CSV)
             </a>
           </div>
         </section>

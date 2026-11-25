@@ -33,20 +33,173 @@ function numeroCSV(valor: number | string | null): string {
   return /^\d+(\.\d+)?$/.test(texto) ? texto : "";
 }
 
+// Diferencia postest - pretest.
+// Si falta alguna medición, permanece vacía.
+
+function diferenciaCSV(
+  previo: number | string | null,
+  posterior: number | string | null
+): string {
+  const pre = numeroCSV(previo);
+  const post = numeroCSV(posterior);
+
+  if (pre === "" || post === "") {
+    return "";
+  }
+
+  const diferencia =
+    Number(post) - Number(pre);
+
+  return Number.isFinite(diferencia)
+    ? String(
+        Math.round(diferencia * 100) / 100
+      )
+    : "";
+}
+
 function campoCSV(valor: string): string {
   let texto = valor;
 
-  if (/^[=+\-@]/.test(texto)) {
+  if (
+    /^\s*[=+@]/.test(texto) ||
+    (
+      /^\s*-/.test(texto) &&
+      !/^-\d+(?:\.\d+)?$/.test(texto)
+    )
+  ) {
     texto = "'" + texto;
   }
 
   return '"' + texto.replace(/"/g, '""') + '"';
 }
 
-export async function GET() {
+// El cambio promedio se calcula sobre pares completos.
+// Los registros faltantes nunca se sustituyen por cero.
+function mediaCSV(valores: number[]): string {
+  if (!valores.length) return "";
+
+  const media =
+    valores.reduce((suma, valor) => suma + valor, 0) /
+    valores.length;
+
+  return Number.isFinite(media)
+    ? String(Math.round(media * 100) / 100)
+    : "";
+}
+
+function valorMedido(
+  valor: number | string | null
+): number | null {
+  const texto = numeroCSV(valor);
+
+  if (texto === "") return null;
+
+  const numero = Number(texto);
+
+  return Number.isFinite(numero) ? numero : null;
+}
+
+function resumenGruposCSV(resultados: Registro[]): string {
+  const indicadores = [
+    {
+      nombre: "asistencia",
+      pre: "pre_asistencia_pct",
+      post: "post_asistencia_pct",
+      unidad: "pct",
+      delta: "pp",
+    },
+    {
+      nombre: "cumplimiento",
+      pre: "pre_cumplimiento_pct",
+      post: "post_cumplimiento_pct",
+      unidad: "pct",
+      delta: "pp",
+    },
+    {
+      nombre: "continuidad",
+      pre: "pre_continuidad_sem",
+      post: "post_continuidad_sem",
+      unidad: "sem",
+      delta: "sem",
+    },
+  ] as const;
+
+  const encabezados = [
+    "grupo_estudio",
+    "participantes",
+    ...indicadores.flatMap((indicador) => [
+      indicador.nombre + "_pre_n",
+      indicador.nombre + "_pre_media_" + indicador.unidad,
+      indicador.nombre + "_post_n",
+      indicador.nombre + "_post_media_" + indicador.unidad,
+      indicador.nombre + "_pares_n",
+      indicador.nombre + "_delta_media_" + indicador.delta,
+    ]),
+  ];
+
+  const filas = (["GE", "GC"] as const)
+    .filter((grupo) =>
+      resultados.some((registro) => registro.grupo_estudio === grupo)
+    )
+    .map((grupo) => {
+      const miembros = resultados.filter(
+        (registro) => registro.grupo_estudio === grupo
+      );
+
+      const resumen = indicadores.flatMap((indicador) => {
+        const previas: number[] = [];
+        const posteriores: number[] = [];
+        const diferencias: number[] = [];
+
+        for (const miembro of miembros) {
+          const pre = valorMedido(miembro[indicador.pre]);
+          const post = valorMedido(miembro[indicador.post]);
+
+          if (pre !== null) {
+            previas.push(pre);
+          }
+
+          if (post !== null) {
+            posteriores.push(post);
+          }
+
+          if (pre !== null && post !== null) {
+            diferencias.push(post - pre);
+          }
+        }
+
+        return [
+          String(previas.length),
+          mediaCSV(previas),
+          String(posteriores.length),
+          mediaCSV(posteriores),
+          String(diferencias.length),
+          mediaCSV(diferencias),
+        ];
+      });
+
+      return [
+        grupo,
+        String(miembros.length),
+        ...resumen,
+      ];
+    });
+
+  return "\uFEFF" + [encabezados, ...filas]
+    .map((fila) => fila.map(campoCSV).join(";"))
+    .join("\r\n");
+}
+
+export async function GET(request: Request) {
   await connection();
 
   try {
+    const tipo =
+      new URL(request.url).searchParams.get("tipo") ?? "participantes";
+
+    if (tipo !== "participantes" && tipo !== "grupos") {
+      return errorJson("Tipo de exportación no válido.", 400);
+    }
     // 1. Comprobar que existe una sesión
     const servidor = await crearServidor();
 
@@ -169,6 +322,34 @@ export async function GET() {
       );
     }
 
+    if (tipo === "grupos") {
+      // No producir estadísticas con participantes duplicados
+      // o clasificaciones que no correspondan a GE/GC.
+      if (
+        resultados.some(
+          (r) => r.grupo_estudio !== "GE" && r.grupo_estudio !== "GC"
+        ) ||
+        new Set(resultados.map((r) => r.cliente_id)).size !==
+          resultados.length
+      ) {
+        return errorJson(
+          "El reporte contiene grupos o participantes ambiguos.",
+          422
+        );
+      }
+
+      return new Response(resumenGruposCSV(resultados), {
+        status: 200,
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition":
+            'attachment; filename="investigacion-comparacion-grupos.csv"',
+          "Cache-Control": "private, no-store",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
+
     // 6. Columnas compatibles con el análisis de tesis
     const encabezados = [
       "participante_id",
@@ -179,6 +360,9 @@ export async function GET() {
       "post_cumplimiento_pct",
       "pre_continuidad_sem",
       "post_continuidad_sem",
+      "delta_asistencia_pp",
+      "delta_cumplimiento_pp",
+      "delta_continuidad_sem",
     ];
 
     // 7. Sustituir UUID por identificadores seudónimos
@@ -197,6 +381,21 @@ export async function GET() {
         numeroCSV(registro.post_cumplimiento_pct),
         numeroCSV(registro.pre_continuidad_sem),
         numeroCSV(registro.post_continuidad_sem),
+
+        diferenciaCSV(
+          registro.pre_asistencia_pct,
+          registro.post_asistencia_pct
+        ),
+
+        diferenciaCSV(
+          registro.pre_cumplimiento_pct,
+          registro.post_cumplimiento_pct
+        ),
+
+        diferenciaCSV(
+          registro.pre_continuidad_sem,
+          registro.post_continuidad_sem
+        ),
       ];
     });
 
