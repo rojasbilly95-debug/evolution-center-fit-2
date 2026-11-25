@@ -33,10 +33,40 @@ function numeroCSV(valor: number | string | null): string {
   return /^\d+(\.\d+)?$/.test(texto) ? texto : "";
 }
 
+// Diferencia postest - pretest.
+// Si falta alguna medición, permanece vacía.
+
+function diferenciaCSV(
+  previo: number | string | null,
+  posterior: number | string | null
+): string {
+  const pre = numeroCSV(previo);
+  const post = numeroCSV(posterior);
+
+  if (pre === "" || post === "") {
+    return "";
+  }
+
+  const diferencia =
+    Number(post) - Number(pre);
+
+  return Number.isFinite(diferencia)
+    ? String(
+        Math.round(diferencia * 100) / 100
+      )
+    : "";
+}
+
 function campoCSV(valor: string): string {
   let texto = valor;
 
-  if (/^[=+\-@]/.test(texto)) {
+  if (
+    /^\s*[=+@]/.test(texto) ||
+    (
+      /^\s*-/.test(texto) &&
+      !/^-\d+(?:\.\d+)?$/.test(texto)
+    )
+  ) {
     texto = "'" + texto;
   }
 
@@ -179,6 +209,9 @@ export async function GET() {
       "post_cumplimiento_pct",
       "pre_continuidad_sem",
       "post_continuidad_sem",
+      "delta_asistencia_pp",
+      "delta_cumplimiento_pp",
+      "delta_continuidad_sem",
     ];
 
     // 7. Sustituir UUID por identificadores seudónimos
@@ -197,6 +230,21 @@ export async function GET() {
         numeroCSV(registro.post_cumplimiento_pct),
         numeroCSV(registro.pre_continuidad_sem),
         numeroCSV(registro.post_continuidad_sem),
+
+        diferenciaCSV(
+          registro.pre_asistencia_pct,
+          registro.post_asistencia_pct
+        ),
+
+        diferenciaCSV(
+          registro.pre_cumplimiento_pct,
+          registro.post_cumplimiento_pct
+        ),
+
+        diferenciaCSV(
+          registro.pre_continuidad_sem,
+          registro.post_continuidad_sem
+        ),
       ];
     });
 
