@@ -194,12 +194,18 @@ export async function GET(request: Request) {
   await connection();
 
   try {
-    const tipo =
-      new URL(request.url).searchParams.get("tipo") ?? "participantes";
+    const parametros = new URL(request.url).searchParams;
+    const tipo = parametros.get("tipo") ?? "participantes";
+    const alcance = parametros.get("alcance") ?? "asignados";
 
     if (tipo !== "participantes" && tipo !== "grupos") {
       return errorJson("Tipo de exportación no válido.", 400);
     }
+
+    if (alcance !== "asignados" && alcance !== "general") {
+      return errorJson("Alcance de exportación no válido.", 400);
+    }
+
     // 1. Comprobar que existe una sesión
     const servidor = await crearServidor();
 
@@ -210,7 +216,7 @@ export async function GET(request: Request) {
       return errorJson("Debes iniciar sesión.", 401);
     }
 
-    const entrenadorId = autenticacion.user.id;
+    const usuarioId = autenticacion.user.id;
 
     // 2. Conectar con Supabase desde el servidor
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -233,67 +239,91 @@ export async function GET(request: Request) {
       },
     });
 
-    // 3. Verificar que el usuario sea entrenador
+    // 3. La exportación general es exclusiva del administrador.
+    // Los entrenadores conservan acceso solo a sus clientes.
     const { data: roles, error: errorRoles } = await admin
       .from("usuario_roles")
       .select("rol")
-      .eq("usuario_id", entrenadorId)
-      .eq("rol", "entrenador")
-      .limit(1);
+      .eq("usuario_id", usuarioId)
+      .in("rol", ["entrenador", "administrador"]);
 
     if (errorRoles) {
       return errorJson("No se pudo verificar tu rol.", 500);
     }
 
-    if (!roles?.length) {
+    const esEntrenador = (roles ?? []).some(
+      (registro) => registro.rol === "entrenador"
+    );
+
+    const esAdministrador = (roles ?? []).some(
+      (registro) => registro.rol === "administrador"
+    );
+
+    if (alcance === "general" && !esAdministrador) {
       return errorJson(
-        "Solo los entrenadores pueden exportar resultados.",
+        "Solo un administrador puede exportar todo el estudio.",
         403
       );
     }
 
-    // 4. Obtener exclusivamente los clientes asignados
-    const { data: asignaciones, error: errorAsignaciones } =
-      await admin
-        .from("asignaciones_entrenadores")
-        .select("cliente_id")
-        .eq("entrenador_id", entrenadorId)
-        .eq("activa", true)
-        .range(0, 999);
-
-    if (errorAsignaciones) {
+    if (alcance === "asignados" && !esEntrenador) {
       return errorJson(
-        "No se pudieron consultar tus clientes.",
-        500
+        "Solo los entrenadores pueden exportar sus clientes.",
+        403
       );
     }
 
-    if ((asignaciones?.length ?? 0) >= 1000) {
-      return errorJson(
-        "El número de asignaciones supera el límite del reporte.",
-        422
-      );
+    // 4. Entrenador: solo asignaciones activas.
+    // Administrador: todos los participantes del estudio.
+    let clientes: string[] | null = null;
+
+    if (alcance === "asignados") {
+      const { data: asignaciones, error: errorAsignaciones } =
+        await admin
+          .from("asignaciones_entrenadores")
+          .select("cliente_id")
+          .eq("entrenador_id", usuarioId)
+          .eq("activa", true)
+          .range(0, 999);
+
+      if (errorAsignaciones) {
+        return errorJson(
+          "No se pudieron consultar tus clientes.",
+          500
+        );
+      }
+
+      if ((asignaciones?.length ?? 0) >= 1000) {
+        return errorJson(
+          "El número de asignaciones supera el límite del reporte.",
+          422
+        );
+      }
+
+      clientes = [
+        ...new Set(
+          (asignaciones ?? [])
+            .map((registro) => registro.cliente_id)
+            .filter((id): id is string => typeof id === "string")
+        ),
+      ];
+
+      if (clientes.length === 0) {
+        return errorJson(
+          "No tienes clientes asignados para exportar.",
+          404
+        );
+      }
     }
 
-    const clientes = [
-      ...new Set(
-        (asignaciones ?? [])
-          .map((registro) => registro.cliente_id)
-          .filter((id): id is string => typeof id === "string")
-      ),
-    ];
+    // 5. Usar el mismo cálculo SQL para ambos alcances.
+    let consultaReporte = admin.rpc("reporte_investigacion_prepost");
 
-    if (clientes.length === 0) {
-      return errorJson(
-        "No tienes clientes asignados para exportar.",
-        404
-      );
+    if (clientes !== null) {
+      consultaReporte = consultaReporte.in("cliente_id", clientes);
     }
 
-    // 5. Ejecutar la función creada en el paso 80.12
-    const { data: filas, error: errorReporte } = await admin
-      .rpc("reporte_investigacion_prepost")
-      .in("cliente_id", clientes)
+    const { data: filas, error: errorReporte } = await consultaReporte
       .order("grupo_estudio", { ascending: true })
       .order("cliente_id", { ascending: true })
       .limit(1000);
@@ -310,7 +340,9 @@ export async function GET(request: Request) {
 
     if (resultados.length === 0) {
       return errorJson(
-        "Todavía no hay participantes inscritos entre tus clientes.",
+        alcance === "general"
+          ? "Todavía no hay participantes inscritos en el estudio."
+          : "Todavía no hay participantes inscritos entre tus clientes.",
         404
       );
     }
@@ -322,22 +354,21 @@ export async function GET(request: Request) {
       );
     }
 
-    if (tipo === "grupos") {
-      // No producir estadísticas con participantes duplicados
-      // o clasificaciones que no correspondan a GE/GC.
-      if (
-        resultados.some(
-          (r) => r.grupo_estudio !== "GE" && r.grupo_estudio !== "GC"
-        ) ||
-        new Set(resultados.map((r) => r.cliente_id)).size !==
-          resultados.length
-      ) {
-        return errorJson(
-          "El reporte contiene grupos o participantes ambiguos.",
-          422
-        );
-      }
+    // Proteger tanto el CSV individual como el grupal.
+    if (
+      resultados.some(
+        (r) => r.grupo_estudio !== "GE" && r.grupo_estudio !== "GC"
+      ) ||
+      new Set(resultados.map((r) => r.cliente_id)).size !==
+        resultados.length
+    ) {
+      return errorJson(
+        "El reporte contiene grupos o participantes ambiguos.",
+        422
+      );
+    }
 
+    if (tipo === "grupos") {
       return new Response(resumenGruposCSV(resultados), {
         status: 200,
         headers: {

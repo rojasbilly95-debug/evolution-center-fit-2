@@ -107,6 +107,20 @@ async function ContenidoReportes() {
               Descargar reporte CSV
             </a>
 
+            <a
+              href="/api/investigacion/exportar?tipo=participantes&alcance=general"
+              className="rounded-xl border border-cyan-500/40 bg-cyan-50 px-5 py-3 text-sm font-bold text-cyan-900 hover:bg-cyan-100 dark:bg-cyan-400/10 dark:text-cyan-200 dark:hover:bg-cyan-400/20"
+            >
+              Exportar pretest y postest (GE/GC)
+            </a>
+
+            <a
+              href="/api/investigacion/exportar?tipo=grupos&alcance=general"
+              className="rounded-xl border border-cyan-500/40 bg-cyan-50 px-5 py-3 text-sm font-bold text-cyan-900 hover:bg-cyan-100 dark:bg-cyan-400/10 dark:text-cyan-200 dark:hover:bg-cyan-400/20"
+            >
+              Exportar comparación entre grupos
+            </a>
+
             <Link
               href="/administrador"
               className="rounded-xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/20 px-5 py-3 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-white/10"
