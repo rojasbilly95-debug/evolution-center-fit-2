@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import ComparativaGrupos from "./comparativa-grupos";
 
 type NombreIcono =
   | "documento"
@@ -369,6 +370,8 @@ export default function ReporteInvestigacionPage() {
             color="bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-300"
           />
         </section>
+
+        <ComparativaGrupos />
 
         {/* CONTENIDO PRINCIPAL */}
         <section className="rounded-3xl border border-[var(--ecf-border,#dce5ee)] dark:border-white/10 bg-gradient-to-br from-white dark:from-[#15243a] to-slate-50 dark:to-[#101a2b] p-5 shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7">
