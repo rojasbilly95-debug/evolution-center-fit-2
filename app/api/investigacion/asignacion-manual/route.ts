@@ -1,6 +1,7 @@
 ﻿import { connection, NextResponse } from "next/server";
 import { createClient as crearAdmin } from "@supabase/supabase-js";
 import { createClient as crearServidor } from "@/lib/supabase/server";
+import { ESTUDIO, faseEstudioOficial } from "@/lib/investigacion/calendario-estudio";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -189,33 +190,59 @@ export async function POST(request: Request) {
       return errorJson("Cliente no inscrito en el estudio.", 409);
     }
 
-    const limite =
-      participante.grupo_estudio === "GC"
-        ? participante.fecha_fin_estudio
-        : participante.grupo_estudio === "GE"
-          ? sumarDias(participante.fecha_inicio_estudio, 27)
-          : null;
-
-    if (!limite) {
-      return errorJson("Grupo de estudio inválido.", 409);
-    }
-
-    const finReal =
-      typeof fechaFin === "string" ? fechaFin : limite;
-
-    if (
-      fechaInicio < participante.fecha_inicio_estudio ||
-      fechaInicio > limite ||
-      finReal < fechaInicio ||
-      finReal > limite
-    ) {
+    if (participante.fecha_inicio_estudio !== ESTUDIO.inicio) {
       return errorJson(
-        "Las fechas están fuera del período de entrenamiento habitual.",
+        "La fecha del participante no coincide con el calendario oficial.",
         409
       );
     }
 
-    const { data: asignacion, error: errorRpc } = await admin.rpc(
+    const grupo = participante.grupo_estudio;
+
+    if (grupo !== "GE" && grupo !== "GC") {
+      return errorJson("Grupo de estudio inválido.", 409);
+    }
+
+    const faseInicio = faseEstudioOficial(fechaInicio);
+
+    const limite =
+      grupo === "GE" && faseInicio === "pretest"
+        ? ESTUDIO.finPretest
+        : ESTUDIO.fin;
+
+    const finReal =
+      typeof fechaFin === "string" ? fechaFin : limite;
+
+    const faseFin = faseEstudioOficial(finReal);
+
+    if (
+      !faseInicio ||
+      !faseFin ||
+      finReal < fechaInicio ||
+      finReal > limite
+    ) {
+      return errorJson(
+        "Las fechas están fuera del calendario de investigación.",
+        409
+      );
+    }
+
+    // GE utiliza IA solamente en intervención.
+    // Fuera de ese periodo puede mantener atención manual.
+    if (
+      grupo === "GE" &&
+      (
+        faseInicio === "intervencion" ||
+        faseInicio !== faseFin
+      )
+    ) {
+      return errorJson(
+        "En GE, la asignación manual debe permanecer íntegramente en pretest o postest.",
+        409
+      );
+    }
+
+        const { data: asignacion, error: errorRpc } = await admin.rpc(
       "asignar_rutina_manual_estudio",
       {
         p_entrenador_id: entrenadorId,

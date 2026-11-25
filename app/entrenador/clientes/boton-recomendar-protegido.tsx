@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import BotonRecomendar from "./boton-recomendar";
+import { ESTUDIO, fechaHoyLima } from "@/lib/investigacion/calendario-estudio";
 
 type Props = {
   clienteId: string;
@@ -32,8 +33,8 @@ export default async function BotonRecomendarProtegido({
     );
   }
 
-  // Los clientes que no participan en el estudio
-  // mantienen el flujo habitual de recomendaciones.
+  // Por seguridad, los no inscritos requieren una política distinta
+  // para recibir IA fuera de la investigación.
   if (!data) {
     return (
       <Aviso mensaje="No se pudo verificar la inscripción del cliente. La IA permanece deshabilitada por seguridad." />
@@ -59,51 +60,23 @@ export default async function BotonRecomendarProtegido({
     grupo === "experimental" ||
     grupo === "grupo_experimental"
   ) {
-    const fecha = String(data.fecha_inicio_estudio ?? "");
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    if (data.fecha_inicio_estudio !== ESTUDIO.inicio) {
       return (
-        <Aviso mensaje="La fecha de inicio del estudio no es vÃ¡lida. La IA permanece deshabilitada." />
+        <Aviso mensaje="El calendario del participante no coincide con el calendario oficial del estudio." />
       );
     }
 
-    const [anio, mes, dia] = fecha.split("-").map(Number);
-    const inicio = Date.UTC(anio, mes - 1, dia);
+    const hoy = fechaHoyLima();
 
-    const partes = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Lima",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).formatToParts(new Date());
-
-    function valor(tipo: string) {
-      return Number(
-        partes.find((parte) => parte.type === tipo)?.value
+    if (hoy < ESTUDIO.inicioIntervencion) {
+      return (
+        <Aviso mensaje="Grupo experimental: la IA se habilitará el 07/12/2026." />
       );
     }
 
-    const hoy = Date.UTC(
-      valor("year"),
-      valor("month") - 1,
-      valor("day")
-    );
-
-    const dias = Math.floor(
-      (hoy - inicio) / 86400000
-    );
-
-    if (!Number.isFinite(dias) || dias < 28) {
-      const fechaHabilitacion = new Date(
-        inicio + 28 * 86400000
-      ).toLocaleDateString("es-PE", {
-        timeZone: "UTC",
-      });
-
+    if (hoy > ESTUDIO.finIntervencion) {
       return (
-        <Aviso
-          mensaje={`Grupo experimental (GE): la IA estarÃ¡ disponible desde el ${fechaHabilitacion}, despuÃ©s de las cuatro semanas de pretest.`}
-        />
+        <Aviso mensaje="La intervención terminó el 03/01/2027. Durante el postest no se generan nuevas recomendaciones de IA." />
       );
     }
 

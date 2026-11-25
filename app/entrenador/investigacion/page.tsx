@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { ESTUDIO } from "@/lib/investigacion/calendario-estudio";
 import {
   useCallback,
   useEffect,
@@ -295,7 +296,7 @@ export default function InvestigacionPage() {
 
   const [clienteId, setClienteId] = useState("");
   const [grupo, setGrupo] = useState<Grupo>("GE");
-  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaInicio, setFechaInicio] = useState<string>(ESTUDIO.inicio);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroGrupo, setFiltroGrupo] =
@@ -432,7 +433,7 @@ export default function InvestigacionPage() {
         "Participante registrado correctamente."
       );
       setClienteId("");
-      setFechaInicio("");
+      setFechaInicio(ESTUDIO.inicio);
       setGrupo("GE");
 
       await cargarClientes();
@@ -708,9 +709,9 @@ export default function InvestigacionPage() {
                 id="fecha"
                 type="date"
                 value={fechaInicio}
-                onChange={(e) =>
-                  setFechaInicio(e.target.value)
-                }
+                readOnly
+                min={ESTUDIO.inicio}
+                max={ESTUDIO.inicio}
                 required
                 disabled={cargando || guardando}
                 className={`${campo} dark:[color-scheme:dark]`}
@@ -721,8 +722,8 @@ export default function InvestigacionPage() {
                   nombre="calendario"
                   className="h-4 w-4"
                 />
-                Desde esta fecha se calcularán
-                las 12 semanas.
+                Fecha oficial fija: 09/11/2026.
+                Las 12 semanas son comunes para GE y GC.
               </p>
             </div>
 
