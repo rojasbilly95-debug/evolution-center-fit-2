@@ -1,6 +1,7 @@
 import { NextResponse, connection } from "next/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { ESTUDIO, faseEstudioOficial } from "@/lib/investigacion/calendario-estudio";
 
 // ============================================
 // EVOLUTION CENTER FIT 2.0
@@ -88,7 +89,7 @@ function sumarDias(
   return copia.toISOString().slice(0, 10);
 }
 
-// Fases calculadas desde la fecha real de inscripción.
+// Fases calculadas con el calendario oficial, verificando la inscripción.
 // Días 1-28: pretest.
 // Días 29-56: intervención.
 // Días 57-84: postest.
@@ -101,32 +102,16 @@ function faseEstudio(
 ): string {
   const fecha = fechaValida(fechaTexto);
 
-  if (!fecha || !inicioEstudio) {
+  if (
+    !fecha ||
+    !inicioEstudio ||
+    inicioEstudio.toISOString().slice(0, 10) !== ESTUDIO.inicio ||
+    (finEstudio && fecha > finEstudio)
+  ) {
     return "";
   }
 
-  if (finEstudio && fecha > finEstudio) {
-    return "";
-  }
-
-  const dia = Math.floor(
-    (fecha.getTime() - inicioEstudio.getTime()) /
-      86400000
-  );
-
-  if (dia < 0 || dia >= 84) {
-    return "";
-  }
-
-  if (dia < 28) {
-    return "pretest";
-  }
-
-  if (dia < 56) {
-    return "intervencion";
-  }
-
-  return "postest";
+  return faseEstudioOficial(fechaTexto) ?? "";
 }
 
 function hoyEnLima(): string {

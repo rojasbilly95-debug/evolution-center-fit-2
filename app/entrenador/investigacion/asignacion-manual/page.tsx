@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { ESTUDIO } from "@/lib/investigacion/calendario-estudio";
 
 type Cliente = {
   clienteId: string;
@@ -84,13 +85,18 @@ export default function AsignacionManualPage() {
   );
 
   const limite =
-    seleccionado?.grupoEstudio === "GC"
-      ? seleccionado.fechaFin
-      : seleccionado?.fechaInicio
-        ? sumarDias(seleccionado.fechaInicio, 27)
-        : null;
+    seleccionado?.grupoEstudio === "GE" &&
+    fechaInicio &&
+    fechaInicio < ESTUDIO.inicioIntervencion
+      ? ESTUDIO.finPretest
+      : ESTUDIO.fin;
 
-  async function guardar(e: FormEvent<HTMLFormElement>) {
+  const intervaloGEInvalido =
+    seleccionado?.grupoEstudio === "GE" &&
+    fechaInicio >= ESTUDIO.inicioIntervencion &&
+    fechaInicio <= ESTUDIO.finIntervencion;
+
+    async function guardar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setMensaje("");
@@ -151,7 +157,7 @@ export default function AsignacionManualPage() {
           </h1>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Entrenamiento habitual para el grupo control
-            y el pretest del grupo experimental.
+            y los periodos pretest y postest del grupo experimental.
           </p>
         </header>
 
@@ -274,7 +280,7 @@ export default function AsignacionManualPage() {
 
               <button
                 type="submit"
-                disabled={guardando || !clienteId || !rutinaId || !fechaInicio}
+                disabled={guardando || !clienteId || !rutinaId || !fechaInicio || Boolean(intervaloGEInvalido)}
                 className="w-full rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50 dark:bg-cyan-400 dark:text-slate-950 dark:hover:bg-cyan-300"
               >
                 {guardando ? "Guardando..." : "Asignar rutina sin IA"}

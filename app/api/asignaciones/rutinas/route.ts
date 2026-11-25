@@ -1,4 +1,5 @@
 import { bloqueoIAEstudio } from "@/lib/investigacion/bloqueo-ia-estudio";
+import { ESTUDIO } from "@/lib/investigacion/calendario-estudio";
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -201,6 +202,19 @@ export async function POST(
     }
 
     // ====================================
+    // La recomendación debe iniciar durante intervención.
+    // El plan asignado puede mantenerse hasta finalizar postest.
+    if (
+      fechaInicio < ESTUDIO.inicioIntervencion ||
+      fechaInicio > ESTUDIO.finIntervencion ||
+      (fechaFin !== null && fechaFin > ESTUDIO.fin)
+    ) {
+      return errorJson(
+        "La asignación de IA debe comenzar durante la intervención y finalizar, como máximo, el 31/01/2027.",
+        409
+      );
+    }
+
     // 2. AUTENTICAR ENTRENADOR
     // ====================================
 

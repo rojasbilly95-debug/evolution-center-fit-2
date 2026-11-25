@@ -4,6 +4,7 @@ import {
   createClient as createAdminClient,
 } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { ESTUDIO } from "@/lib/investigacion/calendario-estudio";
 
 function errorJson(mensaje: string, status: number) {
   return NextResponse.json(
@@ -180,6 +181,13 @@ export async function POST(request: Request) {
       fecha.toISOString().slice(0, 10) !== fechaInicio
     ) {
       return errorJson("Fecha de inicio inválida.", 400);
+    }
+
+    if (fechaInicio !== ESTUDIO.inicio) {
+      return errorJson(
+        "Todos los participantes deben iniciar el estudio el 09/11/2026.",
+        409
+      );
     }
 
     // Solo se permite registrar clientes asignados

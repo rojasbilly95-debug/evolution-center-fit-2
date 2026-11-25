@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { ESTUDIO, fechaHoyLima } from "@/lib/investigacion/calendario-estudio";
 
 // =====================================
 // RESPUESTA DE ACCESO DENEGADO
@@ -87,68 +88,31 @@ export async function bloqueoIAEstudio(
       );
     }
 
-    // 7. Calcular fecha actual en Lima, Perú.
-    const partes = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Lima",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).formatToParts(new Date());
-
-    const obtener = (tipo: string) =>
-      Number(
-        partes.find((p) => p.type === tipo)?.value
-      );
-
-    const hoy = Date.UTC(
-      obtener("year"),
-      obtener("month") - 1,
-      obtener("day")
-    );
-
-    // 8. Verificar fecha de inicio del estudio.
-    const fechaInicio = participante.fecha_inicio_estudio;
-
-    if (
-      typeof fechaInicio !== "string" ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(fechaInicio)
-    ) {
+    // Todos los participantes comparten calendario.
+    if (participante.fecha_inicio_estudio !== ESTUDIO.inicio) {
       return denegar(
-        "La fecha del estudio no es válida.",
-        503
+        "La fecha de inscripción no coincide con el calendario oficial del estudio.",
+        409
       );
     }
 
-    const inicio = Date.parse(
-      `${fechaInicio}T00:00:00.000Z`
-    );
+    const hoy = fechaHoyLima();
 
-    if (
-      !Number.isFinite(hoy) ||
-      !Number.isFinite(inicio) ||
-      new Date(inicio).toISOString().slice(0, 10) !==
-        fechaInicio
-    ) {
+    if (hoy < ESTUDIO.inicioIntervencion) {
       return denegar(
-        "La fecha del estudio no es válida.",
-        503
-      );
-    }
-
-    // 9. Calcular días transcurridos.
-    const diasTranscurridos = Math.floor(
-      (hoy - inicio) / 86400000
-    );
-
-    // 10. GE: impedir IA durante las semanas 1 a 4.
-    if (diasTranscurridos < 28) {
-      return denegar(
-        "El grupo experimental todavía está en pretest. La IA se habilita desde la semana 5.",
+        "La IA permanece bloqueada hasta el inicio de la intervención (07/12/2026).",
         403
       );
     }
 
-    // 11. GE: permitir IA desde la semana 5.
+    if (hoy > ESTUDIO.finIntervencion) {
+      return denegar(
+        "La intervención terminó el 03/01/2027. No se permiten nuevas recomendaciones durante el postest.",
+        403
+      );
+    }
+
+    // GE: IA permitida exclusivamente durante la intervención.
     return null;
   } catch (error) {
     console.error(
