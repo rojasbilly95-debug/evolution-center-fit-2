@@ -88,6 +88,47 @@ function sumarDias(
   return copia.toISOString().slice(0, 10);
 }
 
+// Fases calculadas desde la fecha real de inscripción.
+// Días 1-28: pretest.
+// Días 29-56: intervención.
+// Días 57-84: postest.
+// Fuera del período, el campo permanece vacío.
+
+function faseEstudio(
+  fechaTexto: string,
+  inicioEstudio: Date | null,
+  finEstudio: Date | null
+): string {
+  const fecha = fechaValida(fechaTexto);
+
+  if (!fecha || !inicioEstudio) {
+    return "";
+  }
+
+  if (finEstudio && fecha > finEstudio) {
+    return "";
+  }
+
+  const dia = Math.floor(
+    (fecha.getTime() - inicioEstudio.getTime()) /
+      86400000
+  );
+
+  if (dia < 0 || dia >= 84) {
+    return "";
+  }
+
+  if (dia < 28) {
+    return "pretest";
+  }
+
+  if (dia < 56) {
+    return "intervencion";
+  }
+
+  return "postest";
+}
+
 function hoyEnLima(): string {
   const partes = new Intl.DateTimeFormat(
     "en-US",
@@ -335,7 +376,68 @@ export async function GET(request: Request) {
       );
     }
 
-    // 7. VALIDAR FECHAS DEL PLAN
+    // 7. CONSULTAR INSCRIPCION REAL.
+    // Esta operación es únicamente de lectura.
+
+    const {
+      data: participante,
+      error: errorParticipante,
+    } = await admin
+      .from("participantes_estudio")
+      .select(
+        "grupo_estudio,fecha_inicio_estudio,fecha_fin_estudio"
+      )
+      .eq("cliente_id", plan.cliente_id)
+      .maybeSingle();
+
+    if (errorParticipante) {
+      console.error(
+        "Error consultando inscripción:",
+        errorParticipante
+      );
+
+      return fallo(
+        "No se pudo consultar el grupo del estudio.",
+        500
+      );
+    }
+
+    const grupoEstudio =
+      participante?.grupo_estudio === "GE" ||
+      participante?.grupo_estudio === "GC"
+        ? participante.grupo_estudio
+        : "";
+
+    const inicioCandidato =
+      grupoEstudio &&
+      typeof participante?.fecha_inicio_estudio === "string"
+        ? fechaValida(
+            participante.fecha_inicio_estudio
+          )
+        : null;
+
+    const finEstudio =
+      typeof participante?.fecha_fin_estudio === "string"
+        ? fechaValida(
+            participante.fecha_fin_estudio
+          )
+        : null;
+
+    // No etiquetar fases si las fechas son inválidas.
+
+    const inicioEstudio =
+      participante?.fecha_fin_estudio &&
+      (
+        !finEstudio ||
+        (
+          inicioCandidato &&
+          finEstudio < inicioCandidato
+        )
+      )
+        ? null
+        : inicioCandidato;
+
+    // 8. VALIDAR FECHAS DEL PLAN
 
     const inicioTexto: string =
       plan.fecha_inicio;
@@ -775,8 +877,12 @@ export async function GET(request: Request) {
           m.avance,
           m.cumplimiento,
           m.calidad,
-          "",
-          "",
+          grupoEstudio,
+          faseEstudio(
+            m.sesion.fecha_programada,
+            inicioEstudio,
+            finEstudio
+          ),
         ]
       );
 
@@ -838,6 +944,26 @@ export async function GET(request: Request) {
           semana * 7 - 1
         )
       );
+
+      const faseDesde = faseEstudio(
+        desde,
+        inicioEstudio,
+        finEstudio
+      );
+
+      const faseHasta = faseEstudio(
+        hasta,
+        inicioEstudio,
+        finEstudio
+      );
+
+      // Si una semana cruza dos fases,
+      // no se asigna una etiqueta incorrecta.
+
+      const faseSemana =
+        faseDesde && faseDesde === faseHasta
+          ? faseDesde
+          : "";
 
       const grupo = mediciones.filter(
         (m) => m.semana === semana
@@ -951,8 +1077,8 @@ export async function GET(request: Request) {
           : hechas,
 
         cumplimiento,
-        "",
-        "",
+        grupoEstudio,
+        faseSemana,
       ]);
     }
 
