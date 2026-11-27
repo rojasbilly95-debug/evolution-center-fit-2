@@ -574,14 +574,14 @@ export default async function SeguimientoClientePage({
             >
               <div className="mb-5">
                 <p className="text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-300">
-                  Entrenamiento activo
+                  Seguimiento del plan
                 </p>
 
                 <h2
                   id="titulo-plan-actual"
                   className="mt-2 text-2xl font-extrabold sm:text-3xl"
                 >
-                  Sesiones y adherencia
+                  Gestión de sesiones
                 </h2>
 
                 <p className="mt-2 text-sm leading-6 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">

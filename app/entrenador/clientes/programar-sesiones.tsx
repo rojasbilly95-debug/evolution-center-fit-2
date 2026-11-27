@@ -13,6 +13,7 @@ import ControlAsistencia, {
 
 import RegistroEjercicios from "./registro-ejercicios";
 import ReprogramarSesion from "./reprogramar-sesion";
+import UbicacionSesion from "./ubicacion-sesion";
 import ResumenCumplimiento from "./resumen-cumplimiento";
 import ResumenAdherencia from "./resumen-adherencia";
 import GestionPendientes, { fechaHoyLima } from "./gestion-pendientes";
@@ -444,11 +445,11 @@ export default function ProgramarSesiones({
             "Content-Type":
               "application/json",
           },
-body: JSON.stringify({
-  asignacionId,
-  diasSemana: dias,
-  horaProgramada,
-}),
+          body: JSON.stringify({
+            asignacionId,
+            diasSemana: dias,
+            horaProgramada,
+          }),
           cache: "no-store",
         }
       );
@@ -564,10 +565,10 @@ body: JSON.stringify({
         : filtroSesion === "proximas"
           ? sesionesProximas
           : estado.sesiones.filter(
-              (sesion) =>
-                filtroSesion === "todas" ||
-                sesion.estado === filtroSesion
-            );
+            (sesion) =>
+              filtroSesion === "todas" ||
+              sesion.estado === filtroSesion
+          );
 
   // Orden visual por prioridad.
   // No modifica los estados de las sesiones.
@@ -939,17 +940,22 @@ body: JSON.stringify({
                           }}
                         />
 
-{/* REPROGRAMACIÓN AUDITADA DE LA SESIÓN */}
+                        {/* REPROGRAMACIÓN AUDITADA DE LA SESIÓN */}
 
-<ReprogramarSesion
+                        <ReprogramarSesion
+                          sesion={sesion}
+                          estadoPlan={plan.estado}
+                          fechaInicio={plan.fechaInicio}
+                          fechaFin={plan.fechaFin}
+                          onActualizada={(nuevoMensaje) => {
+                            setMensaje(nuevoMensaje);
+                            actualizar();
+                          }}
+                        />
+                        {/* UBICACIÓN Y EVIDENCIA DE LA SESIÓN */}
+
+<UbicacionSesion
   sesion={sesion}
-  estadoPlan={plan.estado}
-  fechaInicio={plan.fechaInicio}
-  fechaFin={plan.fechaFin}
-  onActualizada={(nuevoMensaje) => {
-    setMensaje(nuevoMensaje);
-    actualizar();
-  }}
 />
 
                         {/* EJERCICIOS EN LA MISMA TARJETA */}
@@ -982,7 +988,7 @@ body: JSON.stringify({
                               {ejerciciosAbiertos
                                 ? "Ocultar ejercicios"
                                 : sesion.estado === "programada" &&
-                                    sesion.fechaProgramada < hoyLima
+                                  sesion.fechaProgramada < hoyLima
                                   ? "Consultar objetivos"
                                   : "Ver ejercicios"}
 

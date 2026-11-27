@@ -81,8 +81,14 @@ class PerfilCliente(BaseModel):
 
     lugar: Lugar
 
-    equipamiento: list[Equipo]
+    # Campo histórico: se conserva para compatibilidad.
+    equipamiento: list[Equipo] = Field(default_factory=list)
 
+    # Equipamiento declarado para cada ubicación.
+    # None significa que todavía no está clasificado.
+    # [] significa que el cliente declaró no tener equipos.
+    equipamiento_casa: list[Equipo] | None = None
+    equipamiento_gimnasio: list[Equipo] | None = None
 
 class Ejercicio(BaseModel):
     nombre: str
@@ -119,8 +125,6 @@ class Rutina(BaseModel):
         min_length=1,
     )
 
-
-
 class SolicitudRecomendacion(BaseModel):
     perfil: PerfilCliente
     rutinas: list[Rutina]
@@ -132,7 +136,6 @@ class SolicitudRecomendacion(BaseModel):
     # Activar solo cuando se solicite expresamente.
     # Evita modificar las pruebas y los clientes existentes.
     incluir_logica_difusa: bool = False
-
 
 
 # ==========================================
@@ -198,6 +201,110 @@ def obtener_equipamiento(
 
     return equipos
 
+# ==========================================
+# EQUIPAMIENTO Y UBICACIONES
+# ==========================================
+
+def ubicaciones_declaradas(
+    perfil: PerfilCliente,
+) -> list[str]:
+    """
+    Devuelve las ubicaciones declaradas
+    por el cliente.
+    """
+
+    if perfil.lugar == "mixto":
+        return [
+            "casa",
+            "gimnasio",
+        ]
+
+    return [perfil.lugar]
+
+
+def equipamiento_en_ubicacion(
+    perfil: PerfilCliente,
+    lugar: str,
+) -> set[str]:
+    """
+    Obtiene el equipamiento disponible
+    exclusivamente en una ubicación.
+
+    No presupone que el equipamiento del
+    gimnasio también exista en casa.
+    """
+
+    if lugar == "casa":
+        declarado = perfil.equipamiento_casa
+
+    elif lugar == "gimnasio":
+        declarado = perfil.equipamiento_gimnasio
+
+    else:
+        return set()
+
+    if declarado is None:
+        # Compatibilidad con perfiles antiguos
+        # que solo utilizaban una ubicación.
+        #
+        # Para perfiles mixtos históricos,
+        # no se puede conocer la distribución
+        # real del equipamiento.
+
+        if perfil.lugar == lugar:
+            declarado = perfil.equipamiento
+        else:
+            declarado = []
+
+    equipos = set(declarado)
+
+    # El peso corporal no requiere
+    # equipamiento adicional.
+    equipos.add("peso_corporal")
+
+    return equipos
+
+
+def lugares_compatibles_rutina(
+    perfil: PerfilCliente,
+    rutina: Rutina,
+) -> list[str]:
+    """
+    Determina en qué ubicaciones puede
+    realizarse la rutina completa.
+
+    Todos los ejercicios deben ser compatibles
+    con una misma ubicación.
+    """
+
+    compatibles = []
+
+    for lugar in ubicaciones_declaradas(perfil):
+
+        if not lugar_compatible(
+            lugar,
+            rutina.lugar,
+        ):
+            continue
+
+        disponibles = equipamiento_en_ubicacion(
+            perfil,
+            lugar,
+        )
+
+        ejercicios_compatibles = all(
+            lugar_compatible(
+                lugar,
+                ejercicio.lugar,
+            )
+            and ejercicio.equipamiento in disponibles
+            for ejercicio in rutina.ejercicios
+        )
+
+        if ejercicios_compatibles:
+            compatibles.append(lugar)
+
+    return compatibles
 
 # ==========================================
 # FASE 1 - REGLAS DE ELEGIBILIDAD
@@ -208,29 +315,35 @@ def comprobar_elegibilidad(
     rutina: Rutina,
 ) -> list[str]:
     """
-    Evalua las restricciones obligatorias.
+    Evalúa las restricciones obligatorias.
 
-    Devuelve los motivos que impiden que
-    una rutina sea considerada elegible.
+    Una rutina únicamente será elegible
+    cuando cumpla todas las reglas.
     """
 
     motivos = []
 
-    # REGLA 1: ESTADO DE LA PLANTILLA
+    # --------------------------------------
+    # REGLA 1: ESTADO DE LA RUTINA
+    # --------------------------------------
 
     if rutina.estado != "publicada":
         motivos.append(
-            "La rutina no esta publicada."
+            "La rutina no está publicada."
         )
 
+    # --------------------------------------
     # REGLA 2: OBJETIVO
+    # --------------------------------------
 
     if rutina.objetivo != perfil.objetivo:
         motivos.append(
             "El objetivo de la rutina no coincide."
         )
 
-    # REGLA 3: NIVEL DE EXPERIENCIA
+    # --------------------------------------
+    # REGLA 3: NIVEL
+    # --------------------------------------
 
     if (
         NIVELES[rutina.nivel]
@@ -240,18 +353,22 @@ def comprobar_elegibilidad(
             "La rutina supera el nivel del cliente."
         )
 
-    # REGLA 4: FRECUENCIA SEMANAL
+    # --------------------------------------
+    # REGLA 4: FRECUENCIA
+    # --------------------------------------
 
     if (
         rutina.frecuencia_semanal
         > perfil.frecuencia_semanal
     ):
         motivos.append(
-            "La rutina requiere mas dias "
+            "La rutina requiere más días "
             "de los disponibles."
         )
 
-    # REGLA 5: DURACION
+    # --------------------------------------
+    # REGLA 5: DURACIÓN
+    # --------------------------------------
 
     if (
         rutina.duracion_min
@@ -259,33 +376,38 @@ def comprobar_elegibilidad(
     ):
         motivos.append(
             "La rutina supera el tiempo "
-            "disponible por sesion."
+            "disponible por sesión."
         )
 
-    # REGLA 6: LUGAR
+    # --------------------------------------
+    # REGLA 6: UBICACIONES
+    # --------------------------------------
 
-    if not lugar_compatible(
-        perfil.lugar,
-        rutina.lugar,
-    ):
+    ubicaciones = ubicaciones_declaradas(
+        perfil
+    )
+
+    lugar_valido = any(
+        lugar_compatible(
+            lugar,
+            rutina.lugar,
+        )
+        for lugar in ubicaciones
+    )
+
+    if not lugar_valido:
         motivos.append(
             "El lugar de entrenamiento no coincide."
         )
 
+    # --------------------------------------
     # REGLA 7: EJERCICIOS
-
-    equipos = obtener_equipamiento(perfil)
+    # --------------------------------------
 
     for ejercicio in rutina.ejercicios:
 
-        # Equipamiento disponible
-        if ejercicio.equipamiento not in equipos:
-            motivos.append(
-                f"Falta equipamiento para "
-                f"{ejercicio.nombre}."
-            )
+        # Verificar nivel de cada ejercicio.
 
-        # Nivel del ejercicio
         if (
             NIVELES[ejercicio.nivel]
             > NIVELES[perfil.experiencia]
@@ -295,18 +417,66 @@ def comprobar_elegibilidad(
                 f"supera el nivel del cliente."
             )
 
-        # Lugar del ejercicio
-        if not lugar_compatible(
-            perfil.lugar,
-            ejercicio.lugar,
-        ):
+        # Verificar ubicación del ejercicio.
+
+        ubicacion_valida = any(
+            lugar_compatible(
+                lugar,
+                ejercicio.lugar,
+            )
+            for lugar in ubicaciones
+        )
+
+        if not ubicacion_valida:
             motivos.append(
                 f"Lugar incompatible para "
                 f"{ejercicio.nombre}."
             )
 
-    return motivos
+        # Verificar que el equipo exista
+        # en alguna ubicación adecuada.
 
+        equipo_disponible = any(
+            lugar_compatible(
+                lugar,
+                ejercicio.lugar,
+            )
+            and ejercicio.equipamiento
+            in equipamiento_en_ubicacion(
+                perfil,
+                lugar,
+            )
+            for lugar in ubicaciones
+        )
+
+        if not equipo_disponible:
+            motivos.append(
+                f"Falta equipamiento para "
+                f"{ejercicio.nombre}."
+            )
+
+    # --------------------------------------
+    # REGLA 8: RUTINA COMPLETA
+    # --------------------------------------
+
+    # Evita combinar equipos de diferentes
+    # ubicaciones como si estuvieran juntos.
+
+    lugares_compatibles = (
+        lugares_compatibles_rutina(
+            perfil,
+            rutina,
+        )
+    )
+
+    if not lugares_compatibles:
+        motivos.append(
+            "No existe una ubicación donde "
+            "pueda realizarse toda la rutina "
+            "con el equipamiento disponible."
+        )
+
+    return motivos
 
 # ==========================================
 # FASE 2 - RANKING DE COMPATIBILIDAD
@@ -412,44 +582,78 @@ def calcular_compatibilidad(
             PESOS["duracion"]
             - diferencia_minutos // 5,
         )
-
     # --------------------------------------
-    # 6. LUGAR - MAXIMO 10 PUNTOS
+    # 6. LUGAR - MÁXIMO 10 PUNTOS
     # --------------------------------------
 
-    lugar_valido = lugar_compatible(
-        perfil.lugar,
-        rutina.lugar,
+    ubicaciones = ubicaciones_declaradas(
+        perfil
     )
 
-    ejercicios_lugar_valido = all(
+    lugar_valido = any(
         lugar_compatible(
-            perfil.lugar,
-            ejercicio.lugar,
+            lugar,
+            rutina.lugar,
         )
-        for ejercicio in rutina.ejercicios
+        for lugar in ubicaciones
+    )
+
+    ejercicios_lugar_valido = any(
+        lugar_compatible(
+            lugar,
+            rutina.lugar,
+        )
+        and all(
+            lugar_compatible(
+                lugar,
+                ejercicio.lugar,
+            )
+            for ejercicio in rutina.ejercicios
+        )
+        for lugar in ubicaciones
     )
 
     puntos["lugar"] = (
         PESOS["lugar"]
-        if lugar_valido and ejercicios_lugar_valido
+        if lugar_valido
+        and ejercicios_lugar_valido
         else 0
     )
 
     # --------------------------------------
-    # 7. EQUIPAMIENTO - MAXIMO 10 PUNTOS
+    # 7. EQUIPAMIENTO - MÁXIMO 10 PUNTOS
     # --------------------------------------
-
-    equipos = obtener_equipamiento(perfil)
 
     total_ejercicios = len(
         rutina.ejercicios
     )
 
-    ejercicios_compatibles = sum(
-        1
-        for ejercicio in rutina.ejercicios
-        if ejercicio.equipamiento in equipos
+    # Se evalúa cada ubicación por separado.
+    # No se mezclan equipos entre casa
+    # y gimnasio.
+
+    ejercicios_compatibles = max(
+        (
+            sum(
+                1
+                for ejercicio in rutina.ejercicios
+                if lugar_compatible(
+                    lugar,
+                    ejercicio.lugar,
+                )
+                and ejercicio.equipamiento
+                in equipamiento_en_ubicacion(
+                    perfil,
+                    lugar,
+                )
+            )
+            for lugar in ubicaciones
+            if lugar_compatible(
+                lugar,
+                rutina.lugar,
+            )
+        ),
+        default=0,
     )
 
     if total_ejercicios > 0:
@@ -461,7 +665,6 @@ def calcular_compatibilidad(
         )
     else:
         puntos["equipamiento"] = 0
-
     # --------------------------------------
     # RESULTADO FINAL
     # --------------------------------------
@@ -514,6 +717,10 @@ def evaluar_rutina(
         "rutina_id": rutina.id,
         "nombre": rutina.nombre,
         "elegible": elegible,
+                "lugares_compatibles": lugares_compatibles_rutina(
+            perfil,
+            rutina,
+        ),
         "motivos": motivos if motivos else [
             "Cumple las reglas iniciales "
             "de elegibilidad."
