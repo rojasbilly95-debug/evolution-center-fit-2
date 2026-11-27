@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import type { PerfilVerificable } from "@/lib/perfil/verificacion";
+import FotoCliente from "./foto-cliente";
 
 type Props = {
   nombre: string;
@@ -82,15 +83,6 @@ export default function VentanaSeguimiento({
     };
   }, []);
 
-  const iniciales =
-    nombre
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((parte) => parte[0] ?? "")
-      .join("")
-      .toUpperCase() || "CL";
-
   const imc =
     perfil?.peso_kg != null &&
     perfil.estatura_cm != null &&
@@ -115,18 +107,11 @@ export default function VentanaSeguimiento({
         {/* CABECERA */}
         <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-[#112138] px-4 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            {fotoUrl ? (
-              <img
-                src={fotoUrl}
-                alt={`Foto de ${nombre}`}
-                referrerPolicy="no-referrer"
-                className="h-12 w-12 rounded-full border border-cyan-400/30 object-cover"
-              />
-            ) : (
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cyan-400/15 font-bold text-cyan-300">
-                {iniciales}
-              </div>
-            )}
+<FotoCliente
+  nombre={nombre}
+  fotoUrl={fotoUrl}
+  compacto
+/>
 
             <div className="min-w-0">
               <h2 className="truncate text-lg font-bold">

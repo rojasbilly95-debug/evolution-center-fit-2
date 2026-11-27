@@ -288,12 +288,10 @@ function TarjetaCliente({
 
         {/* FOTO REAL O AVATAR DE RESPALDO */}
 
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-cyan-400/30 bg-cyan-400/10 sm:h-20 sm:w-20">
-          <FotoCliente
-            nombre={cliente.nombre}
-            fotoUrl={cliente.fotoUrl}
-          />
-        </div>
+<FotoCliente
+  nombre={cliente.nombre}
+  fotoUrl={cliente.fotoUrl}
+/>
 
         {/* NOMBRE */}
 
