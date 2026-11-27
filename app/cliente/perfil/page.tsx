@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
 import FormularioPerfil from "./formulario-perfil";
+import FotoPerfil from "./foto-perfil";
 
 // =============================================
 // EVOLUTION CENTER FIT 2.0
@@ -364,10 +365,16 @@ async function ContenidoPerfil() {
             </div>
           </aside>
 
-          {/* FORMULARIO REAL */}
-          <div className="ecf-profile-content min-w-0">
-            <FormularioPerfil perfilInicial={perfil} />
-          </div>
+{/* PERFIL PERSONAL Y FOTOGRAFÍA */}
+<div className="ecf-profile-content min-w-0 space-y-6">
+
+  {/* FOTOGRAFÍA DEL CLIENTE */}
+  <FotoPerfil usuarioId={userId} />
+
+  {/* FORMULARIO DE ENTRENAMIENTO */}
+  <FormularioPerfil perfilInicial={perfil} />
+
+</div>
         </div>
 
         <footer className="pt-3 text-center text-xs text-slate-500">
