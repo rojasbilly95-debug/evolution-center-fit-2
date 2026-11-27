@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { registrarRevisionIA } from "@/lib/ia/registrar-revision-ia";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { estadoVerificacionPerfil } from "@/lib/perfil/verificacion";
 
 // =====================================
 // TIPOS
@@ -228,8 +229,8 @@ export async function POST(request: Request) {
     } = await supabase
       .from("perfiles_clientes")
       .select(
-        "objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento"
-      )
+  "edad,peso_kg,estatura_cm,objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento,equipamiento_casa,equipamiento_gimnasio,restricciones"
+)
       .eq("usuario_id", clienteId)
       .maybeSingle();
 
@@ -247,6 +248,45 @@ export async function POST(request: Request) {
       );
     }
 
+        // =====================================
+    // VERIFICAR PERFIL ANTES DE APROBAR
+    // =====================================
+
+    if (decision === "aprobada") {
+      const verificacion =
+        await estadoVerificacionPerfil(
+          clienteId,
+          perfil
+        );
+
+      if (verificacion.estado !== "verificado") {
+        return errorJson(
+          "No puedes aprobar esta recomendación. " +
+            "El perfil del cliente requiere una " +
+            "verificación profesional vigente.",
+          409
+        );
+      }
+    }
+
+    // =====================================
+    // REVISAR CONSIDERACIONES DECLARADAS
+    // =====================================
+
+    if (
+      decision === "aprobada" &&
+      typeof perfil.restricciones === "string" &&
+      perfil.restricciones.trim().length > 0 &&
+      observaciones.length < 10
+    ) {
+      return errorJson(
+        "El cliente declaró restricciones o " +
+          "consideraciones adicionales. Debes " +
+          "documentar su revisión en las " +
+          "observaciones (mínimo 10 caracteres).",
+        400
+      );
+    }
     // =====================================
     // 6. CONSULTAR RUTINA PUBLICADA
     // =====================================

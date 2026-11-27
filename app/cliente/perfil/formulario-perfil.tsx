@@ -11,7 +11,9 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 // ======================================================
-// TIPOS
+// EVOLUTION CENTER FIT 2.0
+// PERFIL DEL CLIENTE
+// EQUIPAMIENTO POR UBICACIÓN
 // ======================================================
 
 type Perfil = {
@@ -24,6 +26,8 @@ type Perfil = {
   minutos_por_sesion: number;
   lugar: string;
   equipamiento: string[];
+  equipamiento_casa?: string[] | null;
+  equipamiento_gimnasio?: string[] | null;
   restricciones: string | null;
 };
 
@@ -35,12 +39,18 @@ type DatosFormulario = {
   minutos_por_sesion: string;
   lugar: string;
   equipamiento: string[];
+  equipamiento_casa: string[];
+  equipamiento_gimnasio: string[];
   restricciones: string;
 };
 
+type CampoEquipamiento =
+  | "equipamiento_casa"
+  | "equipamiento_gimnasio";
+
 type CampoTexto = Exclude<
   keyof DatosFormulario,
-  "equipamiento"
+  "equipamiento" | CampoEquipamiento
 >;
 
 type PropsCasillas = {
@@ -80,19 +90,43 @@ const estiloCasilla =
   "flex h-12 w-8 items-center justify-center rounded-lg border border-slate-300 bg-white text-lg font-bold tabular-nums text-slate-900 dark:border-white/20 dark:bg-[#101d31] dark:text-white sm:w-9";
 
 const estiloFlecha =
-  "flex flex-1 items-center justify-center text-[11px] font-bold text-slate-600 transition hover:bg-cyan-50 hover:text-cyan-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-500 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-200 dark:hover:bg-cyan-400/10";
+  "flex flex-1 items-center justify-center text-[11px] font-bold text-slate-600 transition hover:bg-cyan-50 hover:text-cyan-800 focus:outline-none disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-200 dark:hover:bg-cyan-400/10";
 
 // ======================================================
-// EQUIPAMIENTO
+// EQUIPAMIENTO DISPONIBLE
 // ======================================================
 
 const equipamientos = [
-  { valor: "mancuernas", nombre: "Mancuernas" },
-  { valor: "maquinas", nombre: "Máquinas" },
-  { valor: "bandas", nombre: "Bandas elásticas" },
-  { valor: "barra", nombre: "Barra" },
-  { valor: "peso_corporal", nombre: "Peso corporal" },
+  {
+    valor: "mancuernas",
+    nombre: "Mancuernas",
+  },
+  {
+    valor: "maquinas",
+    nombre: "Máquinas",
+  },
+  {
+    valor: "bandas",
+    nombre: "Bandas elásticas",
+  },
+  {
+    valor: "barra",
+    nombre: "Barra",
+  },
 ];
+
+const ubicacionesEquipamiento = [
+  {
+    valor: "casa",
+    etiqueta: "En casa",
+    campo: "equipamiento_casa",
+  },
+  {
+    valor: "gimnasio",
+    etiqueta: "En el gimnasio",
+    campo: "equipamiento_gimnasio",
+  },
+] as const;
 
 // ======================================================
 // UTILIDADES NUMÉRICAS
@@ -137,13 +171,6 @@ function validarPegadoNumerico(
   }
 }
 
-// Convierte un valor de la base de datos
-// en una secuencia de dígitos.
-//
-// Ejemplo:
-// 75.50 -> "7550"
-// 1.75  -> "175"
-
 function numeroADigitos(
   valor: number | null | undefined,
   decimales: number
@@ -160,13 +187,6 @@ function numeroADigitos(
     .replace(".", "")
     .replace(/^0+(?=\d)/, "");
 }
-
-// Convierte los dígitos del formulario
-// en el número correspondiente.
-//
-// Ejemplo:
-// "7550" -> 75.50
-// "175"  -> 1.75
 
 function digitosANumero(
   digitos: string,
@@ -198,9 +218,6 @@ function CasillasMedida({
   const maximoDigitos =
     cantidadEnteros + cantidadDecimales;
 
-  // Se añaden ceros a la izquierda para
-  // mantener el punto en una posición fija.
-
   const completo = digitos.padStart(
     cantidadDecimales + 1,
     "0"
@@ -228,8 +245,6 @@ function CasillasMedida({
         htmlFor={`${id}-entrada`}
         className="relative inline-flex max-w-full cursor-text items-center gap-2 rounded-xl p-1 transition hover:bg-cyan-50/60 focus-within:ring-2 focus-within:ring-cyan-400 dark:hover:bg-cyan-400/5"
       >
-        {/* PARTE ENTERA */}
-
         <div className="flex gap-1">
           {Array.from(
             { length: cantidadEnteros },
@@ -252,16 +267,12 @@ function CasillasMedida({
           )}
         </div>
 
-        {/* PUNTO FIJO */}
-
         <span
           aria-hidden="true"
           className="select-none text-2xl font-black text-cyan-700 dark:text-cyan-300"
         >
           .
         </span>
-
-        {/* PARTE DECIMAL */}
 
         <div className="flex gap-1">
           {Array.from(
@@ -284,8 +295,6 @@ function CasillasMedida({
           )}
         </div>
 
-        {/* UNA SOLA ENTRADA PARA TODAS LAS CASILLAS */}
-
         <input
           id={`${id}-entrada`}
           type="text"
@@ -304,7 +313,6 @@ function CasillasMedida({
             )
           }
           onFocus={(evento) => {
-            // Facilita reemplazar el valor completo.
             evento.currentTarget.select();
           }}
           onClick={(evento) => {
@@ -411,8 +419,6 @@ function CampoNumeroConFlechas({
           placeholder={`${minimo} a ${maximo}`}
         />
 
-        {/* FLECHAS DENTRO DEL CAMPO */}
-
         <div className="absolute inset-y-1 right-1 flex w-9 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-white/15 dark:bg-[#13243a]">
           <button
             type="button"
@@ -479,9 +485,35 @@ export default function FormularioPerfil({
       equipamiento:
         perfilInicial?.equipamiento ?? [],
 
+      // Los perfiles mixtos antiguos
+      // deben clasificar sus equipos.
+
+      equipamiento_casa:
+        perfilInicial?.equipamiento_casa ??
+        (
+          perfilInicial?.lugar === "casa"
+            ? perfilInicial.equipamiento
+            : []
+        ) ??
+        [],
+
+      equipamiento_gimnasio:
+        perfilInicial?.equipamiento_gimnasio ??
+        (
+          perfilInicial?.lugar === "gimnasio"
+            ? perfilInicial.equipamiento
+            : []
+        ) ??
+        [],
+
       restricciones:
         perfilInicial?.restricciones ?? "",
     });
+
+  const [
+    confirmacionMixto,
+    setConfirmacionMixto,
+  ] = useState(false);
 
   // ==================================================
   // MEDIDAS FÍSICAS
@@ -516,9 +548,6 @@ export default function FormularioPerfil({
     )
   );
 
-  // Permite conservar la precisión original
-  // de medidas que no se han editado.
-
   const [
     pesoModificado,
     setPesoModificado,
@@ -530,7 +559,7 @@ export default function FormularioPerfil({
   ] = useState(false);
 
   // ==================================================
-  // ESTADO DEL FORMULARIO
+  // ESTADOS DEL FORMULARIO
   // ==================================================
 
   const [guardando, setGuardando] =
@@ -551,6 +580,10 @@ export default function FormularioPerfil({
     campo: CampoTexto,
     valor: string
   ) {
+    if (campo === "lugar") {
+      setConfirmacionMixto(false);
+    }
+
     setDatos((anterior) => ({
       ...anterior,
       [campo]: valor,
@@ -559,21 +592,26 @@ export default function FormularioPerfil({
     limpiarMensajes();
   }
 
+  // ==================================================
+  // SELECCIÓN DE EQUIPAMIENTO POR UBICACIÓN
+  // ==================================================
+
   function cambiarEquipamiento(
+    campo: CampoEquipamiento,
     valor: string,
     seleccionado: boolean
   ) {
     setDatos((anterior) => ({
       ...anterior,
 
-      equipamiento: seleccionado
+      [campo]: seleccionado
         ? [
             ...new Set([
-              ...anterior.equipamiento,
+              ...anterior[campo],
               valor,
             ]),
           ]
-        : anterior.equipamiento.filter(
+        : anterior[campo].filter(
             (item) => item !== valor
           ),
     }));
@@ -594,7 +632,7 @@ export default function FormularioPerfil({
   }
 
   // ==================================================
-  // CÁLCULO DEL IMC
+  // CÁLCULO DE IMC ORIENTATIVO
   // ==================================================
 
   const pesoCalculado = pesoModificado
@@ -624,7 +662,7 @@ export default function FormularioPerfil({
       : null;
 
   // ==================================================
-  // GUARDAR PERFIL EN SUPABASE
+  // GUARDAR PERFIL
   // ==================================================
 
   async function guardarPerfil(
@@ -651,14 +689,14 @@ export default function FormularioPerfil({
         datos.minutos_por_sesion
       );
 
-      // El peso se almacena en kg.
+      // El peso se almacena en kilogramos.
 
       const pesoValor = pesoModificado
         ? digitosANumero(pesoDigitos, 2)
         : (perfilInicial?.peso_kg ?? null);
 
-      // La interfaz presenta metros.
-      // PostgreSQL almacena centímetros.
+      // La estatura se muestra en metros,
+      // pero la base de datos utiliza cm.
 
       const metros = alturaModificada
         ? digitosANumero(
@@ -677,9 +715,9 @@ export default function FormularioPerfil({
             )
         : (perfilInicial?.estatura_cm ?? null);
 
-      // =================================================
+      // ==================================================
       // VALIDACIONES
-      // =================================================
+      // ==================================================
 
       if (
         !Number.isInteger(edad) ||
@@ -693,9 +731,11 @@ export default function FormularioPerfil({
 
       if (
         pesoValor !== null &&
-        (!Number.isFinite(pesoValor) ||
+        (
+          !Number.isFinite(pesoValor) ||
           pesoValor < 30 ||
-          pesoValor > 300)
+          pesoValor > 300
+        )
       ) {
         throw new Error(
           "El peso debe estar entre 30 y 300 kg."
@@ -704,9 +744,11 @@ export default function FormularioPerfil({
 
       if (
         estaturaValor !== null &&
-        (!Number.isFinite(estaturaValor) ||
+        (
+          !Number.isFinite(estaturaValor) ||
           estaturaValor < 120 ||
-          estaturaValor > 230)
+          estaturaValor > 230
+        )
       ) {
         throw new Error(
           "La estatura debe estar entre 1.20 y 2.30 metros."
@@ -752,6 +794,15 @@ export default function FormularioPerfil({
       }
 
       if (
+        datos.lugar === "mixto" &&
+        !confirmacionMixto
+      ) {
+        throw new Error(
+          "Confirma qué equipamientos tienes disponibles en casa y en el gimnasio."
+        );
+      }
+
+      if (
         datos.restricciones.length > 500
       ) {
         throw new Error(
@@ -759,9 +810,9 @@ export default function FormularioPerfil({
         );
       }
 
-      // =================================================
+      // ==================================================
       // AUTENTICACIÓN
-      // =================================================
+      // ==================================================
 
       const supabase = createClient();
 
@@ -776,9 +827,33 @@ export default function FormularioPerfil({
         );
       }
 
-      // =================================================
-      // INSERTAR O ACTUALIZAR PERFIL
-      // =================================================
+      // ==================================================
+      // EQUIPAMIENTO VÁLIDO SEGÚN LUGAR
+      // ==================================================
+
+      const equiposCasa =
+        datos.lugar !== "gimnasio"
+          ? datos.equipamiento_casa
+          : [];
+
+      const equiposGimnasio =
+        datos.lugar !== "casa"
+          ? datos.equipamiento_gimnasio
+          : [];
+
+      // Conservamos el campo anterior
+      // para compatibilidad con el proyecto.
+
+      const equipamientoGeneral = [
+        ...new Set([
+          ...equiposCasa,
+          ...equiposGimnasio,
+        ]),
+      ];
+
+      // ==================================================
+      // GUARDAR EN SUPABASE
+      // ==================================================
 
       const { error: errorGuardado } =
         await supabase
@@ -786,16 +861,38 @@ export default function FormularioPerfil({
           .upsert(
             {
               usuario_id: user.id,
+
               edad,
+
               peso_kg: pesoValor,
+
               estatura_cm: estaturaValor,
+
               objetivo: datos.objetivo,
+
               experiencia: datos.experiencia,
-              frecuencia_semanal: frecuencia,
-              minutos_por_sesion: minutos,
+
+              frecuencia_semanal:
+                frecuencia,
+
+              minutos_por_sesion:
+                minutos,
+
               lugar: datos.lugar,
+
               equipamiento:
-                datos.equipamiento,
+                equipamientoGeneral,
+
+              equipamiento_casa:
+                datos.lugar !== "gimnasio"
+                  ? datos.equipamiento_casa
+                  : null,
+
+              equipamiento_gimnasio:
+                datos.lugar !== "casa"
+                  ? datos.equipamiento_gimnasio
+                  : null,
+
               restricciones:
                 datos.restricciones.trim() ||
                 null,
@@ -833,6 +930,7 @@ export default function FormularioPerfil({
       onSubmit={guardarPerfil}
       className="space-y-7 text-[var(--ecf-text,#102238)] dark:text-white"
     >
+
       {/* ===============================================
           1. DATOS FÍSICOS
       =============================================== */}
@@ -848,6 +946,7 @@ export default function FormularioPerfil({
         </p>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+
           {/* EDAD */}
 
           <div>
@@ -934,11 +1033,13 @@ export default function FormularioPerfil({
               guarda en centímetros.
             </p>
           </div>
+
         </div>
 
         {/* IMC */}
 
         <div className="mt-6 rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] p-4 dark:border-white/10 dark:bg-[#0b1729]">
+
           <p className="text-sm text-slate-500 dark:text-slate-400">
             IMC estimado
           </p>
@@ -954,6 +1055,7 @@ export default function FormularioPerfil({
             Es un indicador orientativo,
             no una evaluación médica.
           </p>
+
         </div>
       </section>
 
@@ -967,6 +1069,9 @@ export default function FormularioPerfil({
         </h2>
 
         <div className="grid gap-5 sm:grid-cols-2">
+
+          {/* OBJETIVO */}
+
           <div>
             <label
               htmlFor="objetivo"
@@ -1009,6 +1114,8 @@ export default function FormularioPerfil({
             </select>
           </div>
 
+          {/* EXPERIENCIA */}
+
           <div>
             <label
               htmlFor="experiencia"
@@ -1046,6 +1153,7 @@ export default function FormularioPerfil({
               </option>
             </select>
           </div>
+
         </div>
       </section>
 
@@ -1059,11 +1167,12 @@ export default function FormularioPerfil({
         </h2>
 
         <div className="grid gap-5 sm:grid-cols-3">
+
           {/* DÍAS POR SEMANA */}
 
           <CampoNumeroConFlechas
             id="frecuencia"
-            etiqueta="Días por semana"
+            etiqueta="Máximo de días disponibles por semana"
             valor={datos.frecuencia_semanal}
             minimo={1}
             maximo={7}
@@ -1080,7 +1189,7 @@ export default function FormularioPerfil({
 
           <CampoNumeroConFlechas
             id="minutos"
-            etiqueta="Minutos por sesión"
+            etiqueta="Tiempo máximo disponible por sesión (minutos)"
             valor={datos.minutos_por_sesion}
             minimo={15}
             maximo={240}
@@ -1100,7 +1209,7 @@ export default function FormularioPerfil({
               htmlFor="lugar"
               className={estiloEtiqueta}
             >
-              Lugar
+              Lugar donde puedes entrenar
             </label>
 
             <select
@@ -1128,15 +1237,22 @@ export default function FormularioPerfil({
               </option>
 
               <option value="mixto">
-                Mixto
+                Mixto (casa y gimnasio)
               </option>
             </select>
+
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              Este dato indica tu disponibilidad,
+              no confirma dónde se realizará cada sesión.
+              El entrenador debe verificarlo.
+            </p>
           </div>
+
         </div>
       </section>
 
       {/* ===============================================
-          4. EQUIPAMIENTO
+          4. EQUIPAMIENTO DISPONIBLE
       =============================================== */}
 
       <section className={estiloSeccion}>
@@ -1145,39 +1261,137 @@ export default function FormularioPerfil({
         </h2>
 
         <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
-          Puedes seleccionar varias opciones.
+          Marca únicamente los equipos a los que
+          realmente tienes acceso para entrenar.
+
+          El objetivo físico, como perder grasa,
+          no selecciona equipos automáticamente.
+
+          Si no tienes material adicional,
+          puedes dejar las casillas vacías.
         </p>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          {equipamientos.map((equipo) => (
-            <label
-              key={equipo.valor}
-              className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] p-4 transition-colors hover:border-cyan-400/40 dark:border-white/10 dark:bg-[#0b1729] dark:hover:bg-[#112238]"
-            >
-              <input
-                type="checkbox"
-                checked={datos.equipamiento.includes(
-                  equipo.valor
-                )}
-                onChange={(evento) =>
-                  cambiarEquipamiento(
-                    equipo.valor,
-                    evento.target.checked
-                  )
-                }
-                className="h-5 w-5 accent-cyan-400"
-              />
+        {!datos.lugar && (
+          <p className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-3 text-sm">
+            Selecciona primero el lugar
+            donde puedes entrenar.
+          </p>
+        )}
 
-              <span className="text-sm">
-                {equipo.nombre}
-              </span>
-            </label>
-          ))}
+        <div className="space-y-5">
+
+          {ubicacionesEquipamiento
+            .filter(
+              (ubicacion) =>
+                datos.lugar === "mixto" ||
+                datos.lugar === ubicacion.valor
+            )
+            .map((ubicacion) => (
+              <fieldset
+                key={ubicacion.valor}
+                className="rounded-2xl border border-[var(--ecf-border,#dce5ee)] p-4 dark:border-white/10"
+              >
+                <legend className="px-2 text-sm font-bold text-cyan-800 dark:text-cyan-200">
+                  {ubicacion.etiqueta}
+                </legend>
+
+                <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                  Marca solo los equipos que puedes
+                  utilizar en esta ubicación.
+                </p>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+
+                  {equipamientos.map((equipo) => (
+                    <label
+                      key={`${ubicacion.valor}-${equipo.valor}`}
+                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--ecf-border,#dce5ee)] bg-[var(--ecf-surface-soft,#f8fafc)] p-4 transition-colors hover:border-cyan-400/40 dark:border-white/10 dark:bg-[#0b1729] dark:hover:bg-[#112238]"
+                    >
+                      <input
+                        type="checkbox"
+
+                        checked={datos[
+                          ubicacion.campo
+                        ].includes(
+                          equipo.valor
+                        )}
+
+                        onChange={(evento) =>
+                          cambiarEquipamiento(
+                            ubicacion.campo,
+                            equipo.valor,
+                            evento.target.checked
+                          )
+                        }
+
+                        className="h-5 w-5 accent-cyan-400"
+                      />
+
+                      <span className="text-sm">
+                        {equipo.nombre}
+                      </span>
+
+                    </label>
+                  ))}
+
+                </div>
+
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                  {datos[ubicacion.campo].length === 0
+                    ? "Sin material adicional declarado para esta ubicación."
+                    : `${datos[ubicacion.campo].length} tipos de equipo declarados.`}
+                </p>
+
+              </fieldset>
+            ))}
+
         </div>
+
+        {/* INFORMACIÓN SOBRE PESO CORPORAL */}
+
+        <p className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-3 text-xs leading-5 text-slate-700 dark:text-slate-200">
+          Los ejercicios con peso corporal
+          no requieren aparatos adicionales.
+
+          El lugar y los materiales son datos
+          declarados por el cliente.
+
+          El entrenador deberá confirmar
+          su disponibilidad antes de programar
+          el entrenamiento correspondiente.
+        </p>
+
+        {/* CONFIRMACIÓN DE MODALIDAD MIXTA */}
+
+        {datos.lugar === "mixto" && (
+          <label className="mt-4 flex items-start gap-3 rounded-xl border border-amber-400/25 bg-amber-400/5 p-4 text-sm text-amber-900 dark:text-amber-100">
+
+            <input
+              type="checkbox"
+              checked={confirmacionMixto}
+              onChange={(evento) =>
+                setConfirmacionMixto(
+                  evento.target.checked
+                )
+              }
+              className="mt-1 h-4 w-4 accent-cyan-400"
+            />
+
+            <span>
+              Confirmo que he diferenciado
+              correctamente los equipos disponibles
+              en casa y en el gimnasio.
+
+              Los equipos del gimnasio no
+              se copiarán automáticamente a casa.
+            </span>
+
+          </label>
+        )}
       </section>
 
       {/* ===============================================
-          5. CONSIDERACIONES
+          5. CONSIDERACIONES ADICIONALES
       =============================================== */}
 
       <section className={estiloSeccion}>
@@ -1219,7 +1433,7 @@ export default function FormularioPerfil({
       </section>
 
       {/* ===============================================
-          MENSAJES
+          MENSAJES DEL FORMULARIO
       =============================================== */}
 
       {error && (
@@ -1241,7 +1455,7 @@ export default function FormularioPerfil({
       )}
 
       {/* ===============================================
-          BOTÓN DE GUARDADO
+          GUARDAR PERFIL
       =============================================== */}
 
       <button
@@ -1253,6 +1467,7 @@ export default function FormularioPerfil({
           ? "Guardando información..."
           : "Guardar mi perfil"}
       </button>
+
     </form>
   );
 }

@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { cerrarSesion } from "@/lib/actions/auth";
 import BotonRecomendarProtegido from "./boton-recomendar-protegido";
-
+import VerificarPerfil from "./verificar-perfil";
 // EVOLUTION CENTER FIT 2.0
 // FASE 110.5 - Gestión profesional de clientes.
 // Diseño responsive, búsqueda, filtros y seguimiento.
@@ -411,9 +411,22 @@ function TarjetaCliente({
         </Link>
       </div>
 
-      {/* MOTOR INTELIGENTE PROTEGIDO */}
+      {/* ========================================
+          VERIFICACIÓN PROFESIONAL DEL PERFIL
+      ======================================== */}
+
+      <VerificarPerfil
+        clienteId={cliente.id}
+      />
+
+      {/* ========================================
+          MOTOR INTELIGENTE PROTEGIDO
+      ======================================== */}
+
       <details className="group/ia mt-5 rounded-2xl border border-violet-400/15 bg-violet-50/80 dark:bg-[#0a1425]/65 open:border-violet-400/30">
+
         <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-violet-800 dark:text-violet-200 transition hover:bg-violet-400/[0.06] focus-visible:outline-2 focus-visible:outline-violet-300 sm:px-5 [&::-webkit-details-marker]:hidden">
+
           <span>
             Recomendaciones inteligentes y compatibilidad
           </span>
@@ -424,9 +437,11 @@ function TarjetaCliente({
           >
             +
           </span>
+
         </summary>
 
         <div className="min-w-0 border-t border-[var(--ecf-border,#dce5ee)] dark:border-white/10 p-3 sm:p-5">
+
           <p className="mb-4 text-xs leading-5 text-[var(--ecf-muted,#64748b)] dark:text-slate-400">
             El sistema verificará si la IA está habilitada
             para este participante y esta fase del estudio.
@@ -435,8 +450,11 @@ function TarjetaCliente({
           <BotonRecomendarProtegido
             clienteId={cliente.id}
           />
+
         </div>
+
       </details>
+
     </article>
   );
 }

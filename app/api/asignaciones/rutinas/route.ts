@@ -1,5 +1,6 @@
 import { bloqueoIAEstudio } from "@/lib/investigacion/bloqueo-ia-estudio";
 import { ESTUDIO } from "@/lib/investigacion/calendario-estudio";
+import { estadoVerificacionPerfil } from "@/lib/perfil/verificacion";
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +37,12 @@ function errorJson(
 ) {
   return NextResponse.json(
     { error: mensaje },
-    { status }
+    {
+      status,
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    }
   );
 }
 
@@ -202,20 +208,33 @@ export async function POST(
     }
 
     // ====================================
-    // La recomendación debe iniciar durante intervención.
-    // El plan asignado puede mantenerse hasta finalizar postest.
+    // 2. VERIFICAR PERIODO DEL ESTUDIO
+    // ====================================
+
+    // La asignación mediante IA solamente
+    // puede comenzar durante la intervención.
+    //
+    // El plan puede mantenerse hasta el
+    // final del periodo de postest.
+
     if (
       fechaInicio < ESTUDIO.inicioIntervencion ||
       fechaInicio > ESTUDIO.finIntervencion ||
-      (fechaFin !== null && fechaFin > ESTUDIO.fin)
+      (
+        fechaFin !== null &&
+        fechaFin > ESTUDIO.fin
+      )
     ) {
       return errorJson(
-        "La asignación de IA debe comenzar durante la intervención y finalizar, como máximo, el 31/01/2027.",
+        "La asignación de IA debe comenzar durante " +
+          "la intervención y finalizar, como máximo, " +
+          "el 31/01/2027.",
         409
       );
     }
 
-    // 2. AUTENTICAR ENTRENADOR
+    // ====================================
+    // 3. AUTENTICAR ENTRENADOR
     // ====================================
 
     const supabase =
@@ -240,7 +259,7 @@ export async function POST(
     }
 
     // ====================================
-    // 3. VERIFICAR ROL
+    // 4. VERIFICAR ROL
     // ====================================
 
     const {
@@ -266,7 +285,7 @@ export async function POST(
     }
 
     // ====================================
-    // 4. VERIFICAR CLIENTE ASIGNADO
+    // 5. VERIFICAR CLIENTE ASIGNADO
     // ====================================
 
     const {
@@ -298,7 +317,7 @@ export async function POST(
     }
 
     // ====================================
-    // 5. CONSULTAR PERFIL ACTUAL
+    // 6. CONSULTAR PERFIL ACTUAL
     // ====================================
 
     const {
@@ -307,7 +326,7 @@ export async function POST(
     } = await supabase
       .from("perfiles_clientes")
       .select(
-        "objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento"
+        "edad,peso_kg,estatura_cm,objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento,equipamiento_casa,equipamiento_gimnasio,restricciones"
       )
       .eq(
         "usuario_id",
@@ -330,7 +349,35 @@ export async function POST(
     }
 
     // ====================================
-    // 6. CONSULTAR RUTINA PUBLICADA
+    // 7. VERIFICAR PERFIL PROFESIONALMENTE
+    // ====================================
+
+    // Esta verificación se vincula al
+    // contenido actual del perfil.
+    //
+    // Si el cliente modifica sus datos,
+    // la verificación anterior deja
+    // de ser válida.
+
+    const verificacion =
+      await estadoVerificacionPerfil(
+        clienteId,
+        perfil
+      );
+
+    if (
+      verificacion.estado !== "verificado"
+    ) {
+      return errorJson(
+        "El perfil debe estar verificado " +
+          "por el entrenador antes de asignar " +
+          "una rutina.",
+        409
+      );
+    }
+
+    // ====================================
+    // 8. CONSULTAR RUTINA PUBLICADA
     // ====================================
 
     const {
@@ -362,7 +409,7 @@ export async function POST(
     }
 
     // ====================================
-    // 7. CONSULTAR EJERCICIOS
+    // 9. CONSULTAR EJERCICIOS
     // ====================================
 
     const {
@@ -457,12 +504,20 @@ export async function POST(
     }
 
     // ====================================
-    // 8. REVALIDAR CON MOTOR INTELIGENTE
+    // 10. REEVALUAR CON MOTOR INTELIGENTE
     // ====================================
 
-    // PASO 80.10: bloqueo de IA por estudio
-    const bloqueoIA = await bloqueoIAEstudio(String(clienteId));
-    if (bloqueoIA) return bloqueoIA;
+    // Proteger el uso de IA según
+    // el grupo y la fase del estudio.
+
+    const bloqueoIA =
+      await bloqueoIAEstudio(
+        String(clienteId)
+      );
+
+    if (bloqueoIA) {
+      return bloqueoIA;
+    }
 
     const servicio =
       process.env.IA_SERVICE_URL;
@@ -474,9 +529,17 @@ export async function POST(
       );
     }
 
-    const claveInternaIA = process.env.IA_INTERNAL_API_KEY;
-    if (!claveInternaIA || claveInternaIA.length < 32) {
-      return errorJson("Servicio de IA no configurado.", 503);
+    const claveInternaIA =
+      process.env.IA_INTERNAL_API_KEY;
+
+    if (
+      !claveInternaIA ||
+      claveInternaIA.length < 32
+    ) {
+      return errorJson(
+        "Servicio de IA no configurado.",
+        503
+      );
     }
 
     let respuestaIA: Response;
@@ -489,13 +552,18 @@ export async function POST(
         ),
         {
           method: "POST",
+
           headers: {
-            "X-IA-Service-Key": claveInternaIA,
+            "X-IA-Service-Key":
+              claveInternaIA,
+
             "Content-Type":
               "application/json",
           },
+
           body: JSON.stringify({
             perfil,
+
             rutinas: [
               {
                 ...rutina,
@@ -503,10 +571,13 @@ export async function POST(
                   ejerciciosMotor,
               },
             ],
+
             incluir_similitud: true,
             incluir_logica_difusa: true,
           }),
+
           cache: "no-store",
+
           signal:
             AbortSignal.timeout(45000),
         }
@@ -518,7 +589,8 @@ export async function POST(
       );
 
       return errorJson(
-        "El motor inteligente no está disponible. No se asignó la rutina.",
+        "El motor inteligente no está disponible. " +
+          "No se asignó la rutina.",
         503
       );
     }
@@ -553,18 +625,27 @@ export async function POST(
       );
     }
 
+    // ====================================
+    // 11. VERIFICAR ELEGIBILIDAD ACTUAL
+    // ====================================
+
+    // La aprobación profesional no
+    // reemplaza las reglas obligatorias
+    // del motor inteligente.
+
     if (
       !evaluacion.resultados[0]
         .elegible
     ) {
       return errorJson(
-        "La rutina ya no cumple las reglas de elegibilidad del cliente.",
+        "La rutina ya no cumple las reglas " +
+          "de elegibilidad del cliente.",
         409
       );
     }
 
     // ====================================
-    // 9. CONFIGURAR CLIENTE PRIVADO
+    // 12. CONFIGURAR CLIENTE PRIVADO
     // ====================================
 
     const url =
@@ -599,7 +680,68 @@ export async function POST(
     );
 
     // ====================================
-    // 10. EJECUTAR FUNCIÓN TRANSACCIONAL
+    // 13. COMPROBAR APROBACIÓN VIGENTE
+    // ====================================
+
+    // No basta con que la rutina siga siendo
+    // elegible. La aprobación profesional
+    // debe corresponder al perfil verificado
+    // más recientemente.
+
+    const {
+      data: ultimaRevision,
+      error: errorRevision,
+    } = await admin
+      .from("revisiones_rutinas")
+      .select(
+        "decision,revisado_en"
+      )
+      .eq("cliente_id", clienteId)
+      .eq("entrenador_id", entrenadorId)
+      .eq("rutina_id", rutinaId)
+      .order(
+        "revisado_en",
+        { ascending: false }
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (errorRevision) {
+      return errorJson(
+        "No se pudo verificar la aprobación de la rutina.",
+        500
+      );
+    }
+
+    const fechaAprobacion =
+      ultimaRevision?.revisado_en
+        ? Date.parse(
+            ultimaRevision.revisado_en
+          )
+        : NaN;
+
+    const fechaVerificacion =
+      verificacion.revisadoEn
+        ? Date.parse(
+            verificacion.revisadoEn
+          )
+        : NaN;
+
+    if (
+      ultimaRevision?.decision !== "aprobada" ||
+      !Number.isFinite(fechaAprobacion) ||
+      !Number.isFinite(fechaVerificacion) ||
+      fechaAprobacion < fechaVerificacion
+    ) {
+      return errorJson(
+        "La aprobación corresponde a un perfil anterior. " +
+          "Verifica y aprueba nuevamente la rutina.",
+        409
+      );
+    }
+
+    // ====================================
+    // 14. EJECUTAR FUNCIÓN TRANSACCIONAL
     // ====================================
 
     const {
@@ -610,14 +752,19 @@ export async function POST(
       {
         p_entrenador_id:
           entrenadorId,
+
         p_cliente_id:
           clienteId,
+
         p_rutina_id:
           rutinaId,
+
         p_fecha_inicio:
           fechaInicio,
+
         p_fecha_fin:
           fechaFin,
+
         p_notas:
           notas.trim() || null,
       }
@@ -625,16 +772,19 @@ export async function POST(
 
     if (errorRpc) {
       // Conflicto por índice único.
+
       if (
         errorRpc.code === "23505"
       ) {
         return errorJson(
-          "El cliente ya tiene un plan vigente o esta aprobación ya fue utilizada.",
+          "El cliente ya tiene un plan vigente " +
+            "o esta aprobación ya fue utilizada.",
           409
         );
       }
 
-      // Errores conocidos de la función.
+      // Errores conocidos de la función SQL.
+
       const mensajesControlados = [
         "El cliente ya tiene un plan vigente",
         "La última revisión no es una aprobación válida",
@@ -672,7 +822,7 @@ export async function POST(
     }
 
     // ====================================
-    // 11. VALIDAR RESULTADO
+    // 15. VALIDAR RESULTADO
     // ====================================
 
     const fila = Array.isArray(
@@ -697,23 +847,25 @@ export async function POST(
     }
 
     // ====================================
-    // 12. CONFIRMAR ASIGNACIÓN
+    // 16. CONFIRMAR ASIGNACIÓN
     // ====================================
 
     return NextResponse.json(
       {
         mensaje:
           "Rutina asignada correctamente.",
+
         asignacion: fila,
       },
       {
         status: 201,
+
         headers: {
-          "Cache-Control":
-            "no-store",
+          "Cache-Control": "no-store",
         },
       }
     );
+
   } catch (problema) {
     console.error(
       "Error inesperado al asignar rutina:",

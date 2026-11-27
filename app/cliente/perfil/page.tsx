@@ -243,10 +243,10 @@ async function ContenidoPerfil() {
   // 3. CONSULTAR EL PERFIL PROPIO
   const { data: perfil, error: perfilError } =
     await supabase
-      .from("perfiles_clientes")
-      .select(
-        "edad,peso_kg,estatura_cm,objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento,restricciones"
-      )
+.from("perfiles_clientes")
+.select(
+  "edad,peso_kg,estatura_cm,objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento,equipamiento_casa,equipamiento_gimnasio,restricciones"
+)
       .eq("usuario_id", userId)
       .maybeSingle();
 

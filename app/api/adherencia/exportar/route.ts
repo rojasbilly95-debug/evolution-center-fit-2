@@ -810,6 +810,66 @@ export async function GET(request: Request) {
     // ========================================
 
     if (tipo === "sesiones") {
+            // ========================================
+      // CONSULTAR UBICACIONES Y EVIDENCIAS
+      // ========================================
+
+      // La evidencia es información adicional.
+      // No modifica asistencia, cumplimiento
+      // ni continuidad del entrenamiento.
+
+      const evidenciasPorSesion = new Map<
+        number,
+        {
+          lugar: string;
+          estado_verificacion: string;
+          fuente_verificacion: string | null;
+        }
+      >();
+
+      // Consultar en bloques para evitar
+      // solicitudes excesivamente grandes.
+
+      for (
+        let i = 0;
+        i < idsSesiones.length;
+        i += 80
+      ) {
+        const {
+          data: evidencias,
+          error: errorEvidencias,
+        } = await admin
+          .from(
+            "sesiones_ubicaciones_evidencias"
+          )
+          .select(
+            "sesion_id,lugar,estado_verificacion,fuente_verificacion"
+          )
+          .in(
+            "sesion_id",
+            idsSesiones.slice(
+              i,
+              i + 80
+            )
+          );
+
+        if (errorEvidencias) {
+          return fallo(
+            "No se pudo consultar la evidencia de ubicación. Verifica la migración SQL.",
+            503
+          );
+        }
+
+        for (
+          const evidencia
+          of evidencias ?? []
+        ) {
+          evidenciasPorSesion.set(
+            evidencia.sesion_id,
+            evidencia
+          );
+        }
+      }
       const encabezados = [
         "asignacion_id",
         "sesion_id",
@@ -828,6 +888,9 @@ export async function GET(request: Request) {
         "calidad_registro",
         "grupo_estudio",
         "fase_medicion",
+                "lugar_sesion_registrado",
+        "estado_verificacion_ubicacion",
+        "fuente_verificacion_ubicacion",
       ];
 
       const filas = mediciones.map(
@@ -868,6 +931,20 @@ export async function GET(request: Request) {
             inicioEstudio,
             finEstudio
           ),
+          // Ubicación de la sesión
+          evidenciasPorSesion.get(
+            m.sesion.id
+          )?.lugar ?? "",
+
+          // Estado de verificación
+          evidenciasPorSesion.get(
+            m.sesion.id
+          )?.estado_verificacion ?? "",
+
+          // Fuente de información
+          evidenciasPorSesion.get(
+            m.sesion.id
+          )?.fuente_verificacion ?? "",
         ]
       );
 

@@ -4,6 +4,7 @@ import "server-only";
 import { bloqueoIAEstudio } from "@/lib/investigacion/bloqueo-ia-estudio";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { estadoVerificacionPerfil } from "@/lib/perfil/verificacion";
 import {
   createClient as crearClienteAdmin,
 } from "@supabase/supabase-js";
@@ -383,31 +384,97 @@ export async function POST(request: Request) {
       return bloqueoIA;
     }
 
-    // 6. Obtener perfil autorizado.
+        // ============================================
+    // 6. OBTENER Y VERIFICAR PERFIL DEL CLIENTE
+    // ============================================
 
     const {
       data: perfil,
       error: errorPerfil,
     } = await supabase
       .from("perfiles_clientes")
-      .select(
-        "objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento"
-      )
+.select(
+  "edad,peso_kg,estatura_cm,objetivo,experiencia,frecuencia_semanal,minutos_por_sesion,lugar,equipamiento,equipamiento_casa,equipamiento_gimnasio,restricciones"
+)
       .eq("usuario_id", clienteId)
       .maybeSingle();
 
     if (errorPerfil) {
-      throw new Error(
-        "No se pudo consultar el perfil."
+      console.error(
+        "Error al consultar perfil:",
+        errorPerfil.message
+      );
+
+      return respuestaError(
+        "No se pudo consultar el perfil del cliente.",
+        500
       );
     }
 
     if (!perfil) {
       return respuestaError(
-        "El cliente todavía no tiene perfil.",
+        "El cliente todavía no tiene un perfil registrado.",
         404
       );
     }
+
+    // --------------------------------------------
+    // VERIFICAR INFORMACIÓN NECESARIA
+    // --------------------------------------------
+
+    if (
+      !perfil.objetivo ||
+      !perfil.experiencia ||
+      !perfil.frecuencia_semanal ||
+      !perfil.minutos_por_sesion ||
+      !perfil.lugar
+    ) {
+      return respuestaError(
+        "El perfil está incompleto. Solicita al cliente que complete sus datos.",
+        409
+      );
+    }
+
+    // --------------------------------------------
+    // VERIFICACIÓN PROFESIONAL DEL ENTRENADOR
+    // --------------------------------------------
+
+    const verificacion =
+      await estadoVerificacionPerfil(
+        clienteId,
+        perfil
+      );
+
+    if (verificacion.estado !== "verificado") {
+      return respuestaError(
+        "El entrenador debe verificar el lugar, " +
+          "el equipamiento y las consideraciones " +
+          "del perfil antes de generar recomendaciones.",
+        409
+      );
+    }
+
+    // --------------------------------------------
+    // PERFIL AUTORIZADO PARA LA EVALUACIÓN
+    // --------------------------------------------
+
+    // El perfil incluye:
+    //
+    // - Objetivo principal
+    // - Experiencia
+    // - Frecuencia semanal
+    // - Minutos disponibles
+    // - Lugar de entrenamiento
+    // - Equipamiento histórico
+    // - Equipamiento de casa
+    // - Equipamiento de gimnasio
+    // - Restricciones declaradas
+    //
+    // Los campos de equipamiento por ubicación
+    // se enviarán al motor FastAPI.
+    //
+    // La verificación del entrenador no demuestra
+    // por sí misma que una sesión se haya realizado.
 
     // 7. Obtener rutinas publicadas.
 
